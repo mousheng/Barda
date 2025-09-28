@@ -1,88 +1,63 @@
-<div align="center">
-<h1 style="border-bottom: none">
-    <b><a href="https://openblocks.dev/">Openblocks</a></b><br />
-    The Open Source Retool Alternative
-</h1>
-<p>
-    Build internal tools fast, with no limitations
-</p>
-</div>
+# 🚀 Barda 国庆预览版发布说明
 
-<img src="/docs/.gitbook/assets/Bu2fpz1h01.gif"/>
+## 📈 版本概述
 
-## 📢 Use Openblocks in 3 steps
-1. Connect to any data sources or APIs.
-2. Build UI with 50+ components.
-3. Share with colleagues and customers.
-## 💡 Why Openblocks
-It's cumbersome to create a single app. You had to design user interfaces, write code in multiple languages and frameworks, and understand how all of that code works together.
+值此国庆佳节之际，我非常高兴地向大家发布 Barda 预览版！经过一年多的精心开发与持续优化，这个基于 Openblocks 重新构建的分支版本终于与大家见面。
 
-Low-code/No-code platforms are fast to get started with but quickly become unmaintainable and inflexible. This creates more problems than it solves.
+本次更新在核心功能增强、用户体验提升、性能优化等多个维度进行了全面升级，致力于为用户提供更加流畅、高效、安全的使用体验。诚挚邀请您体验这一全新版本，并期待您的宝贵反馈与建议。
 
-Retool-like solutions are great for their simplicity and flexibility, but they can also be limited in different ways compared to frameworks like React/Vue.
+> ⚠️ **重要提醒**：当前版本仍处于测试阶段，项目架构和功能可能会发生较大幅度的调整和变更，这可能导致不同版本间的应用不兼容。**请勿将此版本用于生产环境或正式项目交付**，建议仅用于测试、学习和功能体验。
 
-Openblocks wants to take a step forward. More specifically, Openblocks is
-- An all-in-one IDE to create internal or customer-facing apps.
-- A place to create, build and share building blocks of web applications.
-- A domain-specific language that UI-configurable block is the first-class citizen.
+## ✨ 核心新功能
 
-## 🪄 Features
-- **Visual UI builder** with 50+ built-in components.
-- **Module and Query Library** for reusable components and queries in the UI builder.
-- **Custom components** to share through React and Openblocks SDK (instead of iFrame).
-- **Native connections** to PostgreSQL, MongoDB, MySQL, Redis, Elasticsearch, REST API, SMTP, etc.
-- **JavaScript supported everywhere** to transform data, control components, etc.
-- **Embed Openblocks pages as a React component** (instead of iFrame). [Demo](https://github.com/openblocks-dev/openblocks-sdk-demo)
-- **Role-based access control (RBAC)** for granular permission management.
-- **Auto-saved and restorable history** for release and version control.
-- **DIY app themes** to precisely align with your company's content.
-- **Audit logs** to track activities and ensure compliance.
+### 🔐 安全增强
+* **RSA 加密登录**：采用 RSA 加密技术保护用户账户密码，大幅提升系统安全性
 
-## 🏆 Comparisons
-### Openblocks vs Retool
-- Openblocks is open-source. You don't need to worry about vendor lock-in or being stuck with an outdated version of the software.
-- In Openblocks, developers can create and use their own components instead of depending on official updates.
-- Openblocks supports left menu navigation (like most sites do). Retool has header navigation only.
-### Openblocks vs Appsmith, Tooljet
-- Openblocks has more components and richer configuration than Appsmith and Tooljet.
-- In Openblocks, you can choose auto-height or fixed-height mode for your components, while Appsmith supports fixed-height mode only.
-- In Openblocks, you can reuse common structures when building apps with modules and query library features.
+### 🎨 品牌定制化
+* **企业品牌设置**：支持自定义品牌名称、企业标识、网站图标及顶部主题颜色，打造专属企业形象
 
-## 👐 Support and Community
-If you have any questions, please feel free to contact us or share with our community. Our team is here ready to help.
+### 💻 开发体验优化
+* **智能代码提示**：增强代码编辑器功能，提供更丰富的上下文信息提示，提升开发效率
+* **查询管理增强**：支持为查询添加备注说明，并可通过备注进行快速搜索，便于团队协作
 
-📮 Chat with us on [Discord](https://discord.com/invite/z5W2YHXdtt)
+### 🎯 界面交互改进
+* **自由拖拽排序**：自由模式下支持通过拖拽调整组件显示顺序，操作更加灵活
+* **零边距设计**：允许组件设置 0 边距，实现更紧凑的布局设计（部分组件正在适配中）
+* **组件复制优化**：修复快速粘贴时出现幽灵组件的 bug，确保复制功能的稳定性
 
-📑 Search for solutions in our [Documentation](https://docs.openblocks.dev/)
+### 🏗️ 架构重构
+* **GridLayout 重写**：完全重构网格布局组件，优化拖拽逻辑和布局计算算法，提升鼠标偏移量计算精度
 
-🔎 Submit an issue here on [GitHub](https://github.com/openblocks-dev/openblocks/issues)
+## ⚡ 性能大幅提升
 
-## 💻 Deployment Options
-You can access Openblocks from [cloud-hosted version](https://cloud.openblocks.dev/) at any time, or use the following resources for deploying Openblocks on different platforms:
-- [Docker](https://docs.openblocks.dev/self-hosting)
-- [AWS AMI](https://docs.openblocks.dev/self-hosting/aws-ami)
-- [DigitalOcean](https://docs.openblocks.dev/self-hosting/digitalocean)
+### 🎨 界面渲染优化
+* **编辑界面流畅度提升**：大幅优化编辑界面组件渲染机制，减少不必要的组件刷新，显著提升组件切换时的流畅度
+* **画布性能突破**：优化画布渲染算法，即使拖入上百个组件仍能保持丝滑操作体验
 
-## 💪 Contributing
-- Language support: If you have experience with a language that isn't currently supported by our product, send us a pull request.
-- Create and share components or demos: If you've created something that might be useful to others, add the link here.
-- [Frontend contributing guide](https://github.com/openblocks-dev/openblocks/tree/develop/client)
+### 📊 数据处理能力
+* **表格组件性能革命**：彻底重构表格组件，支持 10 万条数据无卡顿加载，列宽度计算性能提升 **1500+ 倍**
 
-## 📝 Examples(WIP)
-- [Basic CRUD](https://cloud.openblocks.dev/apps/6374b8dbc23a1103804cc23e/view)
-- [Simple table horizontal scroll and pagination demo](https://cloud.openblocks.dev/apps/6377695dc54c5224c70e9770/view)
-- [Pagination with temporary state demo](https://cloud.openblocks.dev/apps/6379cdd9f02c6e6ecc1d37ff/view)
-- [Import third-party JS lib demo](https://cloud.openblocks.dev/apps/637a1797c54c5224c70efed3/view)
-- [JSON schema parsing using a third-party lib](https://cloud.openblocks.dev/apps/638dc95c75cfb658566143c5/view)
-- [Custom Echarts demo](https://cloud.openblocks.dev/apps/63779dd6c54c5224c70ea537/view), [Echarts source](https://echarts.apache.org/examples/en/editor.html?c=area-stack)
-- [Periodically user action report demo](https://cloud.openblocks.dev/apps/637f38daa899fe1ffcb17f0b/view)
-- [Generate PDF using jsPdf](https://cloud.openblocks.dev/apps/6388610b0a254922d92e3882/view)
-- [Excel Explorer](https://cloud.openblocks.dev/apps/6392ff5d51cd8a59114b0c2c/view)
-- [File upload with REST API](https://cloud.openblocks.dev/apps/63a2651e660ad97d59eb4a51/view)
-- [Shopping cart demo using transformers/state/drawer](https://cloud.openblocks.dev/apps/63a422a344075b798fe3ae06/view)
-- [Module demo: color picker](https://cloud.openblocks.dev/apps/63a58f1e85d4cb49cebad1d4/view)
-- [S3 File Management](https://cloud.openblocks.dev/apps/63c7aa55686c4f301cf4d755/view)
-- [Custom Markdown Style](https://cloud.openblocks.dev/apps/63c8bdb9de760726cd253c90/view)
-- [Use JS query to orchestrate other queries](https://cloud.openblocks.dev/apps/63c8fb1e0279b679be2b5a09/view)
-- [Data responder demo](https://cloud.openblocks.dev/apps/63f84d23f5f6f66102fedf81/view)
-- [Change theme by code](https://cloud.openblocks.dev/apps/63f84ca9f5f6f66102fedf3b/view)
+### 📦 资源优化
+* **核心文件瘦身**：barda-core 文件大小从 639KB 优化至 196KB，减少 **69%** 的体积
+* **状态管理优化**：重构 editorState 类，引入智能缓存机制，显著提升常用中间属性的访问性能
+
+
+## 🛠️ 开发体验全面升级
+
+### 🚀 开发环境优化
+* **一键调试脚本**：为 Windows + WSL2 用户提供便捷的一键调试脚本，简化开发环境配置
+* **国内镜像加速**：将前后端 yarn 和 maven 源全面切换为国内镜像，大幅提升依赖安装速度
+
+### 📚 依赖管理改进
+* **冷门依赖集成**：将 rjson 等冷门 jar 包直接集成到项目 lib 文件夹，避免依赖缺失问题
+* **核心依赖升级**：升级核心依赖和构建工具，确保开发环境的稳定性和兼容性
+
+---
+
+## 🎉 结语
+
+感谢大家一直以来的耐心等待！虽然作为个人开发者，我的开发速度可能比较慢，但我依然想把 Barda 好好维护下去，并持续添加新功能，保持免费开源。
+
+我深知一个人的力量有限，因此更加期待与大家一起添砖加瓦，共同打造一个更好的低代码平台。每一个建议、每一个反馈、每一个贡献，都是推动 Barda 前进的重要力量。
+
+**让我们一起见证 Barda 的成长，开启高效开发之旅！** 🚀
