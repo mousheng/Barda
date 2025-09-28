@@ -1,6 +1,6 @@
 import path from "node:path";
-import { buildVars } from "openblocks-dev-utils/buildVars.js";
-import { currentDirName } from "openblocks-dev-utils/util.js";
+import { buildVars } from "barda-dev-utils/buildVars.js";
+import { currentDirName } from "barda-dev-utils/util.js";
 
 const globals = {};
 buildVars.forEach(({ name, defaultValue }) => {
@@ -16,19 +16,19 @@ export default {
   moduleNameMapper: {
     "react-markdown": path.resolve(dirname, "./mocks/react-markdown.js"),
     "\\.md\\?url$": path.resolve(dirname, "./mocks/markdown-url-module.js"),
-    "^@openblocks-ee(.*)$": path.resolve(
+    "^@barda(.*)$": path.resolve(
       dirname,
-      isEE ? "../../packages/openblocks/src/ee/$1" : "../../packages/openblocks/src/$1"
+      isEE ? "../../packages/barda/src/ee/$1" : "../../packages/barda/src/$1"
     ),
-    "openblocks-sdk": path.resolve(dirname, "../../packages/openblocks/src/index.sdk"),
+    "barda-sdk": path.resolve(dirname, "../../packages/barda/src/index.sdk"),
   },
   globals,
   // roots: ["<rootDir>/src"],
   modulePaths: [
     "<rootDir>/src",
-    path.resolve(dirname, "../../packages/openblocks/src"),
-    path.resolve(dirname, "../../packages/openblocks-comps/src"),
-    path.resolve(dirname, "../../packages/openblocks-design/src"),
+    path.resolve(dirname, "../../packages/barda/src"),
+    path.resolve(dirname, "../../packages/barda-comps/src"),
+    path.resolve(dirname, "../../packages/barda-design/src"),
   ],
   setupFiles: [path.resolve(dirname, "./jest.setup.js")],
   setupFilesAfterEnv: [path.resolve(dirname, "./jest.setup-after-env.js")],

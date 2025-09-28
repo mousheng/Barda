@@ -1,0 +1,28 @@
+{
+  "name": "barda-cli-template-typescript",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "build": "barda-cli build"
+  },
+  "barda": {
+    "description": "",
+    "comps": {
+      "hello_world": {
+        "name": "__i18n_helloWorldCompName__",
+        "icon": "./icons/demo-icon.png"
+      }
+    }
+  },
+  "devDependencies": {
+    "barda-cli": "workspace:^",
+    "barda-sdk": "workspace:^",
+    "typescript": "^4.8.4",
+    "vite": "4.5.3"
+  },
+  "keywords": [
+    "barda"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@barda/*": ["*"],
+      "barda-sdk": ["index.sdk"],
+      "*": ["*", "../../barda-comps/src/*", "../../barda-design/src/*"]
+    }
+  }
+}
+  

@@ -5457,6 +5457,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"barda-core@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "barda-core@npm:0.0.1"
+  dependencies:
+    "@rollup/plugin-commonjs": ^23.0.0
+    "@rollup/plugin-node-resolve": ^15.0.0
+    intl-messageformat: ^10.2.1
+    lodash: ^4.17.21
+    lru-cache: ^7.14.1
+  checksum: 3d3eda51276ece458f4a712ce175cdecd5a24ea4ffc485e074cbf7aa6ce01c23f1ad487ea8c855e1114e2e5ccf50181434318a0abad4ba4d9d245c270d9d4778
+  languageName: node
+  linkType: hard
+
+"barda-sdk@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "barda-sdk@npm:0.0.1"
+  peerDependencies:
+    react: ">=18"
+    react-dom: ">=18"
+  checksum: aec124845517845bc83a545c160aa64ad45b6b83c8b2048369f03f880d5c582ff8535139d7d4fd81b37e7a24001b8ebbbb846ddd9c2112b3670738ac244335ca
+  languageName: node
+  linkType: hard
+
 "base64-arraybuffer@npm:^1.0.2":
   version: 1.0.2
   resolution: "base64-arraybuffer@npm:1.0.2"
@@ -9181,29 +9204,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openblocks-core@npm:^0.0.7":
-  version: 0.0.7
-  resolution: "openblocks-core@npm:0.0.7"
-  dependencies:
-    "@rollup/plugin-commonjs": ^23.0.0
-    "@rollup/plugin-node-resolve": ^15.0.0
-    intl-messageformat: ^10.2.1
-    lodash: ^4.17.21
-    lru-cache: ^7.14.1
-  checksum: 9469e04204faadb805a23666a4b5faa36c9d8a8a13cb19c4b7b69abd0d1a1d746f69a99ec1f53affd9c0532c2b65f4c9b8e91c8baaeb4195f99ff1b6fcbc60e7
-  languageName: node
-  linkType: hard
-
-"openblocks-sdk@npm:0.0.38":
-  version: 0.0.38
-  resolution: "openblocks-sdk@npm:0.0.38"
-  peerDependencies:
-    react: ">=17"
-    react-dom: ">=17"
-  checksum: 11bc829871c8037378f35e37d97ca8702a7adbd0c228ea9125befb8a63c8cf883cd9a8ce1818dc70a4865186118da313ae5b7660cd038a6fd0e9dab669e871a9
-  languageName: node
-  linkType: hard
-
 "optionator@npm:^0.8.1":
   version: 0.8.3
   resolution: "optionator@npm:0.8.3::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Foptionator%2F-%2Foptionator-0.8.3.tgz"
@@ -10413,6 +10413,8 @@ __metadata:
     "@types/node": ^18.11.18
     "@types/node-fetch": ^2.6.2
     axios: ^1.2.0
+    barda-core: ^0.0.1
+    barda-sdk: ^0.0.1
     base64-arraybuffer: ^1.0.2
     commander: ^10.0.0
     copyfiles: ^2.4.1
@@ -10432,8 +10434,6 @@ __metadata:
     node-fetch: 2
     nodemon: ^2.0.20
     openapi-types: ^12.1.0
-    openblocks-core: ^0.0.7
-    openblocks-sdk: 0.0.38
     pino: ^8.11.0
     postman-to-openapi: ^3.0.1
     prom-client: ^14.2.0

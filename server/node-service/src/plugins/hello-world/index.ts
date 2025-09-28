@@ -1,4 +1,4 @@
-import { DataSourcePlugin, ConfigToType } from "openblocks-sdk/dataSource";
+import { DataSourcePlugin, ConfigToType } from "barda-sdk/dataSource";
 
 const dataSourceConfig = {
   type: "dataSource",

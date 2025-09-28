@@ -1,4 +1,4 @@
-# Openblocks' frontend
+# Barda' frontend
 
 ## How to contribute
 
@@ -9,10 +9,10 @@
 Simply run below command to start a backend server.
 
 ```bash
-docker run -d --name openblocks -p 3000:3000 -v "$PWD/stacks:/openblocks-stacks" openblocksdev/openblocks-ce
+docker run -d --name barda -p 3000:3000 -v "$PWD/stacks:/barda-stacks" bardadev/barda-ce
 ```
 
-For more information, view our doc https://docs.openblocks.dev/self-hosting
+For more information, view our doc https://docs.barda.dev/self-hosting
 
 #### Build Docker image from source
 
@@ -20,13 +20,13 @@ For more information, view our doc https://docs.openblocks.dev/self-hosting
 2. Use the command below to build Docker image :
 
 ```bash
-docker build -f ./deploy/docker/Dockerfile -t openblocks-dev .
+docker build -f ./deploy/docker/Dockerfile -t barda-dev .
 ```
 
 3. Start
 
 ```bash
-docker run -d --name openblocks-dev -p 3000:3000 -v "$PWD/stacks:/openblocks-stacks" openblocks-dev
+docker run -d --name barda-dev -p 3000:3000 -v "$PWD/stacks:/barda-stacks" barda-dev
 ```
 
 ### Start develop
@@ -43,4 +43,4 @@ In addition, before submitting a pull request, please make sure the following is
 
 1. If you’ve fixed a bug or added code that should be tested and add unit test suite.
 2. Run `yarn test` and ensure all test suites pass.
-3. If you add new dependency, use yarn workspace openblocks some-package to make sure yarn.lock is also updated.
+3. If you add new dependency, use yarn workspace barda some-package to make sure yarn.lock is also updated.

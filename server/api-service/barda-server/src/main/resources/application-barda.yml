@@ -1,0 +1,52 @@
+auth:
+  email:
+    enable: true
+    rsa: true
+spring:
+  codec:
+    max-in-memory-size: 20MB
+  data:
+    mongodb:
+      authentication-database: admin
+      auto-index-creation: false
+      uri: ${MONGODB_URI:mongodb://localhost:27017/barda?socketTimeoutMS=5000}
+    redis:
+      url: ${REDIS_URL:redis://localhost:6379}
+  main:
+    allow-bean-definition-overriding: true
+    allow-circular-references: true
+
+server:
+  compression:
+    enabled: true
+  forward-headers-strategy: NATIVE
+  http2:
+    enabled: true
+  port: 8080
+  shutdown: graceful
+
+common:
+  cookie-name: LOCAL_BARDA_TOKEN
+  product: Barda
+  domain:
+    default-value: skipCheck
+  encrypt:
+    password: barda.com
+    salt: barda.com
+  cloud: true
+  security:
+    cors-allowed-domains:
+      - '*'
+  version: 1.1.8
+  block-hound-enable: false
+  js-executor:
+    host: ${JS_EXECUTOR_URI:http://127.0.0.1:6060}
+  workspace:
+    mode: enterprise
+
+material:
+  mongodb-grid-fs:
+    bucket-name: material
+#logging:
+#  level:
+#    root: debug

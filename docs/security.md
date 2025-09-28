@@ -1,33 +1,13 @@
-# Security
+## Barda会存储我的业务数据吗？
 
-## Does Openblocks store my data?
+​**不会**​，Barda并不存储任何您从 API/数据库查询返回的数据。当您查询 API/数据库时，Barda服务器基于鉴权配置连接您的数据源并转发请求，接着把数据源返回的结果数据返回到浏览器，整个过程中Barda只充当一个代理层，并不保存您的数据。 此外，Barda还提供了私有化部署镜像，您也可以将镜像部署到企业内部容器环境中，保证数据存放在企业内。
 
-No, Openblocks doesn't store any data returned from your APIs or database queries.
+## Barda还做了什么保证信息安全？
 
-Openblocks only serves as a proxy between client side and your data sources. When you query your APIs or databases, Openblocks server connects to the data source with your credentials, forwards the request, and returns the result data to the browser. During the whole process, Openblocks doesn't store any data from your requests or responses.
+Barda采取了一系列的措施来保证信息安全：
 
-Openblocks also provides a self-hosted version. You can deploy self-hosted Openblocks images on your own device, on-premise deployment ensures you have total control over your resources and that your data is securely stored.
-
-## Is it safe to log in to my databases on Openblocks Cloud?
-
-Yes, it is very safe for the following reasons:
-
-* All sensitive credentials, such as database passwords, are encrypted with [AES-256 encryption](https://en.wikipedia.org/wiki/Advanced\_Encryption\_Standard).
-* All sensitive credentials will never be sent to the browser from the server. They are only used in server side and are never exposed to the browser, the browser will display "Encrypted on the server side" as a placeholder.
-
-<figure><img src=".gitbook/assets/image (3) (1).png" alt=""><figcaption></figcaption></figure>
-
-## Other security measures within Openblocks
-
-Openblocks provides secure-by-default service.
-
-* All connections on Openblocks Cloud are encrypted with [TLS](https://en.wikipedia.org/wiki/Public\_key\_certificate).
-* Sensitive credentials, such as database access credentials, are encrypted with AES-256, and each self-hosted Openblocks instance can be configured with unique salt values.
-* Openblocks Cloud only connects to your databases or APIs through allowed IPs: **54.149.191.117** & **54.71.67.239**, ensuring that your data won't be exposed to unknown IPs while using our cloud service.
-* Openblocks Cloud service is deployed and hosted on AWS centers, which are certified with ISO 27001, SOC 1 and SOC 2 standards.
-* Openblocks **** ensures data redundancy on all cloud instances, so you do not need to worry about single point of failure or data loss.
-* Internal access to Openblocks Cloud is controlled through [two-factor authentication (2FA)](https://en.wikipedia.org/wiki/Help:Two-factor\_authentication) and audit logs.
-
-## Feedback
-
-Should you have any questions about data security in Openblocks, please feel free to contact us. We welcome any feedback on our service from security experts and all users.
+* 在Barda云端版本中，所有连接均经过 TLS 加密。
+* 敏感数据（如数据库访问凭证）均经过 AES-256 加密，同时云端版本私有化部署镜像中，可以自定义加密盐值 (Salt) 。
+* 您可通过设置数据源访问 IP 白名单授权给Barda的服务器 IP：`47.111.8.153`​，保证在使用Barda云端版本过程中数据不会泄漏给其他人。
+* Barda云端版本服务器、存储均部署在阿里云，阿里云获得 ISO 27001、SOC 1/2/3 等权威认证；同时Barda云端服务器与存储均保证数据冗余，因此您不用担心单点异常或者数据丢失。
+* Barda云端版本的阿里云部署均开启双因素认证系统和审计日志保证数据安全。

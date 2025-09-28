@@ -1,0 +1,10 @@
+{
+  "name": "barda-dev-utils",
+  "version": "0.0.1",
+  "license": "MIT",
+  "type": "module",
+  "description": "用于Barda构建过程和Barda cli的Barda开发实用程序;Barda dev utils for barda build process and barda-cli",
+  "keywords": [
+    "barda"
+  ]
+}

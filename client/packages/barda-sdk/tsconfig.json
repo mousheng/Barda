@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "experimentalDecorators": true,
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "declaration": true,
+    "declarationDir": "types",
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "jsx": "react-jsx",
+    "baseUrl": "./src",
+    "paths": {
+      "*": [
+        "*",
+        "../../barda/src/*",
+        "../../barda-comps/src/*",
+        "../../barda-design/src/*"
+      ],
+      "@barda/*": ["../../barda/src/*"]
+    }
+  },
+  "exclude": ["../barda/src/ee/*"],
+  "include": [
+    "src",
+    "index.tsx",
+    "../barda/src",
+    "../barda-comps/src",
+    "../barda-design/src"
+  ]
+}

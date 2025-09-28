@@ -1,0 +1,18 @@
+{
+  "name": "create-barda-component",
+  "description": "用于创建barda低代码平台组件的工具;Tool for creating Barda low code platform components",
+  "version": "0.0.4",
+  "bin": "./index.js",
+  "type": "module",
+  "dependencies": {
+    "barda-dev-utils": "^0.0.1",
+    "chalk": "^4",
+    "commander": "^9.4.1",
+    "cross-spawn": "^7.0.3",
+    "fs-extra": "^10.1.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "barda"
+  ]
+}

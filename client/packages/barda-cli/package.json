@@ -1,0 +1,50 @@
+{
+  "name": "barda-cli",
+  "description": "脚手架工具用于构建barda组件;CLI tool used to start build publish barda components.",
+  "version": "0.0.1",
+  "license": "MIT",
+  "bin": "./index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./index.js"
+    },
+    "./config/vite.config": {
+      "import": "./config/vite.config.js",
+      "require": "./config/vite.config.js"
+    },
+    "./client": {
+      "types": "./client.d.ts"
+    },
+    "./actions/init.js": {
+      "import": "./actions/init.js",
+      "require": "./actions/init.js"
+    }
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "axios": "^1.1.3",
+    "barda-dev-utils": "workspace:^",
+    "chalk": "4",
+    "commander": "^9.4.1",
+    "cross-spawn": "^7.0.3",
+    "fs-extra": "^10.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rollup-plugin-external-globals": "^0.7.1",
+    "vite": "4.5.3",
+    "vite-plugin-css-injected-by-js": "^2.1.1",
+    "vite-plugin-svgr": "^2.2.2"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "typescript": "^4.8.4"
+  },
+  "peerDependencies": {
+    "barda-sdk": "*"
+  },
+  "keywords": [
+    "barda"
+  ]
+}

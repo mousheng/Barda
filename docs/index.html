@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="UTF-8">
+  <title>百搭</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Description">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar.min.css" />
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/buble.css">
+  <link rel="icon" type="image/png" href="./assets/logo.svg">
+  <style>
+    .sidebar-nav>p {
+      color: #b9bbc8;
+      margin: 5px 10px;
+    }
+
+    .sidebar .sidebar-nav {
+      line-height: 2em;
+      padding-bottom: 40px;
+      font-size: 14px;
+    }
+
+    .app-sub-sidebar li:before {
+      content: "-";
+      padding-right: 4px;
+      float: left;
+    }
+
+    .sidebar ul li.active>a {
+      border-right: 2px solid;
+      color: #42b983;
+      color: var(--theme-color, #42b983);
+      font-weight: 600;
+    }
+
+    .sidebar li {
+      list-style: none;
+      margin-left: 10px;
+      padding: .2em 0;
+    }
+
+    :root {
+      --docsifytabs-border-color: #ededed;
+      --docsifytabs-tab-highlight-color: #0074d9;
+    }
+  </style>
+</head>
+<script src="//cdn.jsdelivr.net/npm/docsify-edit-on-github"></script>
+
+<body>
+  <div id="app"></div>
+  <script>
+    window.$docsify = {
+      // 主页
+      homepage: 'README.md',
+      // 自定义封面
+      coverpage: 'cover.md',
+      name: 'barda',
+      repo: 'https://github.com/mousheng/lowcoder_CN',
+      subMaxLevel: 2,
+      // loadNavbar: true,
+      loadSidebar: true,
+      loadSidebar: 'SUMMARY.md',
+      // 底部导航
+      pagination: {
+        previousText: "上一页",
+        nextText: "下一页",
+        crossChapter: true,
+        crossChapterText: true,
+      },
+      auto2top: true,
+      toc: {
+        tocMaxLevel: 5,
+        target: "h2, h3, h4, h5, h6",
+      }, //自动跳转到顶部
+      // 全文搜索
+      search: {
+        // （毫秒）过期时间一天
+        maxAge: 86400000,
+        paths: 'auto',
+        placeholder: '搜一下',
+        noData: '无数据',
+        depth: '6'
+      },
+      autoHeader: true,
+      // 小屏自动合并导航栏和侧边栏
+      // mergeNavbar: false,
+      topMargin: 10,
+      // 字数统计
+      count: {
+        countable: true,
+        position: "top",
+        margin: "10px",
+        float: "right",
+        fontsize: "0.9em",
+        color: "#dfe2e6",
+        language: "chinese",
+        localization: {
+          words: "",
+          minute: "",
+        },
+        isExpected: true,
+      },
+      plugins: [
+        // 末尾的/是必要的
+        EditOnGithubPlugin.create('https://github.com/mousheng/barda/blob/barda/docs/'),
+
+      ],
+      tabs: {
+        tabComments: true // default
+      }
+    }
+  </script>
+  <!-- Docsify v4 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code"></script>
+  <script src="//unpkg.com/docsify-count/dist/countable.js"></script>
+  <script src="//unpkg.com/prismjs/components/prism-java.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-tabs@1/dist/docsify-tabs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
+  <!-- 底部 上一页下一页 -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify-pagination@2/dist/docsify-pagination.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/external-script.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/ga.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
+
+  <!-- 页面右侧 TOC -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify-plugin-toc@1.1.0/dist/docsify-plugin-toc.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-tabs@1"></script>
+
+</body>
+
+</html>

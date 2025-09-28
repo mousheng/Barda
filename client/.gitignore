@@ -14,7 +14,7 @@
 
 # production
 /build
-/packages/openblocks/build
+/packages/barda/build
 
 # misc
 .DS_Store

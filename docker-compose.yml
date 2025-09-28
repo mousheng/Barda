@@ -1,0 +1,105 @@
+
+services:
+  barda-client:
+    build:
+      context: ./
+      dockerfile: ./develop/dockerfile/client.Dockerfile
+    image: barda-client:development
+    platform: linux/x86_64
+    working_dir: ${BARDA_CLIENT_WORKDIR}/client
+    environment:
+      - BARDA_API_SERVICE_URL=${BARDA_API_SERVICE_URL}
+      - IN_CONTAINER=${IN_CONTAINER}
+    volumes:
+      - ./client:${BARDA_CLIENT_WORKDIR}/client:cached
+    ports:
+      - 8000:8000
+      - 9000:9000
+    command: tail -f /dev/null
+    profiles:
+      - onlyFrontDevelop
+      - DevelopFrontAndBack
+
+  docsify:
+    build:
+      context: ./
+      dockerfile: ./develop/dockerfile/docsify.Dockerfile
+    image: barda-docsify:development
+    ports:
+      - 30000:3000
+    volumes:
+      - ./docs:/docs
+    # command: tail -f /dev/null
+    profiles:
+      - onlyFrontDevelop
+      - DevelopFrontAndBack
+
+  barda:
+    image: moushengkoo/barda:latest
+    ports:
+      - 3000:3000
+      - 27018:27017
+    volumes:
+      - ./develop/.temp/barda-stacks:/barda-stacks
+    environment:
+      - MONGODB_EXPOSED=true
+    profiles:
+      - onlyFrontDevelop
+
+  barda-mongodb:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_DATABASE=barda
+      - MONGO_INITDB_ROOT_USERNAME=barda
+      - MONGO_INITDB_ROOT_PASSWORD=PassWD123
+    volumes:
+      - ./develop/.temp/mongodb:/data/db
+    profiles:
+      - DevelopFrontAndBack
+
+  barda-redis:
+    image: redis
+    ports:
+      - 6379:6379
+    profiles:
+      - DevelopFrontAndBack
+
+  barda-node-server:
+    build:
+      context: ./
+      dockerfile: ./develop/dockerfile/node.Dockerfile
+    image: node-server:development
+    platform: linux/x86_64
+    volumes:
+      - ./server/node-service:/app/node-service:cached
+    ports:
+      - 6060:6060
+    command: sh -c "yarn install & yarn start"
+    profiles:
+      - DevelopFrontAndBack
+
+  barda-api-server:
+    build:
+      context: ./develop/dockerfile
+      dockerfile: ./api.Dockerfile
+    image: moushengkoo/barda-api-dev:latest
+    platform: linux/x86_64
+    environment:
+      - MONGODB_URI=${MONGODB_URI}
+      - REDIS_URL=${REDIS_URL}
+      - JS_EXECUTOR_URI=${JS_EXECUTOR_URI}
+    volumes:
+      - ../barda:/barda:delegated
+      # ssh免密
+      - ./develop/.temp/authorized_keys:/root/.ssh/authorized_keys
+      # 持久化maven仓库
+      - ./develop/.temp/repository:/root/.m2/repository:delegated
+      # 持久化idea后端
+      - ./develop/.temp/idea:/root/.cache/JetBrains:delegated
+    ports:
+      - 8080:8080
+      - 2222:22
+    profiles:
+      - DevelopFrontAndBack

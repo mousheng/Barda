@@ -1,0 +1,40 @@
+version: 1
+dn: dc=barda,dc=dev
+objectClass: domain
+objectClass: top
+dc: barda
+
+dn: ou=Users,dc=barda,dc=dev
+objectClass: organizationalUnit
+objectClass: top
+ou: Users
+
+dn: cn=Joe Simms,ou=Users,dc=barda,dc=dev
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Joe Simms
+sn: Simms
+uid: user1
+userPassword: 12345
+
+dn: cn=lv,ou=Users,dc=barda,dc=dev
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: lv
+sn: lv
+uid: 1
+userPassword: 1111qqqq
+
+dn: cn=yu,ou=Users,dc=barda,dc=dev
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: yu
+sn: yu
+uid: 2
+userPassword: 1111qqqq

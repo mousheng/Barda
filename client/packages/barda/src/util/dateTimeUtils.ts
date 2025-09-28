@@ -1,0 +1,58 @@
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
+export const TIME_FORMAT = "HH:mm:ss";
+export const TIME_12_FORMAT = "HH:mm:ss:a";
+export const TIME_FORMAT_MINUTES = "HH:mm"
+export const DATE_FORMAT = "YYYY-MM-DD";
+export const DATE_FORMAT_EN = "MM/DD/YYYY";
+export const DATE_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
+export const DATE_TIME_12_FORMAT = "YYYY-MM-DD HH:mm:ss:a";
+export const DATE_ISO8601_FORMAT = "YYYY-MM-DDTHH:mm:ssZ";
+export const DATE_ISO8601_MILLISECOND_FORMAT = "YYYY-MM-DDTHH:mm:ss.SSS[Z]";
+
+export const TIMESTAMP_FORMAT = "x";
+export const DateParser = [DATE_ISO8601_FORMAT, DATE_ISO8601_MILLISECOND_FORMAT, DATE_TIME_FORMAT, DATE_TIME_12_FORMAT, DATE_FORMAT, TIMESTAMP_FORMAT, DATE_FORMAT_EN];
+export const TimeParser = [TIME_12_FORMAT, TIME_FORMAT, TIMESTAMP_FORMAT];
+export type PickerMode = "date" | "week" | "month" | "quarter" | "year";
+
+/**
+ * 时间戳转换为日期字符串
+ * @param timestamp 毫秒时间戳
+ * @returns 日期格式 YYYY-MM-DD HH:mm
+ */
+export function formatTimestamp(timestamp: number): string {
+  return dayjs.unix(timestamp / 1000).format("YYYY-MM-DD HH:mm");
+}
+
+/**
+ * 时间戳转换为易读的时间格式
+ * - if timestamp is less than *intervalMillis* ms from now, transform to a time description related to now;
+ * - otherwise return the absolute time string
+ *
+ * @param timestamp timestamp milliseconds
+ * @param intervalMillis default value is an hour
+ * @returns readable string
+ */
+export function timestampToHumanReadable(
+  timestamp?: number,
+  intervalMillis: number = 3600000
+): string {
+  if (!timestamp) {
+    return "";
+  }
+  const now = Date.now();
+  const TIME_FORMAT = "YYYY-MM-DD HH:mm";
+  let timeInfo;
+  if (now - new Date(timestamp).getTime() <= intervalMillis) {
+    timeInfo = dayjs(timestamp).fromNow();
+  } else {
+    timeInfo = dayjs(timestamp).format(TIME_FORMAT);
+  }
+  return timeInfo;
+}
+
+export function fromStringSafeGetDayjs(text: string, ...args: any) {
+  if (text === '') return dayjs(null);
+  return dayjs(text, ...args);
+}

@@ -1,0 +1,66 @@
+{
+  "name": "barda-comps",
+  "version": "0.0.12",
+  "type": "module",
+  "license": "MIT",
+  "dependencies": {
+    "@fullcalendar/core": "^6.1.15",
+    "@fullcalendar/daygrid": "^6.1.15",
+    "@fullcalendar/interaction": "^6.1.15",
+    "@fullcalendar/list": "^6.1.15",
+    "@fullcalendar/moment": "^6.1.15",
+    "@fullcalendar/multimonth": "^6.1.15",
+    "@fullcalendar/react": "^6.1.15",
+    "@fullcalendar/timegrid": "^6.1.15",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "barda-cli": "workspace:^",
+    "barda-sdk": "workspace:^",
+    "big.js": "^6.2.1",
+    "mermaid": "^10.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "typescript": "4.8.4"
+  },
+  "barda": {
+    "description": "barda低代码平台远程加载的组件;Barda lowcode platform remotely Components",
+    "comps": {
+      "chart": {
+        "name": "Chart",
+        "icon": "./icons/icon-chart.svg",
+        "layoutInfo": {
+          "w": 11,
+          "h": 35
+        }
+      },
+      "imageEditor": {
+        "name": "Image Editor",
+        "icon": "./icons/icon-chart.svg",
+        "layoutInfo": {
+          "w": 15,
+          "h": 60
+        }
+      },
+      "calendar": {
+        "name": "Calendar",
+        "icon": "./icons/icon-comp-calendar.svg",
+        "layoutInfo": {
+          "w": 15,
+          "h": 60
+        }
+      }
+    }
+  },
+  "scripts": {
+    "start": "vite",
+    "build": "yarn test && barda-cli build",
+    "publish": "barda-cli build --publish",
+    "build_only": "barda-cli build",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "29.3.0",
+    "vite": "4.5.3",
+    "vite-tsconfig-paths": "^3.6.0"
+  }
+}

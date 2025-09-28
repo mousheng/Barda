@@ -1,0 +1,289 @@
+{
+  "!name": "lodash",
+  "_": {
+    "map": {
+      "!type": "fn(collection: ?, iteratee: fn(value: ?, index: number, collection: ?) -> ?) -> [?]",
+      "!doc": "Creates an array of values by running each element in collection thru iteratee"
+    },
+    "filter": {
+      "!type": "fn(collection: ?, predicate: fn(value: ?, index: number, collection: ?) -> bool) -> [?]",
+      "!doc": "Iterates over elements of collection, returning an array of all elements predicate returns truthy for"
+    },
+    "find": {
+      "!type": "fn(collection: ?, predicate: fn(value: ?, index: number, collection: ?) -> bool, fromIndex?: number) -> ?",
+      "!doc": "Iterates over elements of collection, returning the first element predicate returns truthy for"
+    },
+    "reduce": {
+      "!type": "fn(collection: ?, iteratee: fn(accumulator: ?, value: ?, index: number, collection: ?) -> ?, accumulator?: ?) -> ?",
+      "!doc": "Reduces collection to a value which is the accumulated result of running each element"
+    },
+    "each": {
+      "!type": "fn(collection: ?, iteratee: fn(value: ?, index: number, collection: ?)) -> ?",
+      "!doc": "Iterates over elements of collection and invokes iteratee for each element"
+    },
+    "forEach": {
+      "!type": "fn(collection: ?, iteratee: fn(value: ?, index: number, collection: ?)) -> ?",
+      "!doc": "Iterates over elements of collection and invokes iteratee for each element"
+    },
+    "includes": {
+      "!type": "fn(collection: ?, value: ?, fromIndex?: number) -> bool",
+      "!doc": "Checks if value is in collection"
+    },
+    "orderBy": {
+      "!type": "fn(collection: ?, iteratees: ?, orders: ?) -> [?]",
+      "!doc": "This method is like _.sortBy except that it allows specifying the sort orders"
+    },
+    "sortBy": {
+      "!type": "fn(collection: ?, iteratees: ?) -> [?]",
+      "!doc": "Creates an array of elements, sorted in ascending order by the results of running each element"
+    },
+    "groupBy": {
+      "!type": "fn(collection: ?, iteratee: fn(value: ?) -> ?) -> ?",
+      "!doc": "Creates an object composed of keys generated from the results of running each element"
+    },
+    "countBy": {
+      "!type": "fn(collection: ?, iteratee: fn(value: ?) -> ?) -> ?",
+      "!doc": "Creates an object composed of keys generated from the results of running each element"
+    },
+    "keyBy": {
+      "!type": "fn(collection: ?, iteratee: fn(value: ?) -> ?) -> ?",
+      "!doc": "Creates an object composed of keys generated from the results of running each element"
+    },
+    "size": {
+      "!type": "fn(collection: ?) -> number",
+      "!doc": "Gets the size of collection"
+    },
+    "isEmpty": {
+      "!type": "fn(value: ?) -> bool",
+      "!doc": "Checks if value is an empty object, collection, map, or set"
+    },
+    "isArray": {
+      "!type": "fn(value: ?) -> bool",
+      "!doc": "Checks if value is classified as an Array object"
+    },
+    "isObject": {
+      "!type": "fn(value: ?) -> bool",
+      "!doc": "Checks if value is the language type of Object"
+    },
+    "isString": {
+      "!type": "fn(value: ?) -> bool",
+      "!doc": "Checks if value is classified as a String primitive or object"
+    },
+    "isNumber": {
+      "!type": "fn(value: ?) -> bool",
+      "!doc": "Checks if value is classified as a Number primitive or object"
+    },
+    "isBoolean": {
+      "!type": "fn(value: ?) -> bool",
+      "!doc": "Checks if value is classified as a boolean primitive"
+    },
+    "isFunction": {
+      "!type": "fn(value: ?) -> bool",
+      "!doc": "Checks if value is classified as a Function object"
+    },
+    "isEqual": {
+      "!type": "fn(value: ?, other: ?) -> bool",
+      "!doc": "Performs a deep comparison between two values to determine if they are equivalent"
+    },
+    "get": {
+      "!type": "fn(object: ?, path: string, defaultValue?: ?) -> ?",
+      "!doc": "Gets the value at path of object"
+    },
+    "set": {
+      "!type": "fn(object: ?, path: string, value: ?) -> ?",
+      "!doc": "Sets the value at path of object"
+    },
+    "assign": {
+      "!type": "fn(object: ?, sources: ?) -> ?",
+      "!doc": "Assigns own enumerable string keyed properties of source objects to the destination object"
+    },
+    "merge": {
+      "!type": "fn(object: ?, sources: ?) -> ?",
+      "!doc": "Recursively merges own and inherited enumerable string keyed properties of source objects"
+    },
+    "pick": {
+      "!type": "fn(object: ?, paths: ?) -> ?",
+      "!doc": "Creates an object composed of the picked object properties"
+    },
+    "omit": {
+      "!type": "fn(object: ?, paths: ?) -> ?",
+      "!doc": "The opposite of _.pick; this method creates an object composed of the own and inherited enumerable"
+    },
+    "keys": {
+      "!type": "fn(object: ?) -> [?]",
+      "!doc": "Creates an array of the own enumerable property names of object"
+    },
+    "values": {
+      "!type": "fn(object: ?) -> [?]",
+      "!doc": "Creates an array of the own enumerable string keyed property values of object"
+    },
+    "entries": {
+      "!type": "fn(object: ?) -> [?]",
+      "!doc": "Creates an array of own enumerable string keyed-value pairs for object"
+    },
+    "toArray": {
+      "!type": "fn(value: ?) -> [?]",
+      "!doc": "Converts value to an array"
+    },
+    "toString": {
+      "!type": "fn(value: ?) -> string",
+      "!doc": "Converts value to a string"
+    },
+    "toNumber": {
+      "!type": "fn(value: ?) -> number",
+      "!doc": "Converts value to a number"
+    },
+    "toInteger": {
+      "!type": "fn(value: ?) -> number",
+      "!doc": "Converts value to an integer"
+    },
+    "uniqueId": {
+      "!type": "fn(prefix?: string) -> string",
+      "!doc": "Generates a unique ID"
+    },
+    "range": {
+      "!type": "fn(start?: number, end?: number, step?: number) -> [?]",
+      "!doc": "Creates an array of numbers (positive and/or negative) progressing from start"
+    },
+    "times": {
+      "!type": "fn(n: number, iteratee: fn(index: number) -> ?) -> [?]",
+      "!doc": "Invokes the iteratee n times, returning an array of the results"
+    },
+    "random": {
+      "!type": "fn(min?: number, max?: number, floating?: bool) -> number",
+      "!doc": "Produces a random number between min and max (inclusive)"
+    },
+    "now": {
+      "!type": "fn() -> number",
+      "!doc": "Gets the timestamp of the number of milliseconds that have elapsed since the Unix epoch"
+    },
+    "debounce": {
+      "!type": "fn(func: fn() -> ?, wait?: number, options?: ?) -> fn() -> ?",
+      "!doc": "Creates a debounced function that delays invoking func until after wait milliseconds"
+    },
+    "throttle": {
+      "!type": "fn(func: fn() -> ?, wait?: number, options?: ?) -> fn() -> ?",
+      "!doc": "Creates a throttled function that only invokes func at most once per every wait milliseconds"
+    },
+    "clone": {
+      "!type": "fn(value: ?) -> ?",
+      "!doc": "Creates a shallow clone of value"
+    },
+    "cloneDeep": {
+      "!type": "fn(value: ?) -> ?",
+      "!doc": "This method is like _.clone except that it recursively clones value"
+    },
+    "chunk": {
+      "!type": "fn(array: ?, size: number) -> [?]",
+      "!doc": "Creates an array of elements split into groups the length of size"
+    },
+    "compact": {
+      "!type": "fn(array: ?) -> [?]",
+      "!doc": "Creates an array with all falsey values removed"
+    },
+    "concat": {
+      "!type": "fn(array: ?, values: ?) -> [?]",
+      "!doc": "Creates a new array concatenating array with any additional arrays and/or values"
+    },
+    "difference": {
+      "!type": "fn(array: ?, values: ?) -> [?]",
+      "!doc": "Creates an array of array values not included in the other given arrays"
+    },
+    "union": {
+      "!type": "fn(arrays: ?) -> [?]",
+      "!doc": "Creates an array of unique values, in order, from all given arrays"
+    },
+    "uniq": {
+      "!type": "fn(array: ?) -> [?]",
+      "!doc": "Creates a duplicate-free version of an array"
+    },
+    "head": {
+      "!type": "fn(array: ?) -> ?",
+      "!doc": "Gets the first element of array"
+    },
+    "last": {
+      "!type": "fn(array: ?) -> ?",
+      "!doc": "Gets the last element of array"
+    },
+    "initial": {
+      "!type": "fn(array: ?) -> [?]",
+      "!doc": "Gets all but the last element of array"
+    },
+    "tail": {
+      "!type": "fn(array: ?) -> [?]",
+      "!doc": "Gets all but the first element of array"
+    },
+    "take": {
+      "!type": "fn(array: ?, n?: number) -> [?]",
+      "!doc": "Creates a slice of array with n elements taken from the beginning"
+    },
+    "takeRight": {
+      "!type": "fn(array: ?, n?: number) -> [?]",
+      "!doc": "Creates a slice of array with n elements taken from the end"
+    },
+    "drop": {
+      "!type": "fn(array: ?, n?: number) -> [?]",
+      "!doc": "Creates a slice of array with n elements dropped from the beginning"
+    },
+    "dropRight": {
+      "!type": "fn(array: ?, n?: number) -> [?]",
+      "!doc": "Creates a slice of array with n elements dropped from the end"
+    },
+    "flatten": {
+      "!type": "fn(array: ?) -> [?]",
+      "!doc": "Flattens array a single level deep"
+    },
+    "flattenDeep": {
+      "!type": "fn(array: ?) -> [?]",
+      "!doc": "Recursively flattens array"
+    },
+    "fromPairs": {
+      "!type": "fn(pairs: ?) -> ?",
+      "!doc": "The inverse of _.toPairs; this method returns an object composed from key-value pairs"
+    },
+    "toPairs": {
+      "!type": "fn(object: ?) -> [?]",
+      "!doc": "Creates an array of own enumerable string keyed-value pairs for object"
+    },
+    "camelCase": {
+      "!type": "fn(string: string) -> string",
+      "!doc": "Converts string to camel case"
+    },
+    "capitalize": {
+      "!type": "fn(string: string) -> string",
+      "!doc": "Converts the first character of string to upper case and the remaining to lower case"
+    },
+    "kebabCase": {
+      "!type": "fn(string: string) -> string",
+      "!doc": "Converts string to kebab case"
+    },
+    "lowerCase": {
+      "!type": "fn(string: string) -> string",
+      "!doc": "Converts string, as space separated words, to lower case"
+    },
+    "upperCase": {
+      "!type": "fn(string: string) -> string",
+      "!doc": "Converts string, as space separated words, to upper case"
+    },
+    "snakeCase": {
+      "!type": "fn(string: string) -> string",
+      "!doc": "Converts string to snake case"
+    },
+    "startCase": {
+      "!type": "fn(string: string) -> string",
+      "!doc": "Converts string to start case"
+    },
+    "trim": {
+      "!type": "fn(string: string, chars?: string) -> string",
+      "!doc": "Removes leading and trailing whitespace or specified characters from string"
+    },
+    "escape": {
+      "!type": "fn(string: string) -> string",
+      "!doc": "Converts the characters &, <, >, \", and ' in string to their corresponding HTML entities"
+    },
+    "unescape": {
+      "!type": "fn(string: string) -> string",
+      "!doc": "The inverse of _.escape; this method converts the HTML entities &amp;, &lt;, &gt;, &quot;, and &#39;"
+    }
+  }
+} 

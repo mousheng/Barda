@@ -1,0 +1,289 @@
+{
+  "!name": "lodash",
+  "_": {
+    "map": {
+      "!type": "fn(collection: ?, iteratee: fn(value: ?, index: number, collection: ?) -> ?) -> [?]",
+      "!doc": "通过对集合中的每个元素运行迭代器函数来创建一个值数组"
+    },
+    "filter": {
+      "!type": "fn(collection: ?, predicate: fn(value: ?, index: number, collection: ?) -> bool) -> [?]",
+      "!doc": "遍历集合中的元素，返回一个由断言函数返回真值的所有元素组成的数组"
+    },
+    "find": {
+      "!type": "fn(collection: ?, predicate: fn(value: ?, index: number, collection: ?) -> bool, fromIndex?: number) -> ?",
+      "!doc": "遍历集合中的元素，返回断言函数返回真值的第一个元素"
+    },
+    "reduce": {
+      "!type": "fn(collection: ?, iteratee: fn(accumulator: ?, value: ?, index: number, collection: ?) -> ?, accumulator?: ?) -> ?",
+      "!doc": "将集合归约为单个值，该值是运行每个元素的累积结果"
+    },
+    "each": {
+      "!type": "fn(collection: ?, iteratee: fn(value: ?, index: number, collection: ?)) -> ?",
+      "!doc": "遍历集合中的元素并为每个元素调用迭代函数"
+    },
+    "forEach": {
+      "!type": "fn(collection: ?, iteratee: fn(value: ?, index: number, collection: ?)) -> ?",
+      "!doc": "遍历集合中的元素并为每个元素调用迭代函数"
+    },
+    "includes": {
+      "!type": "fn(collection: ?, value: ?, fromIndex?: number) -> bool",
+      "!doc": "检查值是否在集合中"
+    },
+    "orderBy": {
+      "!type": "fn(collection: ?, iteratees: ?, orders: ?) -> [?]",
+      "!doc": "此方法类似于 _.sortBy，不同之处在于它允许指定排序顺序"
+    },
+    "sortBy": {
+      "!type": "fn(collection: ?, iteratees: ?) -> [?]",
+      "!doc": "创建一个元素数组，按运行每个元素的结果以升序排序"
+    },
+    "groupBy": {
+      "!type": "fn(collection: ?, iteratee: fn(value: ?) -> ?) -> ?",
+      "!doc": "创建一个对象，键由运行每个元素的结果生成"
+    },
+    "countBy": {
+      "!type": "fn(collection: ?, iteratee: fn(value: ?) -> ?) -> ?",
+      "!doc": "创建一个对象，键由运行每个元素的结果生成，值为对应元素的计数"
+    },
+    "keyBy": {
+      "!type": "fn(collection: ?, iteratee: fn(value: ?) -> ?) -> ?",
+      "!doc": "创建一个对象，键由运行每个元素的结果生成"
+    },
+    "size": {
+      "!type": "fn(collection: ?) -> number",
+      "!doc": "获取集合的大小"
+    },
+    "isEmpty": {
+      "!type": "fn(value: ?) -> bool",
+      "!doc": "检查值是否为空对象、集合、映射或集合"
+    },
+    "isArray": {
+      "!type": "fn(value: ?) -> bool",
+      "!doc": "检查值是否被归类为 Array 对象"
+    },
+    "isObject": {
+      "!type": "fn(value: ?) -> bool",
+      "!doc": "检查值是否为 Object 语言类型"
+    },
+    "isString": {
+      "!type": "fn(value: ?) -> bool",
+      "!doc": "检查值是否被归类为 String 原语或对象"
+    },
+    "isNumber": {
+      "!type": "fn(value: ?) -> bool",
+      "!doc": "检查值是否被归类为 Number 原语或对象"
+    },
+    "isBoolean": {
+      "!type": "fn(value: ?) -> bool",
+      "!doc": "检查值是否被归类为布尔原语"
+    },
+    "isFunction": {
+      "!type": "fn(value: ?) -> bool",
+      "!doc": "检查值是否被归类为 Function 对象"
+    },
+    "isEqual": {
+      "!type": "fn(value: ?, other: ?) -> bool",
+      "!doc": "执行两个值之间的深度比较以确定它们是否等价"
+    },
+    "get": {
+      "!type": "fn(object: ?, path: string, defaultValue?: ?) -> ?",
+      "!doc": "获取对象路径上的值"
+    },
+    "set": {
+      "!type": "fn(object: ?, path: string, value: ?) -> ?",
+      "!doc": "设置对象路径上的值"
+    },
+    "assign": {
+      "!type": "fn(object: ?, sources: ?) -> ?",
+      "!doc": "将源对象的自有可枚举字符串键属性分配给目标对象"
+    },
+    "merge": {
+      "!type": "fn(object: ?, sources: ?) -> ?",
+      "!doc": "递归合并自有和继承的可枚举字符串键属性的源对象"
+    },
+    "pick": {
+      "!type": "fn(object: ?, paths: ?) -> ?",
+      "!doc": "创建一个由选取的对象属性组成的对象"
+    },
+    "omit": {
+      "!type": "fn(object: ?, paths: ?) -> ?",
+      "!doc": "与 _.pick 相反；此方法创建一个由自有和继承的可枚举属性组成的对象"
+    },
+    "keys": {
+      "!type": "fn(object: ?) -> [?]",
+      "!doc": "创建对象自有可枚举属性名的数组"
+    },
+    "values": {
+      "!type": "fn(object: ?) -> [?]",
+      "!doc": "创建对象自有可枚举字符串键属性值的数组"
+    },
+    "entries": {
+      "!type": "fn(object: ?) -> [?]",
+      "!doc": "为对象创建自有可枚举字符串键值对的数组"
+    },
+    "toArray": {
+      "!type": "fn(value: ?) -> [?]",
+      "!doc": "将值转换为数组"
+    },
+    "toString": {
+      "!type": "fn(value: ?) -> string",
+      "!doc": "将值转换为字符串"
+    },
+    "toNumber": {
+      "!type": "fn(value: ?) -> number",
+      "!doc": "将值转换为数字"
+    },
+    "toInteger": {
+      "!type": "fn(value: ?) -> number",
+      "!doc": "将值转换为整数"
+    },
+    "uniqueId": {
+      "!type": "fn(prefix?: string) -> string",
+      "!doc": "生成唯一 ID"
+    },
+    "range": {
+      "!type": "fn(start?: number, end?: number, step?: number) -> [?]",
+      "!doc": "创建一个从 start 开始的数字数组（正数和/或负数）"
+    },
+    "times": {
+      "!type": "fn(n: number, iteratee: fn(index: number) -> ?) -> [?]",
+      "!doc": "调用迭代函数 n 次，返回结果数组"
+    },
+    "random": {
+      "!type": "fn(min?: number, max?: number, floating?: bool) -> number",
+      "!doc": "产生 min 和 max 之间的随机数（包含）"
+    },
+    "now": {
+      "!type": "fn() -> number",
+      "!doc": "获取自 Unix 纪元以来经过的毫秒数的时间戳"
+    },
+    "debounce": {
+      "!type": "fn(func: fn() -> ?, wait?: number, options?: ?) -> fn() -> ?",
+      "!doc": "创建一个防抖函数，延迟调用 func 直到等待毫秒后"
+    },
+    "throttle": {
+      "!type": "fn(func: fn() -> ?, wait?: number, options?: ?) -> fn() -> ?",
+      "!doc": "创建一个节流函数，每等待毫秒最多只调用 func 一次"
+    },
+    "clone": {
+      "!type": "fn(value: ?) -> ?",
+      "!doc": "创建值的浅拷贝"
+    },
+    "cloneDeep": {
+      "!type": "fn(value: ?) -> ?",
+      "!doc": "此方法类似于 _.clone，不同之处在于它递归克隆值"
+    },
+    "chunk": {
+      "!type": "fn(array: ?, size: number) -> [?]",
+      "!doc": "创建一个元素数组，分割成长度为 size 的组"
+    },
+    "compact": {
+      "!type": "fn(array: ?) -> [?]",
+      "!doc": "创建一个删除所有假值的数组"
+    },
+    "concat": {
+      "!type": "fn(array: ?, values: ?) -> [?]",
+      "!doc": "创建一个新数组，将数组与任何其他数组和/或值连接"
+    },
+    "difference": {
+      "!type": "fn(array: ?, values: ?) -> [?]",
+      "!doc": "创建一个数组值数组，不包含在其他给定数组中"
+    },
+    "union": {
+      "!type": "fn(arrays: ?) -> [?]",
+      "!doc": "从所有给定数组中按顺序创建唯一值数组"
+    },
+    "uniq": {
+      "!type": "fn(array: ?) -> [?]",
+      "!doc": "创建数组的无重复版本"
+    },
+    "head": {
+      "!type": "fn(array: ?) -> ?",
+      "!doc": "获取数组的第一个元素"
+    },
+    "last": {
+      "!type": "fn(array: ?) -> ?",
+      "!doc": "获取数组的最后一个元素"
+    },
+    "initial": {
+      "!type": "fn(array: ?) -> [?]",
+      "!doc": "获取除最后一个元素之外的所有数组元素"
+    },
+    "tail": {
+      "!type": "fn(array: ?) -> [?]",
+      "!doc": "获取除第一个元素之外的所有数组元素"
+    },
+    "take": {
+      "!type": "fn(array: ?, n?: number) -> [?]",
+      "!doc": "创建一个数组切片，从开头取 n 个元素"
+    },
+    "takeRight": {
+      "!type": "fn(array: ?, n?: number) -> [?]",
+      "!doc": "创建一个数组切片，从末尾取 n 个元素"
+    },
+    "drop": {
+      "!type": "fn(array: ?, n?: number) -> [?]",
+      "!doc": "创建一个数组切片，从开头删除 n 个元素"
+    },
+    "dropRight": {
+      "!type": "fn(array: ?, n?: number) -> [?]",
+      "!doc": "创建一个数组切片，从末尾删除 n 个元素"
+    },
+    "flatten": {
+      "!type": "fn(array: ?) -> [?]",
+      "!doc": "将数组展平一层"
+    },
+    "flattenDeep": {
+      "!type": "fn(array: ?) -> [?]",
+      "!doc": "递归展平数组"
+    },
+    "fromPairs": {
+      "!type": "fn(pairs: ?) -> ?",
+      "!doc": "_.toPairs 的逆向；此方法返回由键值对组成的对象"
+    },
+    "toPairs": {
+      "!type": "fn(object: ?) -> [?]",
+      "!doc": "为对象创建自有可枚举字符串键值对的数组"
+    },
+    "camelCase": {
+      "!type": "fn(string: string) -> string",
+      "!doc": "将字符串转换为驼峰格式"
+    },
+    "capitalize": {
+      "!type": "fn(string: string) -> string",
+      "!doc": "将字符串的第一个字符转换为大写，其余转换为小写"
+    },
+    "kebabCase": {
+      "!type": "fn(string: string) -> string",
+      "!doc": "将字符串转换为短横线格式"
+    },
+    "lowerCase": {
+      "!type": "fn(string: string) -> string",
+      "!doc": "将字符串转换为以空格分隔的小写单词"
+    },
+    "upperCase": {
+      "!type": "fn(string: string) -> string",
+      "!doc": "将字符串转换为以空格分隔的大写单词"
+    },
+    "snakeCase": {
+      "!type": "fn(string: string) -> string",
+      "!doc": "将字符串转换为下划线格式"
+    },
+    "startCase": {
+      "!type": "fn(string: string) -> string",
+      "!doc": "将字符串转换为起始大写格式"
+    },
+    "trim": {
+      "!type": "fn(string: string, chars?: string) -> string",
+      "!doc": "从字符串中删除前导和尾随空格或指定字符"
+    },
+    "escape": {
+      "!type": "fn(string: string) -> string",
+      "!doc": "将字符串中的字符 &、<、>、\" 和 ' 转换为对应的 HTML 实体"
+    },
+    "unescape": {
+      "!type": "fn(string: string) -> string",
+      "!doc": "_.escape 的逆向；此方法转换 HTML 实体 &amp;、&lt;、&gt;、&quot; 和 &#39;"
+    }
+  }
+}

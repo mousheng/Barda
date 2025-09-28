@@ -1,0 +1,40 @@
+{
+  "name": "barda-plugin-demo",
+  "version": "0.0.1",
+  "type": "module",
+  "license": "MIT",
+  "dependencies": {
+    "barda-core": "^0.0.1",
+    "barda-design": "^0.0.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.com"
+  },
+  "barda": {
+    "description": "",
+    "comps": {
+      "hello_world": {
+        "name": "Hello World",
+        "icon": "./icons/demo-icon.png"
+      },
+      "counter": {
+        "name": "Counter",
+        "icon": "./icons/demo-icon.png"
+      }
+    }
+  },
+  "scripts": {
+    "start": "vite",
+    "build": "barda-cli build"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "barda-cli": "workspace:^",
+    "barda-sdk": "workspace:^",
+    "typescript": "4.8.4",
+    "vite": "4.5.3"
+  }
+}

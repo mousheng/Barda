@@ -1,0 +1,27 @@
+spring:
+  main:
+    allow-circular-references: true
+  data:
+    redis:
+      url: redis://localhost:6370
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.0.2
+
+server:
+  port: 8080
+
+common:
+  cookie-name: BARDA_TEST_TOKEN
+
+demo:
+  datasource:
+    mysql:
+      password: 123
+      port: 3306
+      timeout: 100
+      username: 123
+      host: localhost

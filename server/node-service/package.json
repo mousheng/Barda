@@ -1,6 +1,6 @@
 {
   "name": "taco-js-api",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "private": true,
   "engines": {
     "node": "^14.18.0 || >=16.0.0"
@@ -45,6 +45,8 @@
     "@types/node": "^18.11.18",
     "@types/node-fetch": "^2.6.2",
     "axios": "^1.2.0",
+    "barda-core": "^0.0.1",
+    "barda-sdk": "^0.0.1",
     "base64-arraybuffer": "^1.0.2",
     "dynamodb-data-types": "^4.0.1",
     "express": "^4.18.2",
@@ -59,8 +61,6 @@
     "morgan": "^1.10.0",
     "node-fetch": "2",
     "openapi-types": "^12.1.0",
-    "openblocks-core": "^0.0.7",
-    "openblocks-sdk": "0.0.38",
     "pino": "^8.11.0",
     "prom-client": "^14.2.0",
     "proxy-agent": "^5.0.0",

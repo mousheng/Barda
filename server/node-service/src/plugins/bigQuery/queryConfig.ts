@@ -1,4 +1,4 @@
-import { ConfigToType } from "openblocks-sdk/dataSource";
+import { ConfigToType } from "barda-sdk/dataSource";
 
 const queryConfig = {
   type: "query",

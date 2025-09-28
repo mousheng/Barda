@@ -2,3 +2,5 @@
 logs/
 client/.yarn/cache/*.zip
 server/node-service/.yarn/cache/*.zip
+client/packages/openblocks/visualizer.html
+develop/.temp

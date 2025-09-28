@@ -2,19 +2,19 @@
 
 set -e
 
-API_SERVICE_ROOT=/openblocks/api-service
+API_SERVICE_ROOT=/barda/api-service
 
-# Update ID of openblocks user if required
-if [ ! `id --user openblocks` -eq ${USER_ID} ]; then 
-    usermod --uid ${USER_ID} openblocks
-    echo "ID for openblocks user changed to: ${USER_ID}"
+# Update ID of barda user if required
+if [ ! `id --user barda` -eq ${USER_ID} ]; then 
+    usermod --uid ${USER_ID} barda
+    echo "ID for barda user changed to: ${USER_ID}"
     DO_CHOWN="true"
 fi;
 
-# Update ID of openblocks group if required
-if [ ! `id --group openblocks` -eq ${GROUP_ID} ]; then
-    groupmod --gid ${GROUP_ID} openblocks
-    echo "ID for openblocks group changed to: ${GROUP_ID}"
+# Update ID of barda group if required
+if [ ! `id --group barda` -eq ${GROUP_ID} ]; then
+    groupmod --gid ${GROUP_ID} barda
+    echo "ID for barda group changed to: ${GROUP_ID}"
     DO_CHOWN="true"
 fi;
 
@@ -35,4 +35,4 @@ if [ ! -e ${API_SERVICE_ROOT}/logs/query-error.log ]; then
     chmod 777 ${API_SERVICE_ROOT}/logs/query-error.log
 fi;
 
-echo "Openblocks api-service setup finished."
+echo "Barda api-service setup finished."

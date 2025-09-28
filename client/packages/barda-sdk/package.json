@@ -1,0 +1,60 @@
+{
+  "name": "barda-sdk",
+  "version": "0.0.1",
+  "description": "用于Barda低代码平台程序开发的工具包;A toolkit for developing programs on Barda's lowcode platform",
+  "type": "module",
+  "files": [
+    "src",
+    "dist",
+    "index.d.ts",
+    "dataSource.d.ts",
+    "tsconfig.json"
+  ],
+  "main": "./dist/barda-sdk.js",
+  "module": "./dist/barda-sdk.js",
+  "exports": {
+    ".": {
+      "import": "./dist/barda-sdk.js",
+      "require": "./dist/barda-sdk.js"
+    },
+    "./dataSource": {
+      "types": "./dataSource.d.ts"
+    },
+    "./dist/style.css": {
+      "import": "./dist/style.css"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "start": "vite"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^22.0.2",
+    "@rollup/plugin-json": "^5.0.1",
+    "@rollup/plugin-node-resolve": "^14.1.0",
+    "@rollup/plugin-replace": "^5.0.1",
+    "@rollup/plugin-url": "^7.0.0",
+    "@svgr/rollup": "^6.3.1",
+    "@vitejs/plugin-react": "^4.2.1",
+    "barda-dev-utils": "workspace:^",
+    "rollup": "^4.17.2",
+    "rollup-plugin-cleaner": "^1.0.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.4.0",
+    "rollup-plugin-polyfill-node": "^0.10.2",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript": "^1.0.1",
+    "typescript": "^4.8.4",
+    "vite": "4.5.3",
+    "vite-plugin-svgr": "^2.2.2",
+    "vite-tsconfig-paths": "^3.6.0"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "keywords": [
+    "barda"
+  ],
+  "license": "MIT"
+}

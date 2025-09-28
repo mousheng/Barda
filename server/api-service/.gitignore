@@ -10,7 +10,6 @@ target/**
 **/.idea
 **/target
 **/dist
-*.iml
 node_modules
 .settings/**
 **/.settings
@@ -23,15 +22,15 @@ dependency-reduced-pom.xml
 .run/**
 logs/**
 tmp/**
-/openblocks-server/logs/
+/barda-server/logs/
 
 
-# to ignore the node_modeules folder
-node_modules
 # to ignore the package-lock.json file
 package-lock.json
 
 # test coverage
 coverage-summary.json
 app/client/cypress/locators/Widgets.json
-/openblocks-domain/logs/
+/barda-domain/logs/
+private.key
+public.key

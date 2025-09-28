@@ -1,0 +1,2020 @@
+{
+  "!name": "ecmascript",
+  "!define": {
+    "Error.prototype": "Error.prototype",
+    "propertyDescriptor": {
+      "enumerable": "bool",
+      "configurable": "bool",
+      "value": "?",
+      "writable": "bool",
+      "get": "fn() -> ?",
+      "set": "fn(value: ?)"
+    },
+    "Promise.prototype": {
+      "catch": {
+        "!doc": "catch() 方法返回一个 Promise，只处理被拒绝的情况。它的行为与调用 Promise.prototype.then(undefined, onRejected) 相同。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch",
+        "!type": "fn(onRejected: fn(reason: ?)) -> !this"
+      },
+      "then": {
+        "!doc": "then() 方法返回一个 Promise。它接受两个参数，都是 Promise 成功和失败情况的回调函数。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then",
+        "!type": "fn(onFulfilled: fn(value: ?), onRejected: fn(reason: ?)) -> !custom:Promise_then",
+        "!effects": ["call !0 !this.:t"]
+      }
+    },
+    "Promise_reject": {
+      "!type": "fn(reason: ?) -> !this",
+      "!doc": "Promise.reject(reason) 方法返回一个以给定原因被拒绝的 Promise 对象。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/reject"
+    },
+    "iter_prototype": {
+      ":Symbol.iterator": "fn() -> !this"
+    },
+    "iter": {
+      "!proto": "iter_prototype",
+      "next": {
+        "!type": "fn() -> +iter_result[value=!this.:t]",
+        "!doc": "返回序列中的下一个项目。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators"
+      },
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators"
+    },
+    "iter_result": {
+      "done": "bool",
+      "value": "?"
+    },
+    "generator_prototype": {
+      "!proto": "iter_prototype",
+      "next": "fn(value?: ?) -> iter_result",
+      "return": "fn(value?: ?) -> iter_result",
+      "throw": "fn(exception: +Error)"
+    },
+    "Proxy_handler": {
+      "!doc": "代理的处理程序对象是一个占位符对象，包含代理的陷阱。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler",
+      "getPrototypeOf": "fn(target: ?)",
+      "setPrototypeOf": "fn(target: ?, prototype: ?)",
+      "isExtensible": "fn(target: ?)",
+      "preventExtensions": "fn(target: ?)",
+      "getOwnPropertyDescriptor": "fn(target: ?, property: string) -> propertyDescriptor",
+      "defineProperty": "fn(target: ?, property: string, descriptor: propertyDescriptor)",
+      "has": "fn(target: ?, property: string)",
+      "get": "fn(target: ?, property: string)",
+      "set": "fn(target: ?, property: string, value: ?)",
+      "deleteProperty": "fn(target: ?, property: string)",
+      "enumerate": "fn(target: ?)",
+      "ownKeys": "fn(target: ?)",
+      "apply": "fn(target: ?, self: ?, arguments: [?])",
+      "construct": "fn(target: ?, arguments: [?])"
+    },
+    "Proxy_revocable": {
+      "proxy": "+Proxy",
+      "revoke": "fn()"
+    },
+    "TypedArray": {
+      "!type": "fn(size: number)",
+      "!doc": "TypedArray 对象描述了底层二进制数据缓冲区的类数组视图。没有名为 TypedArray 的全局属性，也没有直接可见的 TypedArray 构造函数。相反，有许多不同的全局属性，其值是特定元素类型的类型化数组构造函数。在以下页面中，您将找到可与包含任何类型元素的任何类型化数组一起使用的通用属性和方法。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray",
+      "from": {
+        "!type": "fn(arrayLike: ?, mapFn?: fn(elt: ?, i: number) -> number, thisArg?: ?) -> +TypedArray",
+        "!effects": ["call !1 this=!2 !0.<i> number"],
+        "!doc": "从类数组或可迭代对象创建新的类型化数组。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/from"
+      },
+      "of": {
+        "!type": "fn(elements: number) -> +TypedArray",
+        "!doc": "从可变数量的参数创建新的类型化数组。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/of"
+      },
+      "BYTES_PER_ELEMENT": {
+        "!type": "number",
+        "!doc": "TypedArray.BYTES_PER_ELEMENT 属性表示类型化数组中每个元素的字节大小。（待完善翻译）",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/BYTES_PER_ELEMENT"
+      },
+      "name": {
+        "!type": "string",
+        "!doc": "TypedArray.name 属性表示类型化数组构造函数名称的字符串值。（待完善翻译）",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/name"
+      },
+      "prototype": {
+        "<i>": "number",
+        "buffer": {
+          "!type": "+ArrayBuffer",
+          "!doc": "buffer 访问器属性表示在构造时由 TypedArray 引用的 ArrayBuffer。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/buffer"
+        },
+        "byteLength": {
+          "!type": "number",
+          "!doc": "byteLength 访问器属性表示从其 ArrayBuffer 开始的类型化数组的长度（以字节为单位）。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/byteLength"
+        },
+        "byteOffset": {
+          "!type": "number",
+          "!doc": "byteOffset 访问器属性表示从其 ArrayBuffer 开始的类型化数组的偏移量（以字节为单位）。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/byteOffset"
+        },
+        "copyWithin": {
+          "!type": "fn(target: number, start: number, end?: number) -> ?",
+          "!doc": "copyWithin() 方法将数组中的元素序列复制到从目标位置开始的位置。复制从第二个和第三个参数 start 和 end 的索引位置开始。end 参数是可选的，默认为数组的长度。此方法与 Array.prototype.copyWithin 具有相同的算法。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/copyWithin"
+        },
+        "entries": {
+          "!type": "fn() -> +iter[:t=number]",
+          "!doc": "entries() 方法返回一个新的 Array Iterator 对象，该对象包含数组中每个索引的键/值对。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/entries"
+        },
+        "every": {
+          "!type": "fn(callback: fn(element: number, index: number, array: TypedArray) -> bool, thisArg?: ?) -> bool",
+          "!effects": ["call !0 this=!1 number number !this"],
+          "!doc": "every() 方法测试类型化数组中的所有元素是否都通过提供的函数实现的测试。此方法与 Array.prototype.every() 具有相同的算法。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/every"
+        },
+        "fill": {
+          "!type": "fn(value: number, start?: number, end?: number)",
+          "!doc": "fill() 方法使用静态值填充类型化数组从开始索引到结束索引的所有元素。此方法与 Array.prototype.fill() 具有相同的算法。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/fill"
+        },
+        "filter": {
+          "!type": "fn(test: fn(element: number, i: number) -> bool, context?: ?) -> !this",
+          "!effects": ["call !0 this=!1 number number"],
+          "!doc": "创建一个新数组，其中包含此数组中提供的过滤函数返回 true 的所有元素。另请参阅 Array.prototype.filter()。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/filter"
+        },
+        "find": {
+          "!type": "fn(callback: fn(element: number, index: number, array: +TypedArray) -> bool, thisArg?: ?) -> number",
+          "!effects": ["call !0 this=!1 number number !this"],
+          "!doc": "find() 方法 returns a value in the typed array, if an element satisfies the provided testing function. Otherwise undefined is returned. TypedArray is one of the typed array types here.\nSee also the findIndex() method, which returns the index of a found element in the typed array instead of its value.。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/find"
+        },
+        "findIndex": {
+          "!type": "fn(callback: fn(element: number, index: number, array: +TypedArray) -> bool, thisArg?: ?) -> number",
+          "!effects": ["call !0 this=!1 number number !this"],
+          "!doc": "findIndex() 方法 returns an index in the typed array, if an element in the typed array satisfies the provided testing function. Otherwise -1 is returned.\nSee also the find() method, which returns the value of a found element in the typed array instead of its index.。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/findIndex"
+        },
+        "forEach": {
+          "!type": "fn(callback: fn(value: number, key: number, array: +TypedArray), thisArg?: ?)",
+          "!effects": ["call !0 this=!1 number number !this"],
+          "!doc": "为每个数组元素执行一次提供的函数。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/forEach"
+        },
+        "indexOf": {
+          "!type": "fn(searchElement: number, fromIndex?: number) -> number",
+          "!doc": "indexOf() method returns the first index at which a given element can be found in the typed array, or -1 if it is not present. This 方法 has the same algorithm as Array.prototype.indexOf(). TypedArray is one of the typed array types here.。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/indexOf"
+        },
+        "join": {
+          "!type": "fn(separator?: string) -> string",
+          "!doc": "join() 方法将数组的所有元素连接成一个字符串。此方法与 Array.prototype.join() 具有相同的算法。TypedArray 是此处的类型化数组类型之一。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/join"
+        },
+        "keys": {
+          "!type": "fn() -> +iter[:t=number]",
+          "!doc": "keys() 方法返回一个新的 Array Iterator 对象，该对象包含数组中每个索引的键。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/keys"
+        },
+        "lastIndexOf": {
+          "!type": "fn(searchElement: number, fromIndex?: number) -> number",
+          "!doc": "lastIndexOf() method returns the last index at which a given element can be found in the typed array, or -1 if it is not present. The typed array is searched backwards, starting at fromIndex. This 方法 has the same algorithm as Array.prototype.lastIndexOf(). TypedArray is one of the typed array types here.。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/lastIndexOf"
+        },
+        "length": {
+          "!type": "number",
+          "!doc": "返回类型化数组中保存的元素数量。在构造时固定，因此为只读。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/length"
+        },
+        "map": {
+          "!type": "fn(f: fn(element: number, i: number) -> number, context?: ?) -> +TypedArray",
+          "!effects": ["call !0 this=!1 number number"],
+          "!doc": "创建一个新数组，其结果是对此数组中的每个元素调用提供的函数。另请参阅 Array.prototype.map()。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/map"
+        },
+        "reduce": {
+          "!type": "fn(combine: fn(sum: ?, elt: number, i: number) -> ?, init?: ?) -> !0.!ret",
+          "!effects": ["call !0 !1 number number"],
+          "!doc": "对累加器和数组的每个值（从左到右）应用函数，将其减少为单个值。另请参阅 Array.prototype.reduce()。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/reduce"
+        },
+        "reduceRight": {
+          "!type": "fn(combine: fn(sum: ?, elt: number, i: number) -> ?, init?: ?) -> !0.!ret",
+          "!effects": ["call !0 !1 number number"],
+          "!doc": "对累加器和数组的每个值（从右到左）应用函数，将其减少为单个值。另请参阅 Array.prototype.reduceRight()。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/reduceRight"
+        },
+        "reverse": {
+          "!type": "fn()",
+          "!doc": "reverse() method reverses a typed array in place. The first typed array element becomes the last and the last becomes the first. This 方法 has the same algorithm as Array.prototype.reverse(). TypedArray is one of the typed array types here.。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/reverse"
+        },
+        "set": {
+          "!type": "fn(array: [number], offset?: number)",
+          "!doc": "set() 方法在类型化数组中存储多个值，从指定数组读取输入值。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/set"
+        },
+        "slice": {
+          "!type": "fn(from: number, to?: number) -> +TypedArray",
+          "!doc": "提取数组的一部分并返回新数组。另请参阅 Array.prototype.slice()。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/slice"
+        },
+        "some": {
+          "!type": "fn(test: fn(elt: number, i: number) -> bool, context?: ?) -> bool",
+          "!effects": ["call !0 this=!1 number number"],
+          "!doc": "some() 方法测试类型化数组中的某些元素是否通过提供的函数实现的测试。此方法与 Array.prototype.some() 具有相同的算法。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/some"
+        },
+        "sort": {
+          "!type": "fn(compare?: fn(a: number, b: number) -> number)",
+          "!effects": ["call !0 number number"],
+          "!doc": "就地对数组的元素进行排序并返回数组。另请参阅 Array.prototype.sort()。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/sort"
+        },
+        "subarray": {
+          "!type": "fn(begin?: number, end?: number) -> +TypedArray",
+          "!doc": "subarray() 方法在相同的 ArrayBuffer 存储上返回一个新的 TypedArray，并且与此 TypedArray 对象具有相同的元素类型。开始偏移量是包含的，结束偏移量是排他的。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/subarray"
+        },
+        "values": {
+          "!type": "fn() -> +iter[:t=number]",
+          "!doc": "values() 方法返回一个新的 Array Iterator 对象，该对象包含数组中每个索引的值。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/values"
+        },
+        ":Symbol.iterator": {
+          "!type": "fn() -> +iter[:t=number]",
+          "!doc": "返回一个新的 Array Iterator 对象，该对象包含数组中每个索引的值。",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/@@iterator"
+        }
+      }
+    }
+  },
+  "Infinity": {
+    "!type": "number",
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Infinity",
+    "!doc": "表示无穷大的数值。"
+  },
+  "undefined": {
+    "!type": "?",
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/undefined",
+    "!doc": "值 undefined。"
+  },
+  "NaN": {
+    "!type": "number",
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/NaN",
+    "!doc": "表示非数字的值。"
+  },
+  "Object": {
+    "!type": "fn()",
+    "getPrototypeOf": {
+      "!type": "fn(obj: ?) -> ?",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/getPrototypeOf",
+      "!doc": "返回指定对象的原型（即内部原型）。"
+    },
+    "create": {
+      "!type": "fn(proto: ?) -> !custom:Object_create",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/create",
+      "!doc": "使用指定的原型对象和属性创建新对象。"
+    },
+    "defineProperty": {
+      "!type": "fn(obj: ?, prop: string, desc: propertyDescriptor) -> !custom:Object_defineProperty",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/defineProperty",
+      "!doc": "直接在对象上定义新属性，或修改对象上的现有属性，并返回对象。 If you want to see how to use the Object.defineProperty method with a binary-flags-like syntax, see this article."
+    },
+    "defineProperties": {
+      "!type": "fn(obj: ?, props: ?) -> !custom:Object_defineProperties",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/defineProperty",
+      "!doc": "直接在对象上定义新属性，或修改对象上的现有属性，并返回对象。 If you want to see how to use the Object.defineProperty method with a binary-flags-like syntax, see this article."
+    },
+    "getOwnPropertyDescriptor": {
+      "!type": "fn(obj: ?, prop: string) -> propertyDescriptor",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/getOwnPropertyDescriptor",
+      "!doc": "返回给定对象的自有属性（即直接存在于对象上的属性，而不是沿着对象的原型链存在的属性）的属性描述符。"
+    },
+    "keys": {
+      "!type": "fn(obj: ?) -> [string]",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/keys",
+      "!doc": "返回给定对象自有可枚举属性的数组，顺序与 for-in 循环提供的顺序相同（区别在于 for-in 循环也枚举原型链中的属性）。"
+    },
+    "getOwnPropertyNames": {
+      "!type": "fn(obj: ?) -> [string]",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/getOwnPropertyNames",
+      "!doc": "返回直接在给定对象上找到的所有属性（可枚举或不可枚举）的数组。"
+    },
+    "seal": {
+      "!type": "fn(obj: ?)",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/seal",
+      "!doc": "密封对象，防止向其添加新属性并将所有现有属性标记为不可配置。 Values of present properties can still be changed as long as they are writable."
+    },
+    "isSealed": {
+      "!type": "fn(obj: ?) -> bool",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/isSealed",
+      "!doc": "确定对象是否被密封。"
+    },
+    "freeze": {
+      "!type": "fn(obj: ?) -> !0",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/freeze",
+      "!doc": "冻结对象：即防止向其添加新属性；防止删除现有属性；并防止更改现有属性或其可枚举性、可配置性或可写性。本质上，对象变得有效不可变。该方法返回被冻结的对象。"
+    },
+    "isFrozen": {
+      "!type": "fn(obj: ?) -> bool",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/isFrozen",
+      "!doc": "确定对象是否被冻结。"
+    },
+    "preventExtensions": {
+      "!type": "fn(obj: ?)",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/preventExtensions",
+      "!doc": "防止新属性被添加到对象中。"
+    },
+    "isExtensible": {
+      "!type": "fn(obj: ?) -> bool",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isExtensible",
+      "!doc": "Object.isExtensible() 方法确定对象是否可扩展（是否可以向其添加新属性）。（待完善翻译）"
+    },
+    "assign": {
+      "!type": "fn(target: ?, source: ?, source?: ?) -> !0",
+      "!effects": ["copy !1 !0", "copy !2 !0", "copy !3 !0"],
+      "!doc": "Object.assign() 方法用于将所有可枚举自有属性的值从一个或多个源对象复制到目标对象。它将返回目标对象。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign"
+    },
+    "getOwnPropertySymbols": {
+      "!type": "fn(obj: ?) -> !custom:getOwnPropertySymbols",
+      "!doc": "Object.getOwnPropertySymbols() 方法返回直接在给定对象上找到的所有符号属性的数组。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertySymbols"
+    },
+    "is": {
+      "!type": "fn(value1: ?, value2: ?) -> bool",
+      "!doc": "Object.is() 方法确定两个值是否为同一值。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is"
+    },
+    "setPrototypeOf": {
+      "!type": "fn(obj: ?, prototype: ?)",
+      "!doc": "Object.setPrototype() 方法将指定对象的原型（即内部 [[Prototype]] 属性）设置为另一个对象或 null。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf"
+    },
+    "prototype": {
+      "!stdProto": "Object",
+      "toString": {
+        "!type": "fn() -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/toString",
+        "!doc": "返回表示对象的字符串。"
+      },
+      "toLocaleString": {
+        "!type": "fn() -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/toLocaleString",
+        "!doc": "返回表示对象的字符串。 This method is meant to be overriden by derived objects for locale-specific purposes."
+      },
+      "valueOf": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/valueOf",
+        "!doc": "返回 primitive value of the specified object。"
+      },
+      "hasOwnProperty": {
+        "!type": "fn(prop: string) -> bool",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/hasOwnProperty",
+        "!doc": "返回一个布尔值，指示对象是否具有指定的属性。"
+      },
+      "propertyIsEnumerable": {
+        "!type": "fn(prop: string) -> bool",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable",
+        "!doc": "返回一个布尔值，指示指定的属性是否可枚举。"
+      },
+      "isPrototypeOf": {
+        "!type": "fn(obj: ?) -> bool",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isPrototypeOf",
+        "!doc": "测试对象是否存在于另一个对象的原型链中。"
+      }
+    },
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object",
+    "!doc": "创建对象包装器。"
+  },
+  "Function": {
+    "!type": "fn(body: string) -> fn()",
+    "prototype": {
+      "!stdProto": "Function",
+      "apply": {
+        "!type": "fn(this: ?, args: [?])",
+        "!effects": ["call and return !this this=!0 !1.<i> !1.<i> !1.<i>"],
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Function/apply",
+        "!doc": "使用给定的 this 值和作为数组（或类数组对象）提供的参数调用函数。"
+      },
+      "call": {
+        "!type": "fn(this: ?, args?: ?) -> !this.!ret",
+        "!effects": ["call and return !this this=!0 !1 !2 !3 !4"],
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Function/call",
+        "!doc": "使用给定的 this 值和单独提供的参数调用函数。"
+      },
+      "bind": {
+        "!type": "fn(this: ?, args?: ?) -> !custom:Function_bind",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Function/bind",
+        "!doc": "创建一个新函数，当调用时，其 this 关键字设置为提供的值，并且在调用新函数时提供的任何参数之前都有给定的参数序列。"
+      },
+      "prototype": "?"
+    },
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Function",
+    "!doc": "JavaScript 中的每个函数实际上都是一个 Function 对象。（待完善翻译）"
+  },
+  "Array": {
+    "!type": "fn(size: number) -> !custom:Array_ctor",
+    "isArray": {
+      "!type": "fn(value: ?) -> bool",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/isArray",
+      "!doc": "如果对象是数组则返回 true，否则返回 false。"
+    },
+    "from": {
+      "!type": "fn(arrayLike: ?, mapFn?: fn(elt: ?, i: number) -> ?, thisArg?: ?) -> [!0.<i>]",
+      "!effects": ["call !1 this=!2 !0.<i> number"],
+      "!doc": "Array.from() 方法从类数组或可迭代对象创建一个新的 Array 实例。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from"
+    },
+    "of": {
+      "!type": "fn(elementN: ?) -> [!0]",
+      "!doc": "Array.of() 方法创建一个具有可变数量参数的新 Array 实例，无论参数的数量或类型如何。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/of"
+    },
+    "prototype": {
+      "!stdProto": "Array",
+      "length": {
+        "!type": "number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/length",
+        "!doc": "指定数组中元素数量的无符号 32 位整数。"
+      },
+      "concat": {
+        "!type": "fn(other: [?]) -> !this",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/concat",
+        "!doc": "返回由此数组与其他数组和/或值连接组成的新数组。"
+      },
+      "join": {
+        "!type": "fn(separator?: string) -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/join",
+        "!doc": "将数组的所有元素连接成字符串。"
+      },
+      "splice": {
+        "!type": "fn(pos: number, amount: number, newelt?: ?) -> [?]",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/splice",
+        "!doc": "更改数组的内容，在删除旧元素的同时添加新元素。"
+      },
+      "pop": {
+        "!type": "fn() -> !this.<i>",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/pop",
+        "!doc": "从数组中删除最后一个元素并返回该元素。"
+      },
+      "push": {
+        "!type": "fn(newelt: ?) -> number",
+        "!effects": ["propagate !0 !this.<i>"],
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/push",
+        "!doc": "通过追加给定元素并返回数组的新长度来变更数组。"
+      },
+      "shift": {
+        "!type": "fn() -> !this.<i>",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/shift",
+        "!doc": "从数组中删除第一个元素并返回该元素。此方法更改数组的长度。"
+      },
+      "unshift": {
+        "!type": "fn(newelt: ?) -> number",
+        "!effects": ["propagate !0 !this.<i>"],
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/unshift",
+        "!doc": "将一个或多个元素添加到数组的开头并返回数组的新长度。"
+      },
+      "slice": {
+        "!type": "fn(from?: number, to?: number) -> !this",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/slice",
+        "!doc": "返回数组部分的浅拷贝。"
+      },
+      "reverse": {
+        "!type": "fn()",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/reverse",
+        "!doc": "就地反转数组。第一个数组元素变成最后一个，最后一个变成第一个。"
+      },
+      "sort": {
+        "!type": "fn(compare?: fn(a: ?, b: ?) -> number)",
+        "!effects": ["call !0 !this.<i> !this.<i>"],
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/sort",
+        "!doc": "就地对数组的元素进行排序并返回数组。"
+      },
+      "indexOf": {
+        "!type": "fn(elt: ?, from?: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/indexOf",
+        "!doc": "返回在数组中可以找到给定元素的第一个索引，如果不存在则返回 -1。"
+      },
+      "lastIndexOf": {
+        "!type": "fn(elt: ?, from?: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/lastIndexOf",
+        "!doc": "返回在数组中可以找到给定元素的最后一个索引，如果不存在则返回 -1。从 fromIndex 开始向后搜索数组。"
+      },
+      "every": {
+        "!type": "fn(test: fn(elt: ?, i: number, array: +Array) -> bool, context?: ?) -> bool",
+        "!effects": ["call !0 this=!1 !this.<i> number !this"],
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/every",
+        "!doc": "测试数组中的所有元素是否都通过提供的函数实现的测试。"
+      },
+      "some": {
+        "!type": "fn(test: fn(elt: ?, i: number, array: +Array) -> bool, context?: ?) -> bool",
+        "!effects": ["call !0 this=!1 !this.<i> number !this"],
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/some",
+        "!doc": "测试数组中的某些元素是否通过提供的函数实现的测试。"
+      },
+      "filter": {
+        "!type": "fn(test: fn(elt: ?, i: number, array: +Array) -> bool, context?: ?) -> !this",
+        "!effects": ["call !0 this=!1 !this.<i> number !this"],
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/filter",
+        "!doc": "创建一个新数组，其中包含通过提供的函数实现的测试的所有元素。"
+      },
+      "forEach": {
+        "!type": "fn(f: fn(elt: ?, i: number, array: +Array), context?: ?)",
+        "!effects": ["call !0 this=!1 !this.<i> number !this"],
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/forEach",
+        "!doc": "为每个数组元素执行一次提供的函数。"
+      },
+      "map": {
+        "!type": "fn(f: fn(elt: ?, i: number, array: +Array) -> ?, context?: ?) -> [!0.!ret]",
+        "!effects": ["call !0 this=!1 !this.<i> number !this"],
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/map",
+        "!doc": "创建一个新数组，其结果是对此数组中的每个元素调用提供的函数。"
+      },
+      "reduce": {
+        "!type": "fn(combine: fn(sum: ?, elt: ?, i: number, array: +Array) -> ?, init?: ?) -> !0.!ret",
+        "!effects": ["call !0 !1 !this.<i> number !this"],
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/Reduce",
+        "!doc": "对累加器和数组的每个值（从左到右）应用函数，将其减少为单个值。"
+      },
+      "reduceRight": {
+        "!type": "fn(combine: fn(sum: ?, elt: ?, i: number, array: +Array) -> ?, init?: ?) -> !0.!ret",
+        "!effects": ["call !0 !1 !this.<i> number !this"],
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/ReduceRight",
+        "!doc": "对数组的两个值（从右到左）同时应用函数，将其减少为单个值。"
+      },
+      "copyWithin": {
+        "!type": "fn(target: number, start: number, end?: number) -> !this",
+        "!doc": "copyWithin() 方法 copies the sequence of array elements within the array to the position starting at target. The copy is taken from the index positions of the second and third arguments start and end.。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/copyWithin"
+      },
+      "entries": {
+        "!type": "fn() -> +iter[:t=[number, !this.<i>]]",
+        "!doc": "entries() 方法返回一个新的 Array Iterator 对象，该对象包含数组中每个索引的键/值对。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/entries"
+      },
+      "fill": {
+        "!type": "fn(value: ?, start?: number, end?: number) -> !this",
+        "!doc": "fill() 方法使用静态值填充数组从开始索引到结束索引的所有元素。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill"
+      },
+      "find": {
+        "!type": "fn(callback: fn(element: ?, index: number, array: [?]) -> bool, thisArg?: ?) -> !this.<i>",
+        "!effects": ["call !0 this=!2 !this.<i> number"],
+        "!doc": "find() 方法返回数组中的值，如果数组中的元素满足提供的测试函数。否则返回 undefined。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find"
+      },
+      "findIndex": {
+        "!type": "fn(callback: fn(element: ?, index: number, array: [?]), thisArg?: ?) -> number",
+        "!effects": ["call !0 this=!2 !this.<i> number"],
+        "!doc": "findIndex() 方法返回数组中的索引，如果数组中的元素满足提供的测试函数。否则返回 -1。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex"
+      },
+      "keys": {
+        "!type": "fn() -> +iter[:t=number]",
+        "!doc": "keys() 方法返回一个新的 Array Iterator，其中包含数组中每个索引的键。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/keys"
+      },
+      "values": {
+        "!type": "fn() -> +iter[:t=!this.<i>]",
+        "!doc": "values() 方法返回一个新的 Array Iterator 对象，该对象包含数组中每个索引的值。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/values"
+      },
+      ":Symbol.iterator": {
+        "!type": "fn() -> +iter[:t=!this.<i>]",
+        "!doc": "返回一个新的 Array Iterator 对象，该对象包含数组中每个索引的值。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/@@iterator"
+      },
+      "includes": {
+        "!type": "fn(value: ?) -> bool",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes",
+        "!doc": "确定数组是否包含某个元素，适当地返回 true 或 false。"
+      }
+    },
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array",
+    "!doc": "JavaScript Array 全局对象是数组的构造函数，数组是高级的类列表对象。（待完善翻译）"
+  },
+  "String": {
+    "!type": "fn(value: ?) -> string",
+    "fromCharCode": {
+      "!type": "fn(code: number) -> string",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/fromCharCode",
+      "!doc": "返回使用指定的 Unicode 值序列创建的字符串。"
+    },
+    "fromCodePoint": {
+      "!type": "fn(point: number, point?: number) -> string",
+      "!doc": "静态 String.fromCodePoint() 方法返回使用指定的代码点序列创建的字符串。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/fromCodePoint"
+    },
+    "raw": {
+      "!type": "fn(template: [string], substitutions: ?, templateString: ?) -> string",
+      "!doc": "静态 String.raw() 方法是模板字符串的标签函数，用于获取模板字符串的原始字符串形式。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/raw"
+    },
+    "prototype": {
+      "!stdProto": "String",
+      "length": {
+        "!type": "number",
+        "!url": "https://developer.mozilla.org/en/docs/JavaScript/Reference/Global_Objects/String/length",
+        "!doc": "表示字符串的长度。"
+      },
+      "<i>": "string",
+      "charAt": {
+        "!type": "fn(i: number) -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/charAt",
+        "!doc": "从字符串返回指定的字符。"
+      },
+      "charCodeAt": {
+        "!type": "fn(i: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/charCodeAt",
+        "!doc": "返回给定索引处字符的数字 Unicode 值（unicode 代码点 > 0x10000 除外）。"
+      },
+      "indexOf": {
+        "!type": "fn(char: string, from?: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/indexOf",
+        "!doc": "返回调用字符串对象中指定值第一次出现的索引，从 fromIndex 开始搜索，如果未找到该值则返回 -1。"
+      },
+      "lastIndexOf": {
+        "!type": "fn(char: string, from?: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/lastIndexOf",
+        "!doc": "返回调用字符串对象中指定值最后一次出现的索引，如果未找到则返回 -1。从 fromIndex 开始向后搜索调用字符串。"
+      },
+      "substring": {
+        "!type": "fn(from: number, to?: number) -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/substring",
+        "!doc": "返回一个索引和另一个索引之间的字符串子集，或通过字符串的结尾。"
+      },
+      "substr": {
+        "!type": "fn(from: number, length?: number) -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/substr",
+        "!doc": "返回从指定位置开始通过指定字符数的字符串中的字符。"
+      },
+      "slice": {
+        "!type": "fn(from: number, to?: number) -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/slice",
+        "!doc": "提取字符串的一部分并返回新字符串。"
+      },
+      "trim": {
+        "!type": "fn() -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/Trim",
+        "!doc": "从字符串的两端删除空白。"
+      },
+      "toUpperCase": {
+        "!type": "fn() -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/toUpperCase",
+        "!doc": "返回转换为大写的调用字符串值。"
+      },
+      "toLowerCase": {
+        "!type": "fn() -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/toLowerCase",
+        "!doc": "返回转换为小写的调用字符串值。"
+      },
+      "toLocaleUpperCase": {
+        "!type": "fn() -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/toLocaleUpperCase",
+        "!doc": "根据任何特定于区域设置的大小写映射，返回转换为大写的调用字符串值。"
+      },
+      "toLocaleLowerCase": {
+        "!type": "fn() -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/toLocaleLowerCase",
+        "!doc": "根据任何特定于区域设置的大小写映射，返回转换为小写的调用字符串值。"
+      },
+      "split": {
+        "!type": "fn(pattern?: string|+RegExp, limit?: number) -> [string]",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/split",
+        "!doc": "通过将字符串分为子字符串，将字符串对象拆分为字符串数组。"
+      },
+      "concat": {
+        "!type": "fn(other: string) -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/concat",
+        "!doc": "组合两个或多个字符串的文本并返回新字符串。"
+      },
+      "localeCompare": {
+        "!type": "fn(other: string) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/localeCompare",
+        "!doc": "返回一个数字，指示引用字符串在排序顺序中是在给定字符串之前、之后还是与给定字符串相同。"
+      },
+      "match": {
+        "!type": "fn(pattern: +RegExp) -> [string]",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/match",
+        "!doc": "用于在将字符串与正则表达式匹配时检索匹配项。"
+      },
+      "replace": {
+        "!type": "fn(pattern: string|+RegExp, replacement: string) -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/replace",
+        "!doc": "返回一个新字符串，其中模式的一些或所有匹配项都被替换项替换。  The pattern can be a string or a RegExp, and the replacement can be a string or a function to be called for each match."
+      },
+      "search": {
+        "!type": "fn(pattern: +RegExp) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/search",
+        "!doc": "执行正则表达式和此字符串对象之间的匹配搜索。"
+      },
+      "codePointAt": {
+        "!type": "fn(pos: number) -> number",
+        "!doc": "codePointAt() 方法返回一个非负整数，即 UTF-16 编码的代码点值。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/codePointAt"
+      },
+      "endsWith": {
+        "!type": "fn(searchString: string, position?: number) -> bool",
+        "!doc": "endsWith() 方法确定字符串是否以另一个字符串的字符结尾，适当地返回 true 或 false。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith"
+      },
+      "includes": {
+        "!type": "fn(searchString: string, position?: number) -> bool",
+        "!doc": "includes() 方法确定是否可以在另一个字符串中找到一个字符串，适当地返回 true 或 false。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/contains"
+      },
+      "normalize": {
+        "!type": "fn(form: string) -> string",
+        "!doc": "normalize() 方法返回给定字符串的 Unicode 规范化形式（如果值不是字符串，则首先将其转换为字符串）。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize"
+      },
+      "repeat": {
+        "!type": "fn(count: number) -> string",
+        "!doc": "repeat() 方法构造并返回一个新字符串，该字符串包含调用它的字符串的指定数量的副本，连接在一起。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/repeat"
+      },
+      "startsWith": {
+        "!type": "fn(searchString: string, position?: number) -> bool",
+        "!doc": "startsWith() 方法确定字符串是否以另一个字符串的字符开头，适当地返回 true 或 false。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith"
+      },
+      ":Symbol.iterator": {
+        "!type": "fn() -> +iter[:t=string]",
+        "!doc": "返回一个新的 Iterator 对象，该对象遍历字符串值的代码点，将每个代码点作为字符串值返回。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/@@iterator"
+      }
+    },
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String",
+    "!doc": "String 全局对象是字符串或字符序列的构造函数。（待完善翻译）"
+  },
+  "Number": {
+    "!type": "fn(value: ?) -> number",
+    "MAX_VALUE": {
+      "!type": "number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Number/MAX_VALUE",
+      "!doc": "JavaScript 中可表示的最大数值。（待完善翻译）"
+    },
+    "MIN_VALUE": {
+      "!type": "number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Number/MIN_VALUE",
+      "!doc": "JavaScript 中可表示的最小正数值。（待完善翻译）"
+    },
+    "POSITIVE_INFINITY": {
+      "!type": "number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Number/POSITIVE_INFINITY",
+      "!doc": "表示正无穷大值的值。"
+    },
+    "NEGATIVE_INFINITY": {
+      "!type": "number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Number/NEGATIVE_INFINITY",
+      "!doc": "表示负无穷大值的值。"
+    },
+    "prototype": {
+      "!stdProto": "Number",
+      "toString": {
+        "!type": "fn(radix?: number) -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Number/toString",
+        "!doc": "返回 string representing the specified Number object。"
+      },
+      "toFixed": {
+        "!type": "fn(digits: number) -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Number/toFixed",
+        "!doc": "Formats a number using fixed-point notation（待完善翻译）"
+      },
+      "toExponential": {
+        "!type": "fn(digits: number) -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Number/toExponential",
+        "!doc": "返回 string representing the Number object in exponential notation。"
+      },
+      "toPrecision": {
+        "!type": "fn(digits: number) -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Number/toPrecision",
+        "!doc": "toPrecision() 方法返回表示数字到指定精度的字符串。"
+      }
+    },
+    "EPSILON": {
+      "!type": "number",
+      "!doc": "Number.EPSILON 属性表示 1 与大于 1 的可表示为 Number 的最小值之间的差。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/EPSILON"
+    },
+    "MAX_SAFE_INTEGER": {
+      "!type": "number",
+      "!doc": "Number.MAX_SAFE_INTEGER 常量表示 JavaScript 中的最大安全整数 (253 - 1)。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER"
+    },
+    "MIN_SAFE_INTEGER": {
+      "!type": "number",
+      "!doc": "Number.MIN_SAFE_INTEGER 常量表示 JavaScript 中的最小安全整数 (-(253 - 1))。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MIN_SAFE_INTEGER"
+    },
+    "isFinite": {
+      "!type": "fn(testValue: ?) -> bool",
+      "!doc": "Number.isFinite() 方法确定传递的值是否有限。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite"
+    },
+    "isInteger": {
+      "!type": "fn(testValue: ?) -> bool",
+      "!doc": "Number.isInteger() 方法确定传递的值是否为整数。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger"
+    },
+    "isNaN": {
+      "!type": "fn(testValue: ?) -> bool",
+      "!doc": "Number.isNaN() 方法确定传递的值是否为 NaN。比原始全局 isNaN() 更强大的版本。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN"
+    },
+    "isSafeInteger": {
+      "!type": "fn(testValue: ?) -> bool",
+      "!doc": "Number.isSafeInteger() 方法 determines whether the provided value is a number that is a safe integer. A safe integer is an integer that。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isSafeInteger"
+    },
+    "parseFloat": {
+      "!type": "fn(string: string) -> number",
+      "!doc": "Number.parseFloat() 方法解析字符串参数并返回浮点数。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/parseFloat"
+    },
+    "parseInt": {
+      "!type": "fn(string: string, radix?: number) -> number",
+      "!doc": "Number.parseInt() 方法解析字符串参数并返回指定基数或进制的整数。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/parseInt"
+    },
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Number",
+    "!doc": "Number JavaScript 对象是一个包装器对象，允许您使用数值。Number 对象是使用 Number() 构造函数创建的。（待完善翻译）"
+  },
+  "Boolean": {
+    "!type": "fn(value: ?) -> bool",
+    "prototype": {
+      "!stdProto": "Boolean"
+    },
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Boolean",
+    "!doc": "Boolean 对象是布尔值的对象包装器。（待完善翻译）"
+  },
+  "RegExp": {
+    "!type": "fn(source: string, flags?: string)",
+    "prototype": {
+      "!stdProto": "RegExp",
+      "exec": {
+        "!type": "fn(input: string) -> [string]",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/RegExp/exec",
+        "!doc": "在指定字符串中执行匹配搜索。返回结果数组或 null。"
+      },
+      "test": {
+        "!type": "fn(input: string) -> bool",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/RegExp/test",
+        "!doc": "执行正则表达式和指定字符串之间的匹配搜索。返回 true 或 false。"
+      },
+      "global": {
+        "!type": "bool",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/RegExp",
+        "!doc": "创建用于使用模式匹配文本的正则表达式对象。"
+      },
+      "ignoreCase": {
+        "!type": "bool",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/RegExp",
+        "!doc": "创建用于使用模式匹配文本的正则表达式对象。"
+      },
+      "multiline": {
+        "!type": "bool",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/RegExp/multiline",
+        "!doc": "Reflects whether or not to search in strings across multiple lines.\n（待完善翻译）"
+      },
+      "source": {
+        "!type": "string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/RegExp/source",
+        "!doc": "A read-only property that contains the text of the pattern, excluding the forward slashes.\n（待完善翻译）"
+      },
+      "lastIndex": {
+        "!type": "number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/RegExp/lastIndex",
+        "!doc": "指定开始下一个匹配的索引的读/写整数属性。"
+      },
+      "flags": {
+        "!type": "string",
+        "!doc": "flags 属性返回由当前正则表达式对象的标志组成的字符串。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/flags"
+      },
+      "sticky": {
+        "!type": "bool",
+        "!doc": "sticky 属性反映搜索是否具有粘性（仅从此正则表达式的 lastIndex 属性指示的索引开始在字符串中搜索）。sticky 是单个正则表达式对象的只读属性。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/sticky"
+      },
+      "unicode": {
+        "!type": "bool",
+        "!doc": "'u' 标志启用各种与 Unicode 相关的功能。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/unicode"
+      }
+    },
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/RegExp",
+    "!doc": "创建用于使用模式匹配文本的正则表达式对象。"
+  },
+  "Date": {
+    "!type": "fn(ms: number)",
+    "parse": {
+      "!type": "fn(source: string) -> +Date",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/parse",
+      "!doc": "解析日期的字符串表示，并返回自 1970 年 1 月 1 日 00:00:00 UTC 以来的毫秒数。"
+    },
+    "UTC": {
+      "!type": "fn(year: number, month: number, date: number, hour?: number, min?: number, sec?: number, ms?: number) -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/UTC",
+      "!doc": "接受与构造函数最长形式相同的参数，并返回 Date 对象中自 1970 年 1 月 1 日 00:00:00 世界时以来的毫秒数。"
+    },
+    "now": {
+      "!type": "fn() -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/now",
+      "!doc": "返回自 1970 年 1 月 1 日 00:00:00 UTC 以来经过的毫秒数。"
+    },
+    "prototype": {
+      "toUTCString": {
+        "!type": "fn() -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/toUTCString",
+        "!doc": "使用世界时约定将日期转换为字符串。"
+      },
+      "toISOString": {
+        "!type": "fn() -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/toISOString",
+        "!doc": "JavaScript 提供了将日期对象转换为 ISO 格式字符串的直接方法，即 ISO 8601 扩展格式。（待完善翻译）"
+      },
+      "toDateString": {
+        "!type": "fn() -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/toDateString",
+        "!doc": "以美式英语的人类可读形式返回 Date 对象的日期部分。"
+      },
+      "toTimeString": {
+        "!type": "fn() -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/toTimeString",
+        "!doc": "以美式英语的人类可读形式返回 Date 对象的时间部分。"
+      },
+      "toLocaleDateString": {
+        "!type": "fn() -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/toLocaleDateString",
+        "!doc": "将日期转换为字符串，使用操作系统的区域设置约定返回\"日期\"部分。\n"
+      },
+      "toLocaleTimeString": {
+        "!type": "fn() -> string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/toLocaleTimeString",
+        "!doc": "将日期转换为字符串，使用当前区域设置的约定返回\"时间\"部分。"
+      },
+      "getTime": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/getTime",
+        "!doc": "根据世界时返回与指定日期的时间对应的数值。"
+      },
+      "getFullYear": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/getFullYear",
+        "!doc": "根据本地时间返回指定日期的年份。"
+      },
+      "getYear": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/getYear",
+        "!doc": "根据本地时间返回指定日期中的年份。"
+      },
+      "getMonth": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/getMonth",
+        "!doc": "根据本地时间返回指定日期中的月份。"
+      },
+      "getUTCMonth": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/getUTCMonth",
+        "!doc": "返回 month of the specified date according to universal time.\n。"
+      },
+      "getDate": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/getDate",
+        "!doc": "根据本地时间返回指定日期的月份中的天数。"
+      },
+      "getUTCDate": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/getUTCDate",
+        "!doc": "返回 day (date) of the month in the specified date according to universal time.\n。"
+      },
+      "getDay": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/getDay",
+        "!doc": "根据本地时间返回指定日期的星期几。"
+      },
+      "getUTCDay": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/getUTCDay",
+        "!doc": "返回 day of the week in the specified date according to universal time.\n。"
+      },
+      "getHours": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/getHours",
+        "!doc": "根据本地时间返回指定日期的小时。"
+      },
+      "getUTCHours": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/getUTCHours",
+        "!doc": "返回 hours in the specified date according to universal time.\n。"
+      },
+      "getMinutes": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/getMinutes",
+        "!doc": "根据本地时间返回指定日期中的分钟。"
+      },
+      "getUTCMinutes": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date",
+        "!doc": "创建允许您使用日期和时间的 JavaScript Date 实例。"
+      },
+      "getSeconds": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/getSeconds",
+        "!doc": "根据本地时间返回指定日期中的秒数。"
+      },
+      "getUTCSeconds": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/getUTCSeconds",
+        "!doc": "返回 seconds in the specified date according to universal time.\n。"
+      },
+      "getMilliseconds": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/getMilliseconds",
+        "!doc": "根据本地时间返回指定日期中的毫秒数。"
+      },
+      "getUTCMilliseconds": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/getUTCMilliseconds",
+        "!doc": "返回 milliseconds in the specified date according to universal time.\n。"
+      },
+      "getTimezoneOffset": {
+        "!type": "fn() -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset",
+        "!doc": "返回当前区域设置的 UTC 时区偏移量（以分钟为单位）。"
+      },
+      "setTime": {
+        "!type": "fn(date: +Date) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/setTime",
+        "!doc": "设置 Date object to the time represented by a number of milliseconds since January 1, 1970, 00:00:00 UTC.\n。"
+      },
+      "setFullYear": {
+        "!type": "fn(year: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/setFullYear",
+        "!doc": "设置 full year for a specified date according to local time.\n。"
+      },
+      "setUTCFullYear": {
+        "!type": "fn(year: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/setUTCFullYear",
+        "!doc": "设置 full year for a specified date according to universal time.\n。"
+      },
+      "setMonth": {
+        "!type": "fn(month: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/setMonth",
+        "!doc": "根据本地时间为指定日期设置月份。"
+      },
+      "setUTCMonth": {
+        "!type": "fn(month: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/setUTCMonth",
+        "!doc": "设置 month for a specified date according to universal time.\n。"
+      },
+      "setDate": {
+        "!type": "fn(day: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/setDate",
+        "!doc": "根据本地时间为指定日期设置月份中的天数。"
+      },
+      "setUTCDate": {
+        "!type": "fn(day: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/setUTCDate",
+        "!doc": "设置 day of the month for a specified date according to universal time.\n。"
+      },
+      "setHours": {
+        "!type": "fn(hour: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/setHours",
+        "!doc": "根据本地时间为指定日期设置小时，并返回自 1970 年 1 月 1 日 00:00:00 UTC 到更新的 Date 实例表示的时间的毫秒数。"
+      },
+      "setUTCHours": {
+        "!type": "fn(hour: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/setUTCHours",
+        "!doc": "设置 hour for a specified date according to universal time.\n。"
+      },
+      "setMinutes": {
+        "!type": "fn(min: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/setMinutes",
+        "!doc": "根据本地时间为指定日期设置分钟。"
+      },
+      "setUTCMinutes": {
+        "!type": "fn(min: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/setUTCMinutes",
+        "!doc": "设置 minutes for a specified date according to universal time.\n。"
+      },
+      "setSeconds": {
+        "!type": "fn(sec: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/setSeconds",
+        "!doc": "根据本地时间为指定日期设置秒数。"
+      },
+      "setUTCSeconds": {
+        "!type": "fn(sec: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/setUTCSeconds",
+        "!doc": "设置 seconds for a specified date according to universal time.\n。"
+      },
+      "setMilliseconds": {
+        "!type": "fn(ms: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/setMilliseconds",
+        "!doc": "设置 milliseconds for a specified date according to local time.\n。"
+      },
+      "setUTCMilliseconds": {
+        "!type": "fn(ms: number) -> number",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/setUTCMilliseconds",
+        "!doc": "设置 milliseconds for a specified date according to universal time.\n。"
+      },
+      "toJSON": {
+        "!type": "fn() -> string",
+        "!doc": "返回表示 Date 对象值的字符串（使用 toISOString()）。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toJSON"
+      }
+    },
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date",
+    "!doc": "创建允许您使用日期和时间的 JavaScript Date 实例。"
+  },
+  "Error": {
+    "!type": "fn(message: string)",
+    "prototype": {
+      "name": {
+        "!type": "string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Error/name",
+        "!doc": "错误类型的名称。"
+      },
+      "message": {
+        "!type": "string",
+        "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Error/message",
+        "!doc": "错误的人类可读描述。"
+      }
+    },
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Error",
+    "!doc": "创建错误对象。"
+  },
+  "SyntaxError": {
+    "!type": "fn(message: string)",
+    "prototype": "Error.prototype",
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/SyntaxError",
+    "!doc": "表示尝试解释语法无效代码时的错误。"
+  },
+  "ReferenceError": {
+    "!type": "fn(message: string)",
+    "prototype": "Error.prototype",
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/ReferenceError",
+    "!doc": "表示引用不存在的变量时的错误。"
+  },
+  "URIError": {
+    "!type": "fn(message: string)",
+    "prototype": "Error.prototype",
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/URIError",
+    "!doc": "表示遇到格式错误的 URI 时的错误。"
+  },
+  "EvalError": {
+    "!type": "fn(message: string)",
+    "prototype": "Error.prototype",
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/EvalError",
+    "!doc": "表示有关 eval 函数的错误。"
+  },
+  "RangeError": {
+    "!type": "fn(message: string)",
+    "prototype": "Error.prototype",
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/RangeError",
+    "!doc": "表示数字不在允许的正确范围内时的错误。"
+  },
+  "TypeError": {
+    "!type": "fn(message: string)",
+    "prototype": "Error.prototype",
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/TypeError",
+    "!doc": "表示值不是预期类型时的错误。"
+  },
+  "parseInt": {
+    "!type": "fn(string: string, radix?: number) -> number",
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/parseInt",
+    "!doc": "解析字符串参数并返回指定基数或进制的整数。"
+  },
+  "parseFloat": {
+    "!type": "fn(string: string) -> number",
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/parseFloat",
+    "!doc": "解析字符串参数并返回浮点数。"
+  },
+  "isNaN": {
+    "!type": "fn(value: number) -> bool",
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/isNaN",
+    "!doc": "确定值是否为 NaN。请注意，此函数已损坏。您可能对 ECMAScript 6 Number.isNaN 感兴趣。"
+  },
+  "isFinite": {
+    "!type": "fn(value: number) -> bool",
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/isFinite",
+    "!doc": "确定传递的值是否为有限数。"
+  },
+  "eval": {
+    "!type": "fn(code: string) -> ?",
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/eval",
+    "!doc": "计算表示为字符串的 JavaScript 代码。"
+  },
+  "encodeURI": {
+    "!type": "fn(uri: string) -> string",
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/encodeURI",
+    "!doc": "通过将某些字符的每个实例替换为表示字符的 UTF-8 编码的一个、两个、三个或四个转义序列来编码统一资源标识符 (URI)（对于由两个\"代理\"字符组成的字符，只有四个转义序列）。"
+  },
+  "encodeURIComponent": {
+    "!type": "fn(uri: string) -> string",
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/encodeURIComponent",
+    "!doc": "通过将某些字符的每个实例替换为表示字符的 UTF-8 编码的一个、两个、三个或四个转义序列来编码统一资源标识符 (URI) 组件（对于由两个\"代理\"字符组成的字符，只有四个转义序列）。"
+  },
+  "decodeURI": {
+    "!type": "fn(uri: string) -> string",
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/decodeURI",
+    "!doc": "解码先前由 encodeURI 或类似例程创建的统一资源标识符 (URI)。"
+  },
+  "decodeURIComponent": {
+    "!type": "fn(uri: string) -> string",
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/decodeURIComponent",
+    "!doc": "解码先前由 encodeURIComponent 或类似例程创建的统一资源标识符 (URI) 组件。"
+  },
+  "Math": {
+    "E": {
+      "!type": "number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/E",
+      "!doc": "自然对数的底数 e，大约 2.718。"
+    },
+    "LN2": {
+      "!type": "number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/LN2",
+      "!doc": "2 的自然对数，大约 0.693。"
+    },
+    "LN10": {
+      "!type": "number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/LN10",
+      "!doc": "10 的自然对数，大约 2.302。"
+    },
+    "LOG2E": {
+      "!type": "number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/LOG2E",
+      "!doc": "E 的以 2 为底的对数（大约 1.442）。（待完善翻译）"
+    },
+    "LOG10E": {
+      "!type": "number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/LOG10E",
+      "!doc": "E 的以 10 为底的对数（大约 0.434）。（待完善翻译）"
+    },
+    "SQRT1_2": {
+      "!type": "number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/SQRT1_2",
+      "!doc": "1/2 的平方根；等价地，2 的平方根的倒数，大约 0.707。"
+    },
+    "SQRT2": {
+      "!type": "number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/SQRT2",
+      "!doc": "2 的平方根，大约 1.414。"
+    },
+    "PI": {
+      "!type": "number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/PI",
+      "!doc": "圆的周长与其直径的比值，大约 3.14159。"
+    },
+    "abs": {
+      "!type": "fn(number) -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/abs",
+      "!doc": "返回数字的绝对值。"
+    },
+    "cos": {
+      "!type": "fn(number) -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/cos",
+      "!doc": "返回数字的余弦值。"
+    },
+    "sin": {
+      "!type": "fn(number) -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/sin",
+      "!doc": "返回数字的正弦值。"
+    },
+    "tan": {
+      "!type": "fn(number) -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/tan",
+      "!doc": "返回数字的正切值。"
+    },
+    "acos": {
+      "!type": "fn(number) -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/acos",
+      "!doc": "返回数字的反余弦值（以弧度为单位）。"
+    },
+    "asin": {
+      "!type": "fn(number) -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/asin",
+      "!doc": "返回数字的反正弦值（以弧度为单位）。"
+    },
+    "atan": {
+      "!type": "fn(number) -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/atan",
+      "!doc": "返回数字的反正切值（以弧度为单位）。"
+    },
+    "atan2": {
+      "!type": "fn(y: number, x: number) -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/atan2",
+      "!doc": "返回其参数商的反正切值。"
+    },
+    "ceil": {
+      "!type": "fn(number) -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/ceil",
+      "!doc": "返回大于或等于数字的最小整数。"
+    },
+    "floor": {
+      "!type": "fn(number) -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/floor",
+      "!doc": "返回小于或等于数字的最大整数。"
+    },
+    "round": {
+      "!type": "fn(number) -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/round",
+      "!doc": "返回舍入到最接近整数的数字值。"
+    },
+    "exp": {
+      "!type": "fn(number) -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/exp",
+      "!doc": "返回 Ex，其中 x 是参数，E 是欧拉常数，即自然对数的底数。"
+    },
+    "log": {
+      "!type": "fn(number) -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/log",
+      "!doc": "返回数字的自然对数（以 E 为底）。"
+    },
+    "sqrt": {
+      "!type": "fn(number) -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/sqrt",
+      "!doc": "返回数字的平方根。"
+    },
+    "pow": {
+      "!type": "fn(number, number) -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/pow",
+      "!doc": "返回底数的指数次幂，即 底数^指数。"
+    },
+    "max": {
+      "!type": "fn(number, number) -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/max",
+      "!doc": "返回零个或多个数字中的最大值。"
+    },
+    "min": {
+      "!type": "fn(number, number) -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/min",
+      "!doc": "返回零个或多个数字中的最小值。"
+    },
+    "random": {
+      "!type": "fn() -> number",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/random",
+      "!doc": "返回范围 [0, 1) 内的浮点伪随机数，即从 0（包含）到但不包括 1（排除），然后您可以将其缩放到所需的范围。"
+    },
+    "acosh": {
+      "!type": "fn(x: number) -> number",
+      "!doc": "Math.acosh() 函数返回数字的双曲反余弦值。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/acosh"
+    },
+    "asinh": {
+      "!type": "fn(x: number) -> number",
+      "!doc": "Math.asinh() 函数返回数字的双曲反正弦值。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/asinh"
+    },
+    "atanh": {
+      "!type": "fn(x: number) -> number",
+      "!doc": "Math.atanh() 函数返回数字的双曲反正切值。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/atanh"
+    },
+    "cbrt": {
+      "!type": "fn(x: number) -> number",
+      "!doc": "Math.cbrt() 函数返回数字的立方根。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/cbrt"
+    },
+    "clz32": {
+      "!type": "fn(x: number) -> number",
+      "!doc": "Math.clz32() 函数返回数字的 32 位二进制表示中前导零位的数量。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/clz32"
+    },
+    "cosh": {
+      "!type": "fn(x: number) -> number",
+      "!doc": "Math.cosh() 函数 returns the hyperbolic cosine of a number, that can be expressed using the constant e:。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/cosh"
+    },
+    "expm1": {
+      "!type": "fn(x: number) -> number",
+      "!doc": "Math.expm1() 函数返回 ex - 1，其中 x 是参数，e 是自然对数的底数。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/expm1"
+    },
+    "fround": {
+      "!type": "fn(x: number) -> number",
+      "!doc": "Math.fround() 函数返回数字的最接近的单精度浮点表示。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/fround"
+    },
+    "hypot": {
+      "!type": "fn(value: number) -> number",
+      "!doc": "Math.hypot() 函数返回其参数平方和的平方根。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/hypot"
+    },
+    "imul": {
+      "!type": "fn(a: number, b: number) -> number",
+      "!doc": "Math.imul() 函数返回两个参数的类似 C 的 32 位乘法的结果。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/imul"
+    },
+    "log10": {
+      "!type": "fn(x: number) -> number",
+      "!doc": "Math.log10() 函数返回数字的以 10 为底的对数。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/log10"
+    },
+    "log1p": {
+      "!type": "fn(x: number) -> number",
+      "!doc": "Math.log1p() 函数返回 1 + 数字的自然对数（以 e 为底）。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/log1p"
+    },
+    "log2": {
+      "!type": "fn(x: number) -> number",
+      "!doc": "Math.log2() 函数返回数字的以 2 为底的对数。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/log2"
+    },
+    "sign": {
+      "!type": "fn(x: number) -> number",
+      "!doc": "Math.sign() 函数返回数字的符号，指示数字是正数、负数还是零。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sign"
+    },
+    "sinh": {
+      "!type": "fn(x: number) -> number",
+      "!doc": "Math.sinh() 函数 returns the hyperbolic sine of a number, that can be expressed using the constant e:。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sinh"
+    },
+    "tanh": {
+      "!type": "fn(x: number) -> number",
+      "!doc": "Math.tanh() 函数返回数字的双曲正切值。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/tanh"
+    },
+    "trunc": {
+      "!type": "fn(x: number) -> number",
+      "!doc": "Math.trunc() function returns the integral part of a number by removing any fractional digits. It does not round any numbers. The 函数 can be expressed with the floor() and ceil() function:。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/trunc"
+    },
+    "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math",
+    "!doc": "具有数学常量和函数的属性和方法的内置对象。"
+  },
+  "JSON": {
+    "parse": {
+      "!type": "fn(json: string, reviver?: fn(key: string, value: ?) -> ?) -> ?",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/JSON/parse",
+      "!doc": "将字符串解析为 JSON，可选择转换解析产生的值。"
+    },
+    "stringify": {
+      "!type": "fn(value: ?, replacer?: fn(key: string, value: ?) -> ?, space?: string|number) -> string",
+      "!url": "https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/JSON/stringify",
+      "!doc": "将值转换为 JSON，如果指定了替换器函数，可选择替换值，或者如果指定了替换器数组，可选择仅包含指定的属性。"
+    },
+    "!url": "https://developer.mozilla.org/en-US/docs/JSON",
+    "!doc": "JSON (JavaScript Object Notation) is a data-interchange format.  It closely resembles a subset of JavaScript syntax, although it is not a strict subset. (See JSON in the JavaScript Reference for full details.)  It is useful when writing any kind of JavaScript-based application, including websites and browser extensions.  For example, you might store user information in JSON format in a cookie, or you might store extension preferences in JSON in a string-valued browser preference."
+  },
+  "ArrayBuffer": {
+    "!type": "fn(length: number)",
+    "!doc": "ArrayBuffer 对象用于表示通用的、固定长度的原始二进制数据缓冲区。（待完善翻译）",
+    "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
+    "isView": {
+      "!type": "fn(arg: +ArrayBuffer) -> bool",
+      "!doc": "ArrayBuffer.isView() 方法如果 arg 是 ArrayBuffer 视图之一（例如类型化数组对象或 DataView）则返回 true；否则返回 false。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer/isView"
+    },
+    "prototype": {
+      "byteLength": {
+        "!type": "number",
+        "!doc": "byteLength 访问器属性表示 ArrayBuffer 的长度（以字节为单位）。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer/byteLength"
+      },
+      "slice": {
+        "!type": "fn(begin: number, end?: number) -> +ArrayBuffer",
+        "!doc": "slice() 方法返回一个新的 ArrayBuffer，其内容是此 ArrayBuffer 从 begin（包含）到 end（不包含）的字节副本。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer/slice"
+      }
+    }
+  },
+  "DataView": {
+    "!type": "fn(buffer: +ArrayBuffer, byteOffset?: number, byteLength?: number)",
+    "!doc": "DataView 视图提供了从 ArrayBuffer 读取数据和向其写入数据的低级接口。（待完善翻译）",
+    "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView",
+    "prototype": {
+      "buffer": {
+        "!type": "+ArrayBuffer",
+        "!doc": "buffer 访问器属性表示在构造时由 DataView 引用的 ArrayBuffer。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/buffer"
+      },
+      "byteLength": {
+        "!type": "number",
+        "!doc": "byteLength 访问器属性表示此视图从其 ArrayBuffer 开始的长度（以字节为单位）。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/byteLength"
+      },
+      "byteOffset": {
+        "!type": "number",
+        "!doc": "byteOffset 访问器属性表示此视图从其 ArrayBuffer 开始的偏移量（以字节为单位）。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/byteOffset"
+      },
+      "getFloat32": {
+        "!type": "fn(byteOffset: number, littleEndian?: bool) -> number",
+        "!doc": "getFloat32() 方法从 DataView 的开始获取指定字节偏移处的有符号 32 位整数 (float)。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/getFloat32"
+      },
+      "getFloat64": {
+        "!type": "fn(byteOffset: number, littleEndian?: bool) -> number",
+        "!doc": "getFloat64() 方法从 DataView 的开始获取指定字节偏移处的有符号 64 位浮点数 (double)。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/getFloat64"
+      },
+      "getInt16": {
+        "!type": "fn(byteOffset: number, littleEndian?: bool) -> number",
+        "!doc": "getInt16() 方法从 DataView 的开始获取指定字节偏移处的有符号 16 位整数 (short)。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/getInt16"
+      },
+      "getInt32": {
+        "!type": "fn(byteOffset: number, littleEndian?: bool) -> number",
+        "!doc": "getInt32() 方法从 DataView 的开始获取指定字节偏移处的有符号 32 位整数 (long)。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/getInt32"
+      },
+      "getInt8": {
+        "!type": "fn(byteOffset: number, littleEndian?: bool) -> number",
+        "!doc": "getInt8() 方法从 DataView 的开始获取指定字节偏移处的有符号 8 位整数 (byte)。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/getInt8"
+      },
+      "getUint16": {
+        "!type": "fn(byteOffset: number, littleEndian?: bool) -> number",
+        "!doc": "getUint16() 方法从 DataView 的开始获取指定字节偏移处的无符号 16 位整数 (unsigned short)。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/getUint16"
+      },
+      "getUint32": {
+        "!type": "fn(byteOffset: number, littleEndian?: bool) -> number",
+        "!doc": "getUint32() 方法从 DataView 的开始获取指定字节偏移处的无符号 32 位整数 (unsigned long)。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/getUint32"
+      },
+      "getUint8": {
+        "!type": "fn(byteOffset: number) -> number",
+        "!doc": "getUint8() 方法从 DataView 的开始获取指定字节偏移处的无符号 8 位整数 (unsigned byte)。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/getUint8"
+      },
+      "setFloat32": {
+        "!type": "fn(byteOffset: number, value: number, littleEndian?: bool)",
+        "!doc": "setFloat32() 方法在 DataView 开始的指定字节偏移处存储有符号 32 位整数 (float) 值。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/setFloat32"
+      },
+      "setFloat64": {
+        "!type": "fn(byteOffset: number, value: number, littleEndian?: bool)",
+        "!doc": "setFloat64() 方法在 DataView 开始的指定字节偏移处存储有符号 64 位整数 (double) 值。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/setFloat64"
+      },
+      "setInt16": {
+        "!type": "fn(byteOffset: number, value: number, littleEndian?: bool)",
+        "!doc": "setInt16() 方法在 DataView 开始的指定字节偏移处存储有符号 16 位整数 (short) 值。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/setInt16"
+      },
+      "setInt32": {
+        "!type": "fn(byteOffset: number, value: number, littleEndian?: bool)",
+        "!doc": "setInt32() 方法在 DataView 开始的指定字节偏移处存储有符号 32 位整数 (long) 值。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/setInt32"
+      },
+      "setInt8": {
+        "!type": "fn(byteOffset: number, value: number)",
+        "!doc": "setInt8() 方法在 DataView 开始的指定字节偏移处存储有符号 8 位整数 (byte) 值。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/setInt8"
+      },
+      "setUint16": {
+        "!type": "fn(byteOffset: number, value: number, littleEndian?: bool)",
+        "!doc": "setUint16() 方法在 DataView 开始的指定字节偏移处存储无符号 16 位整数 (unsigned short) 值。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/setUint16"
+      },
+      "setUint32": {
+        "!type": "fn(byteOffset: number, value: number, littleEndian?: bool)",
+        "!doc": "setUint32() 方法在 DataView 开始的指定字节偏移处存储无符号 32 位整数 (unsigned long) 值。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/setUint32"
+      },
+      "setUint8": {
+        "!type": "fn(byteOffset: number, value: number)",
+        "!doc": "setUint8() 方法在 DataView 开始的指定字节偏移处存储无符号 8 位整数 (byte) 值。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView/setUint8"
+      }
+    }
+  },
+  "Float32Array": "TypedArray",
+  "Float64Array": "TypedArray",
+  "Int16Array": "TypedArray",
+  "Int32Array": "TypedArray",
+  "Int8Array": "TypedArray",
+  "Map": {
+    "!type": "fn(iterable?: [?])",
+    "!doc": "Map 对象是一个简单的键/值映射。任何值（对象和原始值）都可以用作键或值。（待完善翻译）",
+    "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
+    "prototype": {
+      "clear": {
+        "!type": "fn()",
+        "!doc": "clear() 方法从 Map 对象中删除所有元素。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/clear"
+      },
+      "delete": {
+        "!type": "fn(key: ?)",
+        "!doc": "delete() 方法从 Map 对象中删除指定的元素。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/delete"
+      },
+      "entries": {
+        "!type": "fn() -> +iter[:t=[!this.:key, !this.:value]]",
+        "!doc": "entries() 方法返回一个新的 Iterator 对象，该对象按插入顺序包含 Map 对象中每个元素的 [键, 值] 对。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/entries"
+      },
+      "forEach": {
+        "!type": "fn(callback: fn(value: ?, key: ?, map: +Map), thisArg?: ?)",
+        "!effects": ["call !0 this=!1 !this.:value !this.:key !this"],
+        "!doc": "forEach() 方法按插入顺序对 Map 对象中的每个键/值对执行一次提供的函数。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/forEach"
+      },
+      "get": {
+        "!type": "fn(key: ?) -> !this.:value",
+        "!doc": "get() 方法从 Map 对象返回指定的元素。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/get"
+      },
+      "has": {
+        "!type": "fn(key: ?) -> bool",
+        "!doc": "has() 方法返回一个布尔值，指示具有指定键的元素是否存在。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/has"
+      },
+      "keys": {
+        "!type": "fn() -> +iter[:t=!this.:key]",
+        "!doc": "keys() 方法返回一个新的 Iterator 对象，该对象按插入顺序包含 Map 对象中每个元素的键。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/keys"
+      },
+      "set": {
+        "!type": "fn(key: ?, value: ?) -> !this",
+        "!effects": ["propagate !0 !this.:key", "propagate !1 !this.:value"],
+        "!doc": "set() 方法向 Map 对象添加具有指定键和值的新元素。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/set"
+      },
+      "size": {
+        "!type": "number",
+        "!doc": "size 访问器属性返回 Map 对象中的元素数量。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/size"
+      },
+      "values": {
+        "!type": "fn() -> +iter[:t=!this.:value]",
+        "!doc": "values() 方法返回一个新的 Iterator 对象，该对象按插入顺序包含 Map 对象中每个元素的值。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/values"
+      },
+      ":Symbol.iterator": {
+        "!type": "fn() -> +iter[:t=[!this.:key, !this.:value]]",
+        "!doc": "返回一个新的 Iterator 对象，该对象按插入顺序包含 Map 对象中每个元素的 [键, 值] 对。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/@@iterator"
+      }
+    }
+  },
+  "Promise": {
+    "!type": "fn(executor: fn(resolve: fn(value: ?), reject: fn(reason: ?))) -> !custom:Promise_ctor",
+    "!doc": "The Promise object is used for deferred and asynchronous computations. A Promise is in one of the three states:",
+    "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
+    "all": {
+      "!type": "fn(iterable: [+Promise]) -> +Promise[:t=[!0.<i>.:t]]",
+      "!doc": "Promise.all(iterable) 方法返回一个 promise，当可迭代参数中的所有 promise 都已解决时解决。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all"
+    },
+    "race": {
+      "!type": "fn(iterable: [+Promise]) -> !0.<i>",
+      "!doc": "Promise.race(iterable) 方法返回一个 promise，一旦可迭代中的一个 promise 解决或拒绝，就以该 promise 的值或原因解决或拒绝。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race"
+    },
+    "reject": "Promise_reject",
+    "resolve": {
+      "!type": "fn(value: ?) -> !custom:Promise_resolve",
+      "!doc": "Promise.resolve(value) 方法 returns a Promise object that is resolved with the given value. If the value is a thenable (i.e. has a then method), the returned promise will 'follow' that thenable, adopting its eventual state; otherwise the returned promise will be fulfilled with the value.。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/resolve"
+    },
+    "prototype": "Promise.prototype"
+  },
+  "Proxy": {
+    "!type": "fn(target: ?, handler: Proxy_handler)",
+    "!doc": "Proxy 对象用于定义 JavaScript 基本操作的自定义行为（例如属性查找、赋值、枚举、函数调用等）。（待完善翻译）",
+    "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
+    "revocable": {
+      "!type": "fn(target: ?, handler: Proxy_handler) -> Proxy_revocable",
+      "!doc": "Proxy.revocable() 方法用于创建可撤销的 Proxy 对象。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy/revocable"
+    }
+  },
+  "Reflect": {
+    "!doc": "Reflect 是一个内置对象，它提供拦截 JavaScript 操作的方法。（待完善翻译）",
+    "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect",
+    "apply": {
+      "!type": "fn(target: fn(), thisArg?: ?, argumentList?: [?]) -> !0.!ret",
+      "!doc": "使用指定的参数调用目标函数。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/apply"
+    },
+    "construct": {
+      "!type": "fn(target: fn(), argumentList?: [?]) -> ?",
+      "!doc": "作为函数的作用类似于 new 运算符。它等价于调用 new target(...args)。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/construct"
+    },
+    "defineProperty": {
+      "!type": "fn(target: ?, property: string, descriptor: propertyDescriptor) -> bool",
+      "!doc": "静态 Reflect.defineProperty() 方法类似于 Object.defineProperty()，但返回布尔值。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/defineProperty"
+    },
+    "deleteProperty": {
+      "!type": "fn(target: ?, property: string) -> bool",
+      "!doc": "作为函数的工作方式类似于 delete 运算符。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/deleteProperty"
+    },
+    "enumerate": {
+      "!type": "fn(target: ?) -> +iter[:t=string]",
+      "!doc": "返回一个迭代器，包含目标对象的可枚举自有和继承属性。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/enumerate"
+    },
+    "get": {
+      "!type": "fn(target: ?, property: string) -> ?",
+      "!doc": "从对象获取属性。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/get"
+    },
+    "getOwnPropertyDescriptor": {
+      "!type": "fn(target: ?, property: string) -> ?",
+      "!doc": "如果属性存在于对象上，则返回给定属性的属性描述符，否则返回 undefined。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/getOwnPropertyDescriptor"
+    },
+    "getPrototypeOf": {
+      "!type": "fn(target: ?) -> ?",
+      "!doc": "返回指定对象的原型。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/getPrototypeOf"
+    },
+    "has": {
+      "!type": "fn(target: ?, property: string) -> bool",
+      "!doc": "静态 Reflect.has() 方法的工作方式类似于作为函数的 in 运算符。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/has"
+    },
+    "isExtensible": {
+      "!type": "fn(target: ?) -> bool",
+      "!doc": "确定对象是否可扩展（是否可以向其添加新属性）。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/isExtensible"
+    },
+    "ownKeys": {
+      "!type": "fn(target: ?) -> [string]",
+      "!doc": "返回目标对象自有属性键的数组。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/ownKeys"
+    },
+    "preventExtensions": {
+      "!type": "fn(target: ?) -> bool",
+      "!doc": "防止新属性被添加到对象中。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/preventExtensions"
+    },
+    "set": {
+      "!type": "fn(target: ?, property: string, value: ?) -> bool",
+      "!doc": "在对象上设置属性。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/set"
+    },
+    "setPrototypeOf": {
+      "!type": "fn(target: ?, prototype: ?) -> bool",
+      "!doc": "将指定对象的原型设置为另一个对象或 null。",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/setPrototypeOf"
+    }
+  },
+  "Set": {
+    "!type": "fn(iterable?: [?])",
+    "!doc": "Set 对象允许您存储任何类型的唯一值，无论是原始值还是对象引用。（待完善翻译）",
+    "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
+    "prototype": {
+      "add": {
+        "!type": "fn(value: ?) -> !this",
+        "!effects": ["propagate !0 !this.:t"],
+        "!doc": "add() 方法将具有指定值的新元素追加到 Set 对象的末尾。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/add"
+      },
+      "clear": {
+        "!type": "fn()",
+        "!doc": "clear() 方法从 Set 对象中删除所有元素。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/clear"
+      },
+      "delete": {
+        "!type": "fn(value: ?) -> bool",
+        "!doc": "delete() 方法从 Set 对象中删除指定的元素。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/delete"
+      },
+      "entries": {
+        "!type": "fn() -> +iter[:t=[!this.:t]]",
+        "!doc": "entries() 方法返回一个新的 Iterator 对象，该对象按插入顺序包含 Set 对象中每个元素的 [值, 值] 数组。对于 Set 对象，没有像 Map 对象中那样的键。但是，为了保持 API 与 Map 对象相似，这里每个条目的键和值都具有相同的值，因此返回数组 [值, 值]。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/entries"
+      },
+      "forEach": {
+        "!type": "fn(callback: fn(value: ?, value2: ?, set: +Set), thisArg?: ?)",
+        "!effects": ["call !0 this=!1 !this.:t number !this"],
+        "!doc": "forEach() 方法按插入顺序对 Set 对象中的每个值执行一次提供的函数。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/forEach"
+      },
+      "has": {
+        "!type": "fn(value: ?) -> bool",
+        "!doc": "has() 方法返回一个布尔值，指示具有指定值的元素是否存在于 Set 对象中。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/has"
+      },
+      "keys": {
+        "!type": "fn() -> +iter[:t=!this.:t]",
+        "!doc": "values() 方法返回一个新的 Iterator 对象，该对象按插入顺序包含 Set 对象中每个元素的值。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/keys"
+      },
+      "size": {
+        "!type": "number",
+        "!doc": "size 访问器属性返回 Set 对象中的元素数量。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/size"
+      },
+      "values": {
+        "!type": "fn() -> +iter[:t=!this.:t]",
+        "!doc": "values() 方法返回一个新的 Iterator 对象，该对象按插入顺序包含 Set 对象中每个元素的值。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/values"
+      },
+      ":Symbol.iterator": {
+        "!type": "fn() -> +iter[:t=!this.:t]",
+        "!doc": "返回一个新的 Iterator 对象，该对象按插入顺序包含 Set 对象中每个元素的值。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/@@iterator"
+      }
+    }
+  },
+  "Symbol": {
+    "!type": "fn(description?: string) -> !custom:getSymbol",
+    "!doc": "symbol 是一种唯一且不可变的数据类型，可用作对象属性的标识符。symbol 对象是 symbol 原始数据类型的隐式对象包装器。",
+    "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
+    "for": {
+      "!type": "fn(key: string) -> !custom:getSymbol",
+      "!doc": "Symbol.for(key) 方法在运行时范围的符号注册表中搜索具有给定键的现有符号，如果找到则返回它。否则，在全局符号注册表中使用此键创建新符号。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/for"
+    },
+    "keyFor": {
+      "!type": "fn(sym: +Symbol) -> string",
+      "!doc": "Symbol.keyFor(sym) 方法从全局符号注册表中检索给定符号的共享符号键。（待完善翻译）",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/keyFor"
+    },
+    "hasInstance": ":Symbol.hasInstance",
+    "isConcatSpreadable": ":Symbol.isConcatSpreadable",
+    "iterator": ":Symbol.iterator",
+    "match": ":Symbol.match",
+    "replace": ":Symbol.replace",
+    "search": ":Symbol.search",
+    "species": ":Symbol.species",
+    "split": ":Symbol.split",
+    "toStringTag": ":Symbol.toStringTag",
+    "unscopables": ":Symbol.unscopables",
+    "prototype": {
+      "!stdProto": "Symbol"
+    }
+  },
+  "Uint16Array": "TypedArray",
+  "Uint32Array": "TypedArray",
+  "Uint8Array": "TypedArray",
+  "Uint8ClampedArray": "TypedArray",
+  "WeakMap": {
+    "!type": "fn(iterable?: [?])",
+    "!doc": "WeakMap 对象是键/值对的集合，其中键是对象，值可以是任意值。（待完善翻译）",
+    "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
+    "prototype": {
+      "delete": {
+        "!type": "fn(key: ?) -> bool",
+        "!doc": "delete() 方法从 WeakMap 对象中删除指定的元素。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap/delete"
+      },
+      "get": {
+        "!type": "fn(key: ?) -> !this.:value",
+        "!doc": "get() 方法从 WeakMap 对象返回指定的元素。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap/get"
+      },
+      "has": {
+        "!type": "fn(key: ?) -> bool",
+        "!doc": "has() 方法返回一个布尔值，指示具有指定键的元素是否存在于 WeakMap 对象中。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap/has"
+      },
+      "set": {
+        "!type": "fn(key: ?, value: ?)",
+        "!effects": ["propagate !0 !this.:key", "propagate !1 !this.:value"],
+        "!doc": "set() 方法向 WeakMap 对象添加具有指定键和值的新元素。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap/set"
+      }
+    }
+  },
+  "WeakSet": {
+    "!type": "fn(iterable?: [?])",
+    "!doc": "WeakSet 对象允许您在集合中存储弱持有的对象。（待完善翻译）",
+    "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet",
+    "prototype": {
+      "add": {
+        "!type": "fn(value: ?)",
+        "!doc": "add() 方法将新对象追加到 WeakSet 对象的末尾。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet/add"
+      },
+      "delete": {
+        "!type": "fn(value: ?) -> bool",
+        "!doc": "delete() 方法从 WeakSet 对象中删除指定的元素。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet/delete"
+      },
+      "has": {
+        "!type": "fn(value: ?) -> bool",
+        "!doc": "has() 方法返回一个布尔值，指示对象是否存在于 WeakSet 中。",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet/has"
+      }
+    }
+  },
+  "window": {},
+  "uuid": {},
+  "numbro": {
+    "!type": "fn(number)",
+    "!doc": "数字可以格式化为看起来像货币、百分比、时间，甚至是带有小数位、千位分隔符和缩写的普通数字。",
+    "!url": "https://numbrojs.com/format.html"
+  },
+  "Papa": {},
+  "console": {
+    "!type": "+Object",
+    "!doc": "console对象提供对浏览器调试控制台的访问。",
+    "!url": "https://developer.mozilla.org/zh-CN/docs/Web/API/Console",
+    "log": {
+      "!type": "fn(message?: ?, ...optionalParams: [?])",
+      "!doc": "console.log()方法向Web控制台输出一条消息。",
+      "!url": "https://developer.mozilla.org/zh-CN/docs/Web/API/Console/log"
+    },
+    "error": {
+      "!type": "fn(message?: ?, ...optionalParams: [?])",
+      "!doc": "console.error()方法向Web控制台输出一条错误消息。",
+      "!url": "https://developer.mozilla.org/zh-CN/docs/Web/API/Console/error"
+    },
+    "warn": {
+      "!type": "fn(message?: ?, ...optionalParams: [?])",
+      "!doc": "console.warn()方法向Web控制台输出一条警告消息。",
+      "!url": "https://developer.mozilla.org/zh-CN/docs/Web/API/Console/warn"
+    },
+    "info": {
+      "!type": "fn(message?: ?, ...optionalParams: [?])",
+      "!doc": "console.info()方法向Web控制台输出一条信息性消息。",
+      "!url": "https://developer.mozilla.org/zh-CN/docs/Web/API/Console/info"
+    },
+    "debug": {
+      "!type": "fn(message?: ?, ...optionalParams: [?])",
+      "!doc": "console.debug()方法向Web控制台输出一条调试消息。",
+      "!url": "https://developer.mozilla.org/zh-CN/docs/Web/API/Console/debug"
+    }
+  },
+  "setTimeout": {
+    "!type": "fn(callback: fn(), delay: number) -> number",
+    "!doc": "setTimeout()方法设置一个定时器，该定时器在定时器到期后执行一个函数或指定的代码片段。",
+    "!url": "https://developer.mozilla.org/zh-CN/docs/Web/API/setTimeout"
+  },
+  "setInterval": {
+    "!type": "fn(callback: fn(), delay: number) -> number",
+    "!doc": "setInterval()方法重复调用一个函数或执行一个代码片段，在每次调用之间具有固定的时间延迟。",
+    "!url": "https://developer.mozilla.org/zh-CN/docs/Web/API/setInterval"
+  },
+  "clearTimeout": {
+    "!type": "fn(id: number)",
+    "!doc": "clearTimeout()方法取消先前通过调用setTimeout()建立的定时器。",
+    "!url": "https://developer.mozilla.org/zh-CN/docs/Web/API/clearTimeout"
+  },
+  "clearInterval": {
+    "!type": "fn(id: number)",
+    "!doc": "clearInterval()方法取消先前通过调用setInterval()建立的定时重复操作。",
+    "!url": "https://developer.mozilla.org/zh-CN/docs/Web/API/clearInterval"
+  },
+  "fetch": {
+    "!type": "fn(input: string, init?: RequestInit) -> Promise<Response>",
+    "!doc": "fetch()方法开始从网络获取资源的过程，返回一个Promise，一旦响应可用就会被满足。",
+    "!url": "https://developer.mozilla.org/zh-CN/docs/Web/API/fetch"
+  },
+  "document": {
+    "!type": "+Object",
+    "!doc": "document对象表示在浏览器中加载的网页。",
+    "!url": "https://developer.mozilla.org/zh-CN/docs/Web/API/Document"
+  },
+  "localStorage": {
+    "!type": "+Object",
+    "!doc": "localStorage属性允许您访问本地Storage对象。",
+    "!url": "https://developer.mozilla.org/zh-CN/docs/Web/API/Window/localStorage"
+  },
+  "sessionStorage": {
+    "!type": "+Object",
+    "!doc": "sessionStorage属性允许您访问会话Storage对象。",
+    "!url": "https://developer.mozilla.org/zh-CN/docs/Web/API/Window/sessionStorage"
+  },
+  "async": {
+    "!type": "+Object",
+    "!doc": "async函数声明创建一个异步函数，该函数返回一个AsyncFunction对象。",
+    "!url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/async_function"
+  },
+  "await": {
+    "!type": "+Object",
+    "!doc": "await操作符用于等待Promise。它只能在async函数中使用。",
+    "!url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/await"
+  },
+  "const": {
+    "!type": "+Object",
+    "!doc": "常量是块作用域的，类似于使用let关键字声明的变量。",
+    "!url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/const"
+  },
+  "let": {
+    "!type": "+Object",
+    "!doc": "let语句声明一个块作用域的局部变量，可选择地将其初始化为一个值。",
+    "!url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/let"
+  },
+  "var": {
+    "!type": "+Object",
+    "!doc": "var语句声明一个函数作用域或全局作用域的变量，可选择地将其初始化为一个值。",
+    "!url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/var"
+  },
+  "class": {
+    "!type": "+Object",
+    "!doc": "class声明使用基于原型的继承创建一个具有给定名称的新类。",
+    "!url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/class"
+  },
+  "import": {
+    "!type": "+Object",
+    "!doc": "import语句用于导入由另一个模块导出的绑定。",
+    "!url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/import"
+  },
+  "export": {
+    "!type": "+Object",
+    "!doc": "export语句在创建JavaScript模块时用于从模块导出函数、对象或原始值。",
+    "!url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/export"
+  }
+}
