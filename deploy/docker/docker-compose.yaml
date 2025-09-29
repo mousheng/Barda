@@ -5,7 +5,7 @@ services:
   ## Start Barda (all-in-one)
   ##
   barda-api-service:
-    image: bardadev/barda-ce:latest
+    image: bardadev/barda:latest
     container_name: barda
     ports:
       - "3000:3000"
@@ -33,5 +33,5 @@ services:
       BARDA_NODE_SERVICE_URL: "http://localhost:6060"
     volumes:
       - ./barda-stacks:/barda-stacks
-    restart: unless-stopped
+    restart: always
 
