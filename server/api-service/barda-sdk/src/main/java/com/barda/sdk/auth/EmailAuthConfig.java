@@ -38,16 +38,16 @@ public class EmailAuthConfig extends AbstractAuthConfig {
      * @param enableRegister 是否启用注册
      */
     public EmailAuthConfig(@Nullable String id, boolean enable, boolean enableRegister) {
-        super(id, EMAIL, EMAIL, enable, enableRegister, FORM);
-        this.enableRSA = true;
-        this.publicKey = new RSACryptoServiceImpl().getPUblicKeyString();
+        this(id, enable, enableRegister, true);
     }
 
     @JsonCreator
     public EmailAuthConfig(@Nullable String id, boolean enable, boolean enableRegister, boolean enableRSA) {
         super(id, EMAIL, EMAIL, enable, enableRegister, FORM);
-        this.enableRSA = enableRSA;
-        if (enableRSA) {
+        // 统一处理RSA设置：检查环境变量，如果RSA_ENABLED=false，则强制禁用RSA
+        String rsaEnabled = System.getenv("RSA_ENABLED");
+        this.enableRSA = enableRSA && !"false".equals(rsaEnabled);
+        if (this.enableRSA) {
             this.publicKey = new RSACryptoServiceImpl().getPUblicKeyString();
         }
     }

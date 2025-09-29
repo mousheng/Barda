@@ -36,6 +36,12 @@ mkdir -p ${LOGS}/redis \
     ${DATA}/redis \
     ${DATA}/mongodb
 
+# 初始化config目录
+if [ -f "/barda/init-config-dir.sh" ]; then
+    chmod +x /barda/init-config-dir.sh
+    /barda/init-config-dir.sh
+fi
+
 # 更新日志和数据的所有者
 chown -R ${USER_ID}:${GROUP_ID} /barda-stacks/ /barda/etc
 

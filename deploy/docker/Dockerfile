@@ -23,7 +23,8 @@ RUN --mount=type=cache,target=/root/.m2 mvn install:install-file \
   mvn -f pom.xml clean package -DskipTests -T 4
 
 # Create required folder structure
-RUN mkdir -p /barda/api-service/plugins /barda/api-service/config /barda/api-service/logs
+RUN mkdir -p /barda/api-service/plugins /barda/api-service/config /barda/api-service/logs \
+    && chmod 755 /barda/api-service/config
 
 # Define barda main jar and plugin jars
 ARG JAR_FILE=/barda-server/barda-server/target/barda-server-*-SNAPSHOT.jar
@@ -204,6 +205,9 @@ COPY --chown=barda:barda --from=barda-ce-node-service /barda/node-service /barda
 
 # Add services configuration
 COPY --chown=barda:barda deploy/docker/all-in-one/etc /barda/etc
+
+# Add config initialization script
+COPY --chown=barda:barda deploy/docker/init-config-dir.sh /barda/init-config-dir.sh
 
 # Add startup script
 COPY --chown=barda:barda deploy/docker/all-in-one/entrypoint.sh /barda/entrypoint.sh

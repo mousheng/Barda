@@ -11,6 +11,7 @@ auth:
   email:
     enable: ${LOGIN_CHANNEL_EMAIL:true}
     enable-register: ${ENABLE_USER_SIGN_UP:true}
+    rsa: ${RSA_ENABLED:true}
 
 spring:
   data:
