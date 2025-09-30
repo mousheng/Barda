@@ -1,8 +1,7 @@
 version: "3"
 services:
-
   ##
-  ## Start Barda (all-in-one)
+  ## Barda一体化镜像
   ##
   barda-api-service:
     image: bardadev/barda:latest
@@ -10,33 +9,33 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # enable services
+      # 服务启用状态
       REDIS_ENABLED: "true"
       MONGODB_ENABLED: "true"
       API_SERVICE_ENABLED: "true"
       NODE_SERVICE_ENABLED: "true"
       FRONTEND_ENABLED: "true"
-      # generic parameters
+      # 权限参数
       PUID: "1000"
       PGID: "1000"
-      # api-service parameters
-      #MONGODB_URI: "mongodb://barda:secret123@mongodb/barda?authSource=admin"
+      # api-service 参数
       MONGODB_URI: "mongodb://localhost:27017/barda?authSource=admin"
       REDIS_URL: "redis://localhost:6379"
       JS_EXECUTOR_URI: "http://localhost:6060"
+      BARDA_API_SERVICE_URL: "http://localhost:8080"
+      BARDA_NODE_SERVICE_URL: "http://localhost:6060"
       ENABLE_USER_SIGN_UP: "true"
+      # 加密参数
       ENCRYPTION_PASSWORD: "barda.dev"
       ENCRYPTION_SALT: "barda.dev"
       CORS_ALLOWED_DOMAINS: "*"
       # RSA加密配置
       RSA_ENABLED: "true"
-      # RSA密钥文件路径（可选，默认使用/barda-stacks/config/）
+      # RSA密钥文件路径（可选，默认在/barda-stacks/config/）
       # RSA_PUBLIC_KEY_PATH: "/barda-stacks/config/public.key"
       # RSA_PRIVATE_KEY_PATH: "/barda-stacks/config/private.key"
-      # api and node service parameters
-      BARDA_API_SERVICE_URL: "http://localhost:8080"
-      BARDA_NODE_SERVICE_URL: "http://localhost:6060"
+      # 工作区模式，默认为"ENTERPRISE"，可设置为"SAAS"。
+      COMMON_WORKSPACE_MODE: "ENTERPRISE"
     volumes:
       - ./barda-stacks:/barda-stacks
     restart: always
-

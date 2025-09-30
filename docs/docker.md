@@ -24,7 +24,7 @@ docker-compose -v
 > * Windows 推荐使用 PowerShell 来执行以下命令
 
 ### 拉取镜像
-输入以下命令拉取最新镜像，镜像约 500 MB。
+输入以下命令拉取最新镜像。
 
 > 💡 权限
 > * linux下命令前面加上 `sudo`+ 空格，防止权限不足
@@ -32,10 +32,6 @@ docker-compose -v
 ```
 docker pull moushengkoo/barda:latest
 ```
-
-![](assets/1-20231002181225-bpznpuo.jpeg)​
-
-!> 如使用latest标签但拉取的镜像却不是最新的，可到 [DockerHub](https://hub.docker.com/r/moushengkoo/barda/tags) 复制最新的tag再拉取，并修改docker-compose.yml文件或命令行中的latest为复制的tag
 
 ### 创建目录
 
@@ -50,15 +46,51 @@ cd barda
 <!-- tab:Docker-Compose部署方式 -->
 #### 使用 Docker-Compose 部署（推荐）
 
-##### 步骤 1：下载配置文件
+##### 步骤 1：编辑配置文件 docker-compose.yaml
 
-可以使用 curl 命令进行下载：
-
-```text
-curl https://yun.mousheng.top/barda/docker-compose.yml -o $PWD/docker-compose.yml
+```shell
+version: "3"
+services:
+  ##
+  ## Barda一体化镜像
+  ##
+  barda-api-service:
+    image: bardadev/barda:latest
+    container_name: barda
+    ports:
+      - "3000:3000"
+    environment:
+      # 服务启用状态
+      REDIS_ENABLED: "true"
+      MONGODB_ENABLED: "true"
+      API_SERVICE_ENABLED: "true"
+      NODE_SERVICE_ENABLED: "true"
+      FRONTEND_ENABLED: "true"
+      # 权限参数
+      PUID: "1000"
+      PGID: "1000"
+      # api-service 参数
+      MONGODB_URI: "mongodb://localhost:27017/barda?authSource=admin"
+      REDIS_URL: "redis://localhost:6379"
+      JS_EXECUTOR_URI: "http://localhost:6060"
+      BARDA_API_SERVICE_URL: "http://localhost:8080"
+      BARDA_NODE_SERVICE_URL: "http://localhost:6060"
+      ENABLE_USER_SIGN_UP: "true"
+      # 加密参数
+      ENCRYPTION_PASSWORD: "barda.dev"
+      ENCRYPTION_SALT: "barda.dev"
+      CORS_ALLOWED_DOMAINS: "*"
+      # RSA加密配置
+      RSA_ENABLED: "true"
+      # RSA密钥文件路径（可选，默认在/barda-stacks/config/）
+      # RSA_PUBLIC_KEY_PATH: "/barda-stacks/config/public.key"
+      # RSA_PRIVATE_KEY_PATH: "/barda-stacks/config/private.key"
+      # 工作区模式，默认为"ENTERPRISE"，可设置为"SAAS"。
+      COMMON_WORKSPACE_MODE: "ENTERPRISE"
+    volumes:
+      - ./barda-stacks:/barda-stacks
+    restart: always
 ```
-
-或者通过点击 [docker-compose.yml](https://yun.mousheng.top/barda/docker-compose.yml) 进行下载。
 
 ##### 步骤 2：启动 docker 容器
 
@@ -90,7 +122,7 @@ docker-compose up -d
 执行以下命令来私有化部署Barda服务：
 
 ```text
-docker run -d --name barda -p 3000:3000 -v "$PWD/stacks:/barda-stacks" moushengkoo/barda:latest
+docker run -d --name barda -p 3000:3000 -v "$PWD/barda-stacks:/barda-stacks" moushengkoo/barda:latest
 ```
 
 ##### 更新镜像
@@ -100,7 +132,7 @@ docker run -d --name barda -p 3000:3000 -v "$PWD/stacks:/barda-stacks" moushengk
 ```bash
 docker pull moushengkoo/barda:latest
 docker rm -fv barda
-docker run -d --name barda -p 3000:3000 -v "$PWD/stacks:/barda-stacks" moushengkoo/barda:latest
+docker run -d --name barda -p 3000:3000 -v "$PWD/barda-stacks:/barda-stacks" moushengkoo/barda:latest
 ```
 
 <!-- tabs:end -->

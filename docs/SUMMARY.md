@@ -1,23 +1,23 @@
 快速开始
-* [Barda是什么](README.md)
+* [Barda 是什么](README.md)
 * [新手上路](quick-tutorial.md)
 * [数据安全](security.md)
 * [常见问题](faq.md)
 * [更新日志](change-log.md)
 
 私有化部署
-* [Docker](docker)
+* [Docker 部署](docker.md)
 * [如何访问宿主机 API/DB](visit-host-api-or-db.md)
 
 
 数据源
 * [管理数据源](datasource.md)
-* [IP白名单](ip-allowlist.md)
+* [IP 白名单](ip-allowlist.md)
 * [连接数据库](database/README.md)
-    * [连接SQL](database/mysql.md)
+    * [连接 MySQL](database/mysql.md)
     * [连接 MongoDB](database/mongodb.md)
     * [连接 PostgreSQL](database/postgresql.md)
-    * [连接 Microsoft SQL server](database/ms-SQL-server.md)
+    * [连接 Microsoft SQL Server](database/ms-SQL-server.md)
     * [连接 Redis](database/redis.md)
     * [连接 Elasticsearch](database/elasticsearch.md)
     * [连接 Oracle](database/oracle.md)
@@ -78,12 +78,12 @@
 * [模块 (Module)](module.md)
 * [样式、主题与友好交互](style/README.md)
     * [表单设计技巧](style/form-desgin.md)
-    * [自定义 CSS 使用样例](style/css-demo)
+    * [自定义 CSS 使用样例](style/css-demo.md)
     * [自定义 CSS 注意事项](style/css-manual.md)
 * [聚合页](left-navigation.md)
 * [应用发布与历史记录](app-release.md)
-* [开发Barda组件](develop-component.md)
-* [使用 SDK 嵌入码匠应用](embed-using-sdk.md)
+* [开发 Barda 组件](develop-component.md)
+* [使用 SDK 嵌入 Barda 应用](embed-using-sdk.md)
 
 开发者
 
@@ -92,6 +92,6 @@
   * [调试后端](developer/debugBackendCode.md)
   * [添加原生组件](developer/addComponent.md)
   * [组件文件简单介绍](developer/component-file.md)
-  * [打包Docker镜像](developer/build-image.md)
+  * [打包 Docker 镜像](developer/build-image.md)
   * [同步上游仓库代码](developer/upstream.md)
 

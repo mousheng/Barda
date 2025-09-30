@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" role="img" aria-labelledby="titleDoc">
+  <g>
+    <rect x="5" y="5" width="110" height="130" rx="4" ry="4"
+          fill="#e3f2fd" stroke="#0288d1" stroke-width="2"/>
+    <polygon points="115,5 115,25 95,5" fill="#bbdefb" stroke="#0288d1" stroke-width="1.5"/>
+    <line x1="20" y1="105" x2="100" y2="105" stroke="#90caf9" stroke-width="2"/>
+    <line x1="20" y1="115" x2="80" y2="115" stroke="#90caf9" stroke-width="2"/>
+  </g>
+  <g transform="translate(20,20) scale(0.7)">
+    <g fill-opacity="0.85">
+      <path fill="#28bade" d="M44.04 16.31l-9.25 5.34L1.66 40.78 0 41.73v50.86l20.97-12.11 21.41-12.36 1.66-.96V56.19l-.73-.42.73-.42V16.31z"/>
+      <path fill="#7c5fa5" d="M78.83 63.03L56.44 50.11l-1.66-.96-1.66.96-9.08 5.24v.84l-.73-.42-32.57 18.8 10.23 5.91 32.15 18.56 1.66.96 1.66-.96 42.38-24.47-19.99-11.54z"/>
+      <path fill="#e95967" d="M77.17 24.47L34.79 0V50.85l1.66.96 6.86 3.96.73-.42v.84l34.79 20.09V25.43l-1.66-.96z"/>
+      <path fill="#232275" d="M43.31 55.77l.73.42v11l-1.66 1L21 80.48l-10.26-5.91zM44 16.31l-9.25 5.34v29.2l1.65 1 6.87 4 .73-.42zm12.4 33.8l-1.66-1-1.66 1L44 55.35v.84l34.82 20.09V63z"/>
+    </g>
+  </g>
+</svg>
