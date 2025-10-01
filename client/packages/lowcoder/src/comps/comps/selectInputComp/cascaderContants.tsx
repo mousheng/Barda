@@ -19,7 +19,7 @@ import { RefControl } from "comps/controls/refControl";
 import { CascaderRef } from "antd/lib/cascader";
 import { CascaderValidationSection } from "./selectInputConstants";
 
-import { MarginControl } from "../../controls/marginControl";	
+import { MarginControl } from "../../controls/marginControl";
 import { PaddingControl } from "../../controls/paddingControl";
 import { SelectChildrenMap } from "./selectCompConstants";
 import { useContext } from "react";
@@ -29,7 +29,8 @@ export const defaultDataSource = JSON.stringify(i18nObjs.cascader, null, " ");
 
 export const CascaderChildren = {
   ...SelectChildrenMap,
-  value: arrayStringExposingStateControl("value", i18nObjs.cascaderDefult),
+  value: arrayStringExposingStateControl("value"),
+  defaultValue: arrayStringExposingStateControl("defaultValue",  i18nObjs.cascaderDefult),
   selectedObject: arrayObjectExposingStateControl("selectedObject", []),
   label: LabelControl,
   placeholder: StringControl,
@@ -40,7 +41,7 @@ export const CascaderChildren = {
   style: styleControl(CascaderStyle),
   showSearch: BoolControl.DEFAULT_TRUE,
   viewRef: RefControl<CascaderRef>,
-  margin: MarginControl,	
+  margin: MarginControl,
   padding: PaddingControl,
 };
 
@@ -50,7 +51,7 @@ export const CascaderPropertyView = (
   <>
     <Section name={sectionNames.basic}>
       {children.options.propertyView({ label: trans("cascader.options") })}
-      {children.value.propertyView({ label: trans("prop.defaultValue") })}
+      {children.defaultValue.propertyView({ label: trans("prop.defaultValue") })}
       {placeholderPropertyView(children)}
     </Section>
 
