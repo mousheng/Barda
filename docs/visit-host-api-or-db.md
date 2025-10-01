@@ -6,7 +6,6 @@
 
 假设宿主机上已有 MySQL 服务，端口为 12345，确认本地访问 MySQL 服务无误：
 
-![localhost mysql](assets/localhost-mysql-20231002181238-cw1zx3c.jpg)
 
 ## Linux
 

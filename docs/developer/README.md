@@ -16,7 +16,7 @@
 ```bash
 # WSL下注意切换到任意的linux目录，否则IO性能会很差
 cd ~
-git clone https://github.com/mousheng/lowcoder_CN
+git clone https://github.com/mousheng/barda
 # 国内网络
 git clone https://gitee.com/moushengkoo/Barda.git
 

@@ -25,10 +25,6 @@ docker-compose -v
 
 ### 拉取镜像
 输入以下命令拉取最新镜像。
-
-> 💡 权限
-> * linux下命令前面加上 `sudo`+ 空格，防止权限不足
-
 ```
 docker pull moushengkoo/barda:latest
 ```
@@ -41,12 +37,13 @@ docker pull moushengkoo/barda:latest
 mkdir barda
 cd barda
 ```
+
 ### 部署
 <!-- tabs:start -->
 <!-- tab:Docker-Compose部署方式 -->
 #### 使用 Docker-Compose 部署（推荐）
 
-##### 步骤 1：编辑配置文件 docker-compose.yaml
+##### 步骤 1：新建配置文件 docker-compose.yaml
 
 ```shell
 version: "3"
@@ -112,7 +109,7 @@ docker-compose up -d
 
 ```text
 docker-compose pull
-docker-compose rm -fsv barda
+docker-compose barda down
 docker-compose up -d
 ```
 <!-- tab:Docker命令部署 -->
@@ -153,7 +150,7 @@ docker logs -f barda
 
 访问 http://localhost:3000 ，选择​**立即注册**​，注册后将自动创建企业，之后您可以邀请成员进入该企业。
 
-![](assets/2-20231002181225-34pfxhn.png)​
+![](assets/2025-10-01-08-03-23.png)
 
 ### Docker环境变量介绍
 
@@ -242,7 +239,7 @@ docker-compose up -d
 ``` bash
 docker rm -f barda
 # 先切换回实例数据存放目录，再运行以下命令
-docker run -d --name barda -p 33000:3000 -v "$PWD/stacks:/barda-stacks" moushengkoo/barda:latest
+docker run -d --name barda -p 33000:3000 -v "$PWD/barda-stacks:/barda-stacks" moushengkoo/barda:latest
 ```
 
 <!-- tabs:end -->
