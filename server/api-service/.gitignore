@@ -19,7 +19,6 @@ node_modules
 
 *.env
 dependency-reduced-pom.xml
-.run/**
 logs/**
 tmp/**
 /barda-server/logs/
