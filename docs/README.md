@@ -11,6 +11,10 @@ Barda 是一款开发者友好的低代码平台。通过开箱即用的组件�
 
 请访问 https://www.barda.com.cn
 
+### 在线文档
+
+请访问 https://docs.barda.com.cn
+
 
 ### 私有化部署
 请参阅 [docker部署](docker.md)

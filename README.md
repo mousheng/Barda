@@ -4,6 +4,10 @@
 
 请访问 https://www.barda.com.cn
 
+### 在线文档
+
+请访问 https://docs.barda.com.cn
+
 ## 📈 版本概述
 
 值此国庆佳节之际，我们非常高兴地向大家发布 Barda 预览版！经过一年多的精心开发与持续优化，这个基于 Openblocks 重新构建的分支版本终于与大家见面。
