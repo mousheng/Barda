@@ -1,5 +1,18 @@
 #!/bin/bash
 
+# 加载原用户的环境变量，让sudo环境能找到yarn
+if [ -n "$SUDO_USER" ]; then
+    user_home=$(getent passwd $SUDO_USER | cut -d: -f6)
+    if [ -f "$user_home/.bashrc" ]; then
+        source "$user_home/.bashrc"
+    fi
+    if [ -f "$user_home/.profile" ]; then
+        source "$user_home/.profile"
+    fi
+    export PATH="$user_home/.nvm/versions/node/$(ls $user_home/.nvm/versions/node | tail -n 1)/bin:$PATH"
+fi
+
+
 # 获取原始用户
 original_user=$(echo $SUDO_USER)
 
@@ -27,8 +40,9 @@ show_help() {
     echo
     echo -e "${GREEN}语法:${NC} sudo ./dev.sh [选项]"
     echo -e "\n${GREEN}选项:${NC}"
-    echo -e "${GREEN}  -f${NC}    仅调试前端"
-    echo -e "${GREEN}  -rf${NC}   先删除容器，再调试前端"
+    echo -e "${GREEN}  -fr${NC}   远程调试前端"
+    echo -e "${GREEN}  -f${NC}    本地调试前端"
+    echo -e "${GREEN}  -rf${NC}   先删除容器，再本地调试前端"
     echo -e "${GREEN}  -dc${NC}   调试组件"
     echo -e "${GREEN}  -cf${NC}   自定义调试前端"
     echo -e "${GREEN}  -b${NC}    调试前后端"
@@ -44,6 +58,12 @@ show_help() {
 enter_client() {
     docker-compose exec barda-client sh -c "$1"
     echo 您可使用以下命令重新开始调试：docker-compose exec barda-client sh -c \"$1\"
+}
+
+# 远程调试前端
+dev_front_remote() {
+    echo "正在远程调试前端"
+    cd ../client && yarn && BARDA_API_SERVICE_URL=http://43.133.22.234:30000 yarn start
 }
 
 # 调试前端
@@ -176,6 +196,10 @@ fi
 
 # 根据参数执行相应命令
 case "$1" in
+-fr)
+    open_browser 8000
+    dev_front_remote
+    ;;
 -f)
     open_browser 30000
     open_browser 8000
