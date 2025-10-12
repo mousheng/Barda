@@ -77,10 +77,15 @@ function Test-MavenAvailable {
 function Add-CommonJavaMavenPath {
     # 尝试注入常见安装路径到当前会话 PATH（不改系统环境变量）
     $pathsToTry = @()
-    $pathsToTry += (Get-ChildItem -Path "C:\Program Files\Eclipse Adoptium" -Directory -ErrorAction SilentlyContinue | ForEach-Object { Join-Path $_.FullName "bin" })
-    $pathsToTry += (Get-ChildItem -Path "C:\Program Files\Java" -Directory -ErrorAction SilentlyContinue | ForEach-Object { Join-Path $_.FullName "bin" })
-    $pathsToTry += (Get-ChildItem -Path "C:\Program Files\Apache" -Directory -ErrorAction SilentlyContinue | ForEach-Object { Join-Path $_.FullName "Maven\bin" })
-    $pathsToTry += (Get-ChildItem -Path "C:\Program Files\Apache" -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -like 'maven*' } | ForEach-Object { Join-Path $_.FullName "bin" })
+    
+    # Java 路径
+    $pathsToTry += (Get-ChildItem -Path "C:\Program Files\Microsoft" -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -like '*jdk*' } | ForEach-Object { Join-Path $_.FullName "bin" })
+    
+    # 用户目录下的 Maven 路径
+    $userPrograms = Join-Path $env:USERPROFILE "Programs"
+    if (Test-Path $userPrograms) {
+        $pathsToTry += (Get-ChildItem -Path $userPrograms -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -like 'apache-maven*' } | ForEach-Object { Join-Path $_.FullName "bin" })
+    }
 
     foreach ($p in $pathsToTry) {
         if ($p -and (Test-Path $p) -and (-not ($env:Path -split ';' | Where-Object { $_ -eq $p }))) {
@@ -176,6 +181,81 @@ function Open-In-IntelliJ {
     } else {
         Write-Warn "未找到 IntelliJ IDEA，可手动打开 IDE 并加载该目录。"
         return $false
+    }
+}
+# endregion -------------------------------------------------------------------
+
+# region Maven 手动安装函数 ---------------------------------------------------
+function Install-MavenManually {
+    try {
+        Write-Info "开始手动安装 Maven 3.9.10..."
+        
+        # 检查管理员权限
+        $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
+        if (-not $isAdmin) {
+            Write-Warn "需要管理员权限来安装到 C:\Program Files，尝试使用用户目录..."
+            $installDir = Join-Path $env:USERPROFILE "Programs"
+            $mavenTargetDir = Join-Path $installDir "apache-maven-3.9.10"
+        } else {
+            $installDir = "C:\Program Files"
+            $mavenTargetDir = Join-Path $installDir "apache-maven-3.9.10"
+        }
+        
+        # 创建临时目录
+        $tempDir = [System.IO.Path]::GetTempPath()
+        $mavenZip = Join-Path $tempDir "apache-maven-3.9.10-bin.zip"
+        $mavenUrl = "https://archive.apache.org/dist/maven/maven-3/3.9.10/binaries/apache-maven-3.9.10-bin.zip"
+        
+        # 下载 Maven
+        Write-Info "下载 Maven 3.9.10..."
+        Invoke-WebRequest -Uri $mavenUrl -OutFile $mavenZip -UseBasicParsing
+        
+        # 确保安装目录存在
+        if (-not (Test-Path $installDir)) {
+            New-Item -ItemType Directory -Path $installDir -Force | Out-Null
+        }
+        
+        Write-Info "解压 Maven 到: $mavenTargetDir"
+        Expand-Archive -Path $mavenZip -DestinationPath $installDir -Force
+        
+        # 设置环境变量
+        Write-Info "配置 Maven 环境变量..."
+        
+        # 设置 MAVEN_HOME
+        if ($isAdmin) {
+            [Environment]::SetEnvironmentVariable("MAVEN_HOME", $mavenTargetDir, "Machine")
+        } else {
+            [Environment]::SetEnvironmentVariable("MAVEN_HOME", $mavenTargetDir, "User")
+        }
+        $env:MAVEN_HOME = $mavenTargetDir
+        
+        # 更新 PATH
+        $mavenBinPath = Join-Path $mavenTargetDir "bin"
+        if ($isAdmin) {
+            $currentPath = [Environment]::GetEnvironmentVariable("PATH", "Machine")
+            if ($currentPath -notlike "*$mavenBinPath*") {
+                $newPath = "$currentPath;$mavenBinPath"
+                [Environment]::SetEnvironmentVariable("PATH", $newPath, "Machine")
+            }
+        } else {
+            $currentPath = [Environment]::GetEnvironmentVariable("PATH", "User")
+            if ($currentPath -notlike "*$mavenBinPath*") {
+                $newPath = "$currentPath;$mavenBinPath"
+                [Environment]::SetEnvironmentVariable("PATH", $newPath, "User")
+            }
+        }
+        $env:Path = "$env:Path;$mavenBinPath"
+        
+        # 清理临时文件
+        Remove-Item $mavenZip -Force -ErrorAction SilentlyContinue
+        
+        Write-Success "Maven 3.9.10 安装完成！"
+        Write-Info "MAVEN_HOME: $mavenTargetDir"
+        Write-Info "Maven bin 已添加到 PATH"
+        
+    } catch {
+        Write-ErrorLine "手动安装 Maven 失败: $($_.Exception.Message)"
+        throw
     }
 }
 # endregion -------------------------------------------------------------------
@@ -312,10 +392,13 @@ switch ($choice) {
                         Write-Info "安装 JDK 17（Eclipse Temurin）..."
                         winget install --id EclipseAdoptium.Temurin.17.JDK -e --accept-source-agreements --accept-package-agreements
                     } catch {}
+                    # 安装 Maven
                     try {
-                        Write-Info "安装 Maven..."
-                        winget install --id Apache.Maven -e --accept-source-agreements --accept-package-agreements
-                    } catch {}
+                        Write-Info "安装 Maven 3.9.10..."
+                        Install-MavenManually
+                    } catch {
+                        Write-ErrorLine "安装 Maven 失败: $($_.Exception.Message)"
+                    }
 
                     # 注入常见安装路径并复检
                     Add-CommonJavaMavenPath
