@@ -1,46 +1,11 @@
-# Barda' frontend
+## 二次开发
 
-## How to contribute
+如果你想进行二次开发，我已经为您准备了非常简单的一键开发脚本和开发教程，您可以打开教程页查看。
 
-### Start a local backend server
+### 提交拉取请求之前
 
-#### Use prebuilt docker image
+此外，在提交拉取请求之前，请确保完成以下操作：
 
-Simply run below command to start a backend server.
-
-```bash
-docker run -d --name barda -p 3000:3000 -v "$PWD/stacks:/barda-stacks" bardadev/barda-ce
-```
-
-For more information, view our doc https://docs.barda.dev/self-hosting
-
-#### Build Docker image from source
-
-1. Check out source code and change to source dir.
-2. Use the command below to build Docker image :
-
-```bash
-docker build -f ./deploy/docker/Dockerfile -t barda-dev .
-```
-
-3. Start
-
-```bash
-docker run -d --name barda-dev -p 3000:3000 -v "$PWD/stacks:/barda-stacks" barda-dev
-```
-
-### Start develop
-
-1. Check out source code.
-2. Change to client dir in the repository root via cd client.
-3. Run yarn to install dependencies: .
-4. Start dev server: `API_PROXY_TARGET=http://localhost:3000 yarn start`.
-5. After dev server starts successfully, it will be automatically opened in the default browser.
-
-### Before submitting a pull request
-
-In addition, before submitting a pull request, please make sure the following is done:
-
-1. If you’ve fixed a bug or added code that should be tested and add unit test suite.
-2. Run `yarn test` and ensure all test suites pass.
-3. If you add new dependency, use yarn workspace barda some-package to make sure yarn.lock is also updated.
+1. 如果您修复了错误或添加了应该测试的代码，请添加单元测试套件。
+2. 运行 `yarn test` 并确保所有测试套件通过。
+3. 如果您添加新的依赖项，请使用 `yarn workspace barda some-package` 确保 yarn.lock 也被更新。

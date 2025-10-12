@@ -51,8 +51,8 @@ services:
   ##
   ## Barda一体化镜像
   ##
-  barda-api-service:
-    image: bardadev/barda:latest
+  barda:
+    image: moushengkoo/barda:latest
     container_name: barda
     ports:
       - "3000:3000"
@@ -201,7 +201,7 @@ docker logs -f barda
 
 **步骤5：** 修改启动命令
 ```
-docker run -d --name barda -p 3443:3443 -v "$PWD/stacks:/barda-stacks" moushengkoo/barda:latest
+docker run -d --name barda -p 3443:3443 -v "$PWD/barda-stacks:/barda-stacks" moushengkoo/barda:latest
 
 ```
 <!-- tabs:end -->

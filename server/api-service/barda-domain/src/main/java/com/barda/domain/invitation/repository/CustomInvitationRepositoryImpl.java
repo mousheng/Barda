@@ -13,7 +13,7 @@ import com.mongodb.client.result.UpdateResult;
 import com.barda.domain.invitation.model.Invitation;
 // 在使用 Spring Data JPA 或者其他支持 QueryDSL 的库时，会生成与实体类对应的Q类。这些 Q类用于支持类型安全的查询。
 // 如果IDEA提示你找不到该类，说明你配置错误
-// 请对照步骤 https://mousheng.github.io/lowcoder_CN/#/developer/debugBackendCode
+// 请对照步骤 https://docs.barda.com.cn/#/developer/debugBackendCode
 // 如果你运行 mvn clean package -DskipTests命令成功，仍显示 无法解析符号 'QInvitation'
 // 你应该点击idea右侧maven面板的【重新加载所有Maven项目】即可
 import com.barda.domain.invitation.model.QInvitation;

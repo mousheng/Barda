@@ -32,7 +32,7 @@ git clone https://gitee.com/moushengkoo/Barda.git
 # 如果您本机已经运行了Barda容器，那么可以直接跳过该步骤
 sudo docker run -d --name barda-dev -p 3000:3000 moushengkoo/barda:latest
 # 以上命令运行的容器如果删除，数据将都消失，您也可以加载卷来做数据持久化
-sudo docker run -d --name barda-dev -p 3000:3000 -v "$PWD/stacks:/barda-stacks" moushengkoo/barda:latest
+sudo docker run -d --name barda-dev -p 3000:3000 -v "$PWD/barda-stacks:/barda-stacks" moushengkoo/barda:latest
 ```
 > 如果提示sudo: docker: command not found，[解决](#打开wsl-docker)
 

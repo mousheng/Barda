@@ -12,7 +12,7 @@
 - 可私有化部署
 
 <!-- 以下为链接，空格分隔 -->
-[仓库](https://github.com/mousheng/lowcoder_CN) [文档](README.md) [试一下](README.md#在线试用)
+[仓库](https://github.com/mousheng/barda) [文档](README.md) [试一下](README.md#在线试用)
 
 <!-- ![](media/seaside.jpg) -->
 

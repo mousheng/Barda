@@ -85,10 +85,13 @@
 * [开发 Barda 组件](develop-component.md)
 * [使用 SDK 嵌入 Barda 应用](embed-using-sdk.md)
 
-开发者
+二次开发
 
-* [二次开发](developer/README.md)
-  * [快速调试前端](developer/README.md#快速调试前端)
+* [新开发教程 (推荐)](developer/quick-start-examples.md)
+  * [Windows 环境开发指南](developer/windows-dev-guide.md)
+  * [WSL2 环境开发指南](developer/wsl2-dev-guide.md)
+  
+* [原开发教程](developer/README.md)
   * [调试后端](developer/debugBackendCode.md)
   * [添加原生组件](developer/addComponent.md)
   * [组件文件简单介绍](developer/component-file.md)

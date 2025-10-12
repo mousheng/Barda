@@ -1,55 +1,59 @@
-# Server Setup
+# 运行说明
 
-This document explains how to start Openblocks server locally.
+本文档说明如何在本地启动 Barda 服务器。
 
-## System Prerequisites
 
-Java - OpenJDK 17 Maven - Version 3+ (preferably 3.8+)
+## 系统先决条件
+
+Java - OpenJDK 17  
+Maven - 版本 3+（建议 3.8+）
+
+## 新运行方式
+
+如果您是通过Barda一键调试运行的，那么您只需要简单设置项目SDK版本并重新加载Maven项目即可快速调试
+
+### 选择正确的SDK版本
+![](../../docs/assets/2025-10-12-21-20-19.png)
+
+### 重新加载Maven项目
+![](../../docs/assets/2025-10-12-21-22-11.png)
+
+## 手动方式
 
 ### MongoDB
 
-If you don't have an available MongoDB, you can start a local MongoDB service with docker:
+如果您没有可用的 MongoDB，可以使用 docker 启动本地 MongoDB 服务：
 
 ```shell
-docker run -d  --name openblocks-mongodb -p 27017:27017 -e MONGO_INITDB_DATABASE=openblocks mongo
+docker run -d  --name barda-mongodb -p 27017:27017 -e MONGO_INITDB_DATABASE=barda mongo
 ```
-
-Configure the MongoDB connection URI in the application-openblocks.yml
-<img src="https://cdn-files.openblocks.dev/server-setup/image1.png"/>
 
 ### Redis
 
-If you don't have an available MongoDB, you can start a local Redis service with docker:
+如果您没有可用的 Redis，可以使用 docker 启动本地 Redis 服务：
 
 ```shell
-docker run -d --name openblocks-redis -p 6379:6379 redis
+docker run -d --name barda-redis -p 6379:6379 redis
 ```
 
-Configure the Redis connection URI in the application-openblocks.yml
-<img src="https://cdn-files.openblocks.dev/server-setup/image2.png"/>
+## 构建并启动 barda 服务器 jar
 
-## Build and start the Openblocks server jar
-
-1. Clone Openblocks repository
-2. Next, execute the following commands in sequence
+接下来，按顺序执行以下命令
 
 ```shell
-cd server
-mvn clean package
-java -Dpf4j.mode=development -Dspring.profiles.active=openblocks -Dpf4j.pluginsDir=openblocks-plugins -jar openblocks-server/target/openblocks-server-1.0-SNAPSHOT.jar
+cd server/api-service
+mvn clean package -DskipTests
+java "-Dpf4j.mode=development" "-Dspring.profiles.active=barda" "-Dpf4j.pluginsDir=barda-plugins" -jar barda-server/target/barda-server-1.0.1-SNAPSHOT.jar
 ```
 
-<img src="https://cdn-files.openblocks.dev/server-setup/start.gif"/>
-Now, you can check the status of the service by visiting http://localhost:8080 through your browser. By default, you should see an HTTP 404 error.
+现在，您可以通过浏览器访问 http://localhost:8080 来检查服务状态。默认情况下，您应该会看到 HTTP 404 错误。
 
-<img src="https://cdn-files.openblocks.dev/server-setup/image3.png"/>
 
-## Start with IntelliJ IDEA
+## 使用 IntelliJ IDEA 启动
 
-Configure the Run/Debug configuration as shown in the screenshot below, the version used in the screenshot is IntelliJ
-IDEA 2021.3.2 (Community Edition):
-<img src="https://cdn-files.openblocks.dev/server-setup/image4.png"/>
-<img src="https://cdn-files.openblocks.dev/server-setup/image5.png"/>
+项目已经配置好IntelliJ IDEA的运行/调试配置，您可以直接点击运行按钮启动项目。
+
+### 运行/调试配置
 
 <table>
     <tr>
@@ -58,23 +62,23 @@ IDEA 2021.3.2 (Community Edition):
     </tr>
     <tr>
         <td>-cp </td>
-        <td>openblocks-server </td>
+        <td>barda-server </td>
     </tr>
     <tr>
         <td>VM options </td>
-        <td>-Dpf4j.mode=development -Dpf4j.pluginsDir=openblocks-plugins -Dspring.profiles.active=openblocks -XX:+AllowRedefinitionToAddDeleteMethods --add-opens java.base/java.nio=ALL-UNNAMED</td>
+        <td>-Dpf4j.mode=development -Dpf4j.pluginsDir=barda-plugins -Dspring.profiles.active=barda -XX:+AllowRedefinitionToAddDeleteMethods --add-opens java.base/java.nio=ALL-UNNAMED</td>
     </tr>
     <tr>
         <td>Main class </td>
-        <td>com.openblocks.api.ServerApplication </td>
+        <td>com.barda.api.ServerApplication </td>
     </tr>
 </table>
 
-Next, execute the following commands in sequence
+接下来，按顺序执行以下命令
 
 ```shell
-cd server
-mvn clean package
+cd server/api-service
+mvn clean package -DskipTests
 ```
 
-After Maven package runs successfully, you can start the Openblocks server with IntelliJ IDEA.
+Maven 打包成功运行后，您可以使用 IntelliJ IDEA 启动 barda 服务器。

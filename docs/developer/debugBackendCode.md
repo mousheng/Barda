@@ -52,7 +52,7 @@ sudo nano /usr/share/maven/conf/settings.xml
 ## 下载源码到本地
 
 ```shell
-cd ~ && git clone https://github.com/mousheng/lowcoder_CN --depth=1
+cd ~ && git clone https://github.com/mousheng/barda --depth=1
 ```
 
 ![Alt text](../assets/1705033060931.png)
