@@ -19,7 +19,14 @@ services:
       PUID: "1000"
       PGID: "1000"
       # api-service 参数
-      MONGODB_URI: "mongodb://localhost:27017/barda?authSource=admin"
+      # 是否允许外部连接mongodb
+      MONGODB_EXPOSED: "false"
+      # MONGODB_URI: "mongodb://<用户名>:<密码>@localhost:27017/barda?authSource=admin"
+      # ↑ 默认由一体化镜像启动脚本自动拼装并注入（无需手动设置）。
+      # 如需自定义 MongoDB 凭证/连接串，请取消注释并按需填写。
+      # 可选：自定义根用户（若未设置将自动生成并保存到 /barda-stacks/config/mongodb-credentials.env）
+      # MONGO_INITDB_ROOT_USERNAME: "barda"
+      # MONGO_INITDB_ROOT_PASSWORD: "请自行设置强密码"
       REDIS_URL: "redis://localhost:6379"
       JS_EXECUTOR_URI: "http://localhost:6060"
       BARDA_API_SERVICE_URL: "http://localhost:8080"
