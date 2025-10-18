@@ -310,9 +310,9 @@ function getStaticBackground(color: string) {
   } as const;
 }
 
-export const ButtonStyle = [...getBgBorderRadiusByBg("primary"), TEXT] as const;
+export const ButtonStyle = [...getBgBorderRadiusByBg("primary"), TEXT, getMargin()] as const;
 
-export const dropdownStyle = [getBackground("primary"), getStaticBorder("#4096ff"), getRadius(), TEXT] as const;
+export const dropdownStyle = [getBackground("primary"), getStaticBorder("#4096ff"), getRadius(), TEXT, getMargin()] as const;
 
 export const ToggleButtonStyle = [
   getBackground("canvas"),
@@ -325,6 +325,7 @@ export const ToggleButtonStyle = [
     transformer: toSelf,
   },
   getRadius(),
+  getMargin(),
 ] as const;
 
 export const TextStyle = [
@@ -389,6 +390,7 @@ export const SliderStyle = [
     color: SURFACE_COLOR,
   },
   TRACK,
+  getMargin(),
 ] as const;
 
 export const InputLikeStyle = [
@@ -396,6 +398,7 @@ export const InputLikeStyle = [
   ...getStaticBgBorderRadiusByBg(SURFACE_COLOR),
   TEXT,
   ...ACCENT_VALIDATE,
+  getMargin()
 ] as const;
 
 export const RatingStyle = [
@@ -410,6 +413,7 @@ export const RatingStyle = [
     label: trans("style.unchecked"),
     color: SECOND_SURFACE_COLOR,
   },
+  getMargin(),
 ] as const;
 
 export const SwitchStyle = [
@@ -432,6 +436,7 @@ export const SwitchStyle = [
     depType: DEP_TYPE.SELF,
     transformer: toSelf,
   },
+  getMargin(),
 ] as const;
 
 export const SelectStyle = [
@@ -439,6 +444,7 @@ export const SelectStyle = [
   ...getStaticBgBorderRadiusByBg(SURFACE_COLOR, "pc"),
   TEXT,
   ...ACCENT_VALIDATE,
+  getMargin(),
 ] as const;
 
 const multiSelectCommon = [
@@ -459,6 +465,7 @@ const multiSelectCommon = [
     transformer: contrastText,
     platform: "pc",
   },
+  getMargin(),
 ] as const;
 
 export const MultiSelectStyle = [
@@ -491,6 +498,7 @@ export const TabContainerStyle = [
     depType: DEP_TYPE.SELF,
     transformer: toSelf,
   },
+  getMargin(),
 ] as const;
 
 export const ModalStyle = getBgBorderRadiusByBg();
@@ -500,6 +508,7 @@ export const CascaderStyle = [
   ...getStaticBgBorderRadiusByBg(SURFACE_COLOR, "pc"),
   TEXT,
   ACCENT,
+  getMargin(),
 ] as const;
 
 function checkAndUncheck() {
@@ -538,6 +547,7 @@ export const CheckboxStyle = [
   getRadius(),
   STATIC_TEXT,
   VALIDATE,
+  getMargin(),
 ] as const;
 
 export const RadioStyle = [
@@ -552,6 +562,7 @@ export const RadioStyle = [
   },
   STATIC_TEXT,
   VALIDATE,
+  getMargin(),
 ] as const;
 
 export const SegmentStyle = [
@@ -576,6 +587,7 @@ export const SegmentStyle = [
   },
   getRadius(),
   VALIDATE,
+  getMargin(),
 ] as const;
 
 export const TableStyle = [
@@ -634,23 +646,26 @@ export const TableStyle = [
     depType: DEP_TYPE.CONTRAST_TEXT,
     transformer: contrastText,
   },
+  getMargin(),
 ] as const;
 
-export const FileStyle = [...getStaticBgBorderRadiusByBg(SURFACE_COLOR), TEXT, ACCENT] as const;
+export const FileStyle = [...getStaticBgBorderRadiusByBg(SURFACE_COLOR), TEXT, ACCENT, getMargin()] as const;
 
 export const FileViewerStyle = [
   getStaticBackground("#FFFFFF"),
   getStaticBorder("#00000000"),
   getRadius(),
+  getMargin(),
 ] as const;
 
-export const IframeStyle = [getBackground(), getStaticBorder("#00000000"), getRadius()] as const;
+export const IframeStyle = [getBackground(), getStaticBorder("#00000000"), getRadius(), getMargin()] as const;
 
 export const DateTimeStyle = [
   LABEL,
   ...getStaticBgBorderRadiusByBg(SURFACE_COLOR),
   TEXT,
   ...ACCENT_VALIDATE,
+  getMargin(),
 ] as const;
 
 export const LinkStyle = [
@@ -661,6 +676,7 @@ export const LinkStyle = [
     depType: DEP_TYPE.SELF,
     transformer: toSelf,
   },
+  getMargin(),
 ] as const;
 
 export const DividerStyle = [
@@ -675,6 +691,7 @@ export const DividerStyle = [
     depName: "color",
     transformer: handleToDividerText,
   },
+  getMargin(),
 ] as const;
 
 export const ProgressStyle = [
@@ -688,6 +705,7 @@ export const ProgressStyle = [
   TRACK,
   FILL,
   SUCCESS,
+  getMargin(),
 ] as const;
 
 export const NavigationStyle = [
@@ -701,6 +719,7 @@ export const NavigationStyle = [
   ACCENT,
   getStaticBackground("#FFFFFF00"),
   getStaticBorder("#FFFFFF00"),
+  getMargin(),
 ] as const;
 
 export const ImageStyle = [getStaticBorder("#00000000"), getRadius(), getMargin()] as const;
@@ -710,6 +729,7 @@ export const ListViewStyle = [
   getStaticBorder(undefined, trans("style.compBorder")),
   getRadius(trans("style.compRadius")),
   getPadding("10px"),
+  getMargin(),
 ];
 
 export const JsonSchemaFormStyle = BG_STATIC_BORDER_RADIUS;
@@ -721,6 +741,7 @@ export const QRCodeStyle = [
     label: trans("color"),
     color: "#000000",
   },
+  getMargin(),
 ] as const;
 
 export const TimeLineStyle = [
@@ -771,15 +792,16 @@ export const TreeStyle = [
   ...getStaticBgBorderRadiusByBg(SURFACE_COLOR),
   TEXT,
   VALIDATE,
+  getMargin(),
 ] as const;
 
-export const TreeSelectStyle = [...multiSelectCommon, ...ACCENT_VALIDATE] as const;
+export const TreeSelectStyle = [...multiSelectCommon, ...ACCENT_VALIDATE, getMargin()] as const;
 
 export const DrawerStyle = [getBackground()] as const;
 
-export const JsonEditorStyle = [LABEL] as const;
+export const JsonEditorStyle = [LABEL, getMargin()] as const;
 
-export const JsonExplorerStyle = [getStaticBorder("#d7d9e0"), getRadius(), getBackground()] as const;
+export const JsonExplorerStyle = [getStaticBorder("#d7d9e0"), getRadius(), getBackground(), getMargin()] as const;
 
 export const CalendarStyle = [
   getBackground("primarySurface"),
@@ -823,6 +845,7 @@ export const CalendarStyle = [
     depTheme: "primary",
     transformer: handleCalendarSelectColor,
   },
+  getMargin(),
 ] as const;
 
 export const SignatureStyle = [
@@ -843,11 +866,12 @@ export const SignatureStyle = [
     label: trans("style.footerIcon"),
     color: "#222222",
   },
+  getMargin(),
 ] as const;
 
-export const CarouselStyle = [getBackground("canvas")] as const;
+export const CarouselStyle = [getBackground("canvas"), getMargin()] as const;
 
-export const RichTextEditorStyle = [getStaticBorder(), getRadius()] as const;
+export const RichTextEditorStyle = [getStaticBorder(), getRadius(), getMargin()] as const;
 
 export type InputLikeStyleType = StyleConfigType<typeof InputLikeStyle>;
 export type ButtonStyleType = StyleConfigType<typeof ButtonStyle>;
