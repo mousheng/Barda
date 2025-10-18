@@ -8,7 +8,7 @@ import { StringControl } from "comps/controls/codeControl";
 import { booleanExposingStateControl } from "comps/controls/codeStateControl";
 import { eventHandlerControl } from "comps/controls/eventHandlerControl";
 import { styleControl } from "comps/controls/styleControl";
-import { ModalStyle, ModalStyleType } from "comps/controls/styleControlConstants";
+import { ModalStyle, ModalStyleType, parseBoxValues } from "comps/controls/styleControlConstants";
 import { withDefault } from "comps/generators";
 import { withMethodExposing } from "comps/generators/withMethodExposing";
 import { BackgroundColorContext } from "comps/utils/backgroundColorContext";
@@ -33,6 +33,7 @@ const DEFAULT_PADDING = 16;
 const getStyle = (style: ModalStyleType) => {
   return css`
     .ant-modal-content {
+      padding: 0;
       border-radius: ${style.radius};
       border: 1px solid ${style.border};
       overflow: hidden;
@@ -77,6 +78,7 @@ let TmpModalComp = (function () {
     (props, dispatch) => {
       const userViewMode = useUserViewMode();
       const bodyStyle: Record<string, any> = { body: { padding: 0 }, top: props.defaultStartHeight };
+      const containerPadding = parseBoxValues(props.style.bodyPadding_UNIT, [3, 19, 3, 19], false) as number[];
       const width = transToPxSize(props.width || DEFAULT_WIDTH);
       let height = undefined;
       let resizeHandles: ResizeHandle[] = ["w", "e"];
@@ -136,7 +138,7 @@ let TmpModalComp = (function () {
                 items={gridItemCompToGridItems(items)}
                 autoHeight={props.autoHeight}
                 minHeight={DEFAULT_HEIGHT - DEFAULT_PADDING * 2 + "px"}
-                containerPadding={[DEFAULT_PADDING, DEFAULT_PADDING]}
+                containerPadding={[containerPadding[1], containerPadding[0]]}
                 hintPlaceholder={HintPlaceHolder}
               />
             </Modal>

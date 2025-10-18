@@ -9,7 +9,7 @@ import { booleanExposingStateControl } from "comps/controls/codeStateControl";
 import { PositionControl } from "comps/controls/dropdownControl";
 import { closeEvent, eventHandlerControl } from "comps/controls/eventHandlerControl";
 import { styleControl } from "comps/controls/styleControl";
-import { DrawerStyle } from "comps/controls/styleControlConstants";
+import { DrawerStyle, parseBoxValues } from "comps/controls/styleControlConstants";
 import { withDefault } from "comps/generators";
 import { withMethodExposing } from "comps/generators/withMethodExposing";
 import { BackgroundColorContext } from "comps/utils/backgroundColorContext";
@@ -89,6 +89,7 @@ let TmpDrawerComp = (function () {
       const { items, ...otherContainerProps } = props.container;
       const userViewMode = useUserViewMode();
       const resizable = !userViewMode && (!isTopBom || !props.autoHeight);
+      const containerPadding = parseBoxValues(props.style.bodyPadding_UNIT, [3, 19, 3, 19], false) as number[];
       const onResizeStop = useCallback(
         (
           e: React.SyntheticEvent,
@@ -143,7 +144,7 @@ let TmpDrawerComp = (function () {
                 autoHeight={props.autoHeight}
                 minHeight={isTopBom ? DEFAULT_HEIGHT + "px" : "100%"}
                 style={{ height: "100%" }}
-                containerPadding={[DEFAULT_PADDING, DEFAULT_PADDING]}
+                containerPadding={[containerPadding[1], containerPadding[0]]}
                 hintPlaceholder={HintPlaceHolder}
                 bgColor={props.style.background}
               />

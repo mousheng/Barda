@@ -374,6 +374,15 @@ export const ContainerStyle = [
   }
 ] as const;
 
+export const DrawerStyle = [
+  getBackground(),
+  {
+  name: "bodyPadding_UNIT",
+  label: trans("style.bodyPadding"),
+  default: '11 19',
+  },
+] as const;
+
 export const SliderStyle = [
   LABEL,
   FILL,
@@ -501,7 +510,14 @@ export const TabContainerStyle = [
   getMargin(),
 ] as const;
 
-export const ModalStyle = getBgBorderRadiusByBg();
+export const ModalStyle = [
+  ...getBgBorderRadiusByBg(),
+  {
+    name: "bodyPadding_UNIT",
+    label: trans("style.bodyPadding"),
+    default: '11 19',
+    },
+] as const;
 
 export const CascaderStyle = [
   LABEL,
@@ -796,8 +812,6 @@ export const TreeStyle = [
 ] as const;
 
 export const TreeSelectStyle = [...multiSelectCommon, ...ACCENT_VALIDATE, getMargin()] as const;
-
-export const DrawerStyle = [getBackground()] as const;
 
 export const JsonEditorStyle = [LABEL, getMargin()] as const;
 
