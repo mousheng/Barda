@@ -19,6 +19,7 @@ import styled from "styled-components";
 import { labelCss } from "barda-design";
 import { TransparentImg } from "../../../util/commonUtils";
 import { RightContext } from "./rightContext";
+import { matchesPinyinSearch } from "../bottom/BottomSidebar";
 
 const GrayLabel = (props: { label: string }) => {
   const { label } = props;
@@ -112,10 +113,15 @@ export const UICompPanel = () => {
         .map(([key, value], index) => {
           let infos = value;
           if (!isEmpty(searchValue)) {
-            const searchString = searchValue.trim().toLocaleLowerCase();
-            infos = infos.filter((info) =>
-              info[1].keywords.toLowerCase().includes(searchString.toLowerCase())
-            );
+            const searchString = searchValue.trim();
+            infos = infos.filter((info) => {
+              const manifest = info[1];
+              return (
+                matchesPinyinSearch(manifest.name, searchString) ||
+                matchesPinyinSearch(manifest.enName, searchString) ||
+                matchesPinyinSearch(manifest.keywords, searchString)
+              );
+            });
           }
 
           if (isEmpty(infos)) {

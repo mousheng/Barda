@@ -126,7 +126,7 @@ const AddBtn = styled(TacoButton)`
 
 type RefTreeCompType = InstanceType<typeof RefTreeComp>;
 
-const matchesPinyinSearch = (text: string, searchTerm: string): boolean => {
+export const matchesPinyinSearch = (text: string, searchTerm: string): boolean => {
   if (!text || !searchTerm) return false;
 
   const lowerText = text.toLowerCase();
