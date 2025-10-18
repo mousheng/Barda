@@ -3,11 +3,12 @@ services:
   ##
   ## Barda一体化镜像
   ##
-  barda-api-service:
-    image: bardadev/barda:latest
+  barda:
+    image: moushengkoo/barda:latest
     container_name: barda
     ports:
       - "3000:3000"
+      # - "27017:27017"   #暴露mongodb，需设置MONGODB_EXPOSED为true
     environment:
       # 服务启用状态
       REDIS_ENABLED: "true"

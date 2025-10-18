@@ -54,7 +54,7 @@ fi
 
 if [ -z "${MONGO_INITDB_ROOT_PASSWORD}" ]; then
 	# 生成随机密码（长度32）
-	export MONGO_INITDB_ROOT_PASSWORD="$(tr -dc 'A-Za-z0-9~!#_+=-' < /dev/urandom | head -c 32)"
+	export MONGO_INITDB_ROOT_PASSWORD="$(tr -dc 'A-Za-z0-9~!#_+-' < /dev/urandom | head -c 32)"
 fi
 
 # 将凭证保存到config目录
