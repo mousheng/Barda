@@ -379,6 +379,8 @@ export const en = {
     richTextEditorReadOnlyDesc: "If true, the Editor is read-only",
     richTextEditorHideToolBarDesc: "If true, thr toolbar is hidden",
     jsonEditorDesc: "Current json data",
+    jsonEditorAutoFormat: "Auto Format",
+    jsonEditorAutoFormatDesc: "Automatically format JSON content when the user loses focus",
     sliderValueDesc: "Currently selected value",
     sliderMaxValueDesc: "The maximum value of the current interval",
     sliderMinValueDesc: "The minimum value of the current interval",

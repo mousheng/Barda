@@ -1,25 +1,33 @@
 import { Section, sectionNames } from "barda-design";
-import { UICompBuilder } from "../../generators";
-import { NameConfigHidden, NameConfig, withExposingConfigs } from "../../generators/withExposing";
-import { defaultData } from "./jsonConstants";
-import styled from "styled-components";
-import { jsonValueExposingStateControl } from "comps/controls/codeStateControl";
-import { ChangeEventHandlerControl } from "comps/controls/eventHandlerControl";
-import { hiddenPropertyView } from "comps/utils/propertyUtils";
-import { trans } from "i18n";
-import { LabelControl } from "comps/controls/labelControl";
-import { formDataChildren, FormDataPropertyView } from "../formComp/formDataConstants";
-import { JsonEditorStyle } from "comps/controls/styleControlConstants";
-import { styleControl } from "comps/controls/styleControl";
-import { migrateOldData, withDefault } from "comps/generators/simpleGenerators";
-import { useRef, useEffect } from "react";
+import { getFormatter } from "base/codeEditor/autoFormat";
 import {
   EditorState,
   EditorView,
   type EditorView as EditorViewType,
 } from "base/codeEditor/codeMirror";
 import { useExtensions } from "base/codeEditor/extensions";
-import { getJsonFormatter } from "base/codeEditor/autoFormat";
+import { BoolControl } from "comps/controls/boolControl";
+import { jsonValueExposingStateControl } from "comps/controls/codeStateControl";
+import { ChangeEventHandlerControl } from "comps/controls/eventHandlerControl";
+import { LabelControl } from "comps/controls/labelControl";
+import { styleControl } from "comps/controls/styleControl";
+import { JsonEditorStyle } from "comps/controls/styleControlConstants";
+import { migrateOldData, withDefault } from "comps/generators/simpleGenerators";
+import { hiddenPropertyView } from "comps/utils/propertyUtils";
+import { trans } from "i18n";
+import { useEffect, useRef } from "react";
+import styled from "styled-components";
+import { UICompBuilder } from "../../generators";
+import {
+  NameConfig,
+  NameConfigHidden,
+  withExposingConfigs,
+} from "../../generators/withExposing";
+import {
+  formDataChildren,
+  FormDataPropertyView,
+} from "../formComp/formDataConstants";
+import { defaultData } from "./jsonConstants";
 
 /**
  * JsonEditor Comp
@@ -66,15 +74,42 @@ const childrenMap = {
   onEvent: ChangeEventHandlerControl,
   label: withDefault(LabelControl, { position: "column" }),
   style: styleControl(JsonEditorStyle),
+  autoFormat: BoolControl,
 
   ...formDataChildren,
+};
+
+// 格式化内容的公共函数
+const formatContent = async (content: string, autoFormat: boolean, extensions: any) => {
+  if (!autoFormat) {
+    return content;
+  }
+  
+  const formatter = getFormatter("json", "PureJSON");
+  if (!formatter) {
+    return content;
+  }
+  
+  try {
+    return await formatter(content);
+  } catch {
+    return content;
+  }
+};
+
+// 创建编辑器状态的公共函数
+const createEditorState = (content: string, extensions: any) => {
+  return EditorState.create({
+    doc: content,
+    extensions,
+  });
 };
 
 let JsonEditorTmpComp = (function () {
   return new UICompBuilder(childrenMap, (props) => {
     const wrapperRef = useRef<HTMLDivElement>(null);
     const view = useRef<EditorViewType | null>(null);
-    const editContent = useRef<string>();
+    const isUserEditing = useRef<boolean>(false);
     const { extensions } = useExtensions({
       codeType: "PureJSON",
       language: "json",
@@ -83,41 +118,75 @@ let JsonEditorTmpComp = (function () {
       onFocus: (focused) => {
         if (focused) {
           wrapperRef.current?.click();
+        } else {
+          if (props.autoFormat && view.current) {
+            const currentContent = view.current.state.doc.toString();
+              const formatter = getFormatter("json", "PureJSON");
+              if (formatter) {
+                formatter(currentContent)
+                  .then((formattedContent) => {
+                    if (formattedContent !== currentContent && view.current) {
+                      const state = EditorState.create({
+                        doc: formattedContent,
+                        extensions,
+                      });
+                      view.current.setState(state);
+                    }
+                  })
+                  .catch(() => {
+                  });
+              }
+          }
         }
       },
       onChange: (state) => {
-        editContent.current = state.doc.toString();
+        isUserEditing.current = true; // 标记用户正在编辑
         try {
           const value = JSON.parse(state.doc.toString());
           props.value.onChange(value);
           props.onEvent("change");
-        } catch (error) {}
+        } catch (error) {
+          // JSON 解析错误时保持当前状态
+        }
       },
     });
 
     useEffect(() => {
-      if (wrapperRef.current && !view.current) {
-        const state = EditorState.create({
-          doc: JSON.stringify(props.value.value, null, 2),
-          extensions,
-        });
-        view.current = new EditorView({ state, parent: wrapperRef.current });
+      // 当外部值变化时，同步到编辑器
+      if (view.current && !isUserEditing.current) {
+        const newContent = JSON.stringify(props.value.value, null, 2);
+        const currentContent = view.current.state.doc.toString();
+        
+        // 只有当内容真正不同时才更新
+        if (newContent !== currentContent) {
+          formatContent(newContent, props.autoFormat, extensions)
+            .then((formattedContent) => {
+              const state = createEditorState(formattedContent, extensions);
+              view.current?.setState(state);
+            });
+        }
       }
-    }, [wrapperRef.current]);
+      
+      // 重置编辑状态
+      isUserEditing.current = false;
+    }, [props.value.value, extensions, props.autoFormat]);
 
-    if (wrapperRef.current && view.current && !editContent.current) {
-      const state = EditorState.create({
-        doc: JSON.stringify(props.value.value, null, 2),
-        extensions,
-      });
-      view.current?.setState(state);
-    }
-    if (editContent.current) {
-      editContent.current = undefined;
-    }
+    // 初始化编辑器
+    useEffect(() => {
+      if (wrapperRef.current && !view.current) {
+        const initialContent = JSON.stringify(props.value.value, null, 2);
+        
+        formatContent(initialContent, props.autoFormat, extensions)
+          .then((formattedContent) => {
+            const state = createEditorState(formattedContent, extensions);
+            view.current = new EditorView({ state, parent: wrapperRef.current! });
+          });
+      }
+    }, [extensions, props.value.value, props.autoFormat]);
+
     return props.label({
       style: props.style,
-      children: <Wrapper ref={wrapperRef} onFocus={() => (editContent.current = "focus")} />,
+      children: <Wrapper ref={wrapperRef} />,
     });
   })
     .setPropertyViewFn((children) => {
@@ -128,9 +197,21 @@ let JsonEditorTmpComp = (function () {
           </Section>
           <FormDataPropertyView {...children} />
           {children.label.getPropertyView()}
-          <Section name={sectionNames.interaction}>{children.onEvent.getPropertyView()}</Section>
-          <Section name={sectionNames.layout}>{hiddenPropertyView(children)}</Section>
-          <Section name={sectionNames.style}>{children.style.getPropertyView()}</Section>
+          <Section name={sectionNames.interaction}>
+            {children.onEvent.getPropertyView()}
+          </Section>
+          <Section name={sectionNames.advanced}>
+            {children.autoFormat.propertyView({
+              label: trans("export.jsonEditorAutoFormat"),
+              tooltip: trans("export.jsonEditorAutoFormatDesc"),
+            })}
+          </Section>
+          <Section name={sectionNames.layout}>
+            {hiddenPropertyView(children)}
+          </Section>
+          <Section name={sectionNames.style}>
+            {children.style.getPropertyView()}
+          </Section>
         </>
       );
     })

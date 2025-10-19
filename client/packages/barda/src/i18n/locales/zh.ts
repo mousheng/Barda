@@ -375,6 +375,8 @@ export const zh = {
         richTextEditorReadOnlyDesc: "如果为true,则编辑器为只读",
         richTextEditorHideToolBarDesc: "如果为true,则隐藏工具栏",
         jsonEditorDesc: "当前的JSON数据",
+    jsonEditorAutoFormat: "自动格式化",
+    jsonEditorAutoFormatDesc: "当用户失去焦点时，自动格式化 JSON 内容",
         sliderValueDesc: "当前选定的值",
         sliderMaxValueDesc: "当前区间的最大值",
         sliderMinValueDesc: "当前区间的最小值",
