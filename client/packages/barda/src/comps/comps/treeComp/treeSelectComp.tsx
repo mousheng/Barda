@@ -124,6 +124,7 @@ const TreeCompView = (
           const nextValue = Array.isArray(keys) ? keys : keys !== undefined ? [keys] : [];
           handleChange(nextValue);
         }}
+        onClear={() => props.onEvent('clear')}
         showSearch={props.showSearch}
         // search label
         treeNodeFilterProp="label"

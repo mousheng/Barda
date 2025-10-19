@@ -34,6 +34,7 @@ let CascaderBasicComp = (function () {
           $style={props.style}
           onFocus={() => props.onEvent("focus")}
           onBlur={() => props.onEvent("blur")}
+          onClear={() => props.onEvent("clear")}
           onChange={(value: (string | number | null)[], selectOptions: DefaultOptionType[]) => {
             props.value.onChange(value as string[]);
             props.onEvent("change");

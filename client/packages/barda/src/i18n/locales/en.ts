@@ -290,6 +290,8 @@ export const en = {
     deleteDesc: "Triggers on delete",
     mention: "mention",
     mentionDesc: "Triggers on mention",
+    clear: "Clear",
+    clearDesc: "Triggers when component value is cleared",
   },
   themeDetail: {
     primary: "Brand color",

@@ -406,11 +406,18 @@ export const mentionEvent: EventConfigType = {
   description: trans("event.mentionDesc"),
 };
 
+export const clearEvent: EventConfigType = {
+  label: trans("event.clear"),
+  value: "clear",
+  description: trans("event.clearDesc"),
+};
+
 export const InputEventHandlerControl = eventHandlerControl([
   changeEvent,
   focusEvent,
   blurEvent,
   submitEvent,
+  clearEvent,
 ] as const);
 
 export const ButtonEventHandlerControl = eventHandlerControl([clickEvent] as const);
@@ -421,6 +428,7 @@ export const SelectEventHandlerControl = eventHandlerControl([
   changeEvent,
   focusEvent,
   blurEvent,
+  clearEvent,
 ] as const);
 
 export const ScannerEventHandlerControl = eventHandlerControl([

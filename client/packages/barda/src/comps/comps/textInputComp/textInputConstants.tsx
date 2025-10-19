@@ -176,6 +176,7 @@ export const textInputProps = (props: RecordConstructorToView<typeof textInputCh
   onFocus: () => props.onEvent("focus"),
   onBlur: () => props.onEvent("blur"),
   onPressEnter: () => props.onEvent("submit"),
+  onClear: () => props.onEvent("clear"),
 });
 
 export const useTextInputProps = (props: RecordConstructorToView<typeof textInputChildren>) => {

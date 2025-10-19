@@ -32,6 +32,7 @@ import {
   requiredPropertyView,
   regexPropertyView,
   maxLengthPropertyView,
+  allowClearPropertyView,
 } from "comps/utils/propertyUtils";
 import { trans } from "i18n";
 import { IconControl } from "comps/controls/iconControl";
@@ -53,6 +54,7 @@ const PasswordTmpComp = (function () {
     visibilityToggle: BoolControl.DEFAULT_TRUE,
     prefixIcon: IconControl,
     style: styleControl(InputLikeStyle),
+    allowClear: BoolControl,
   };
   return new UICompBuilder(childrenMap, (props) => {
     const [inputProps, validateState] = useTextInputProps(props);
@@ -65,6 +67,7 @@ const PasswordTmpComp = (function () {
           ref={props.viewRef}
           visibilityToggle={props.visibilityToggle}
           $style={props.style}
+          allowClear={props.allowClear}
         />
       ),
       style: props.style,
@@ -84,6 +87,7 @@ const PasswordTmpComp = (function () {
             {children.visibilityToggle.propertyView({
               label: trans("password.visibilityToggle"),
             })}
+            {allowClearPropertyView(children)}
             {readOnlyPropertyView(children)}
             {children.prefixIcon.propertyView({ label: trans("button.prefixIcon") })}
           </Section>

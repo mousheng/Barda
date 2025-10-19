@@ -285,6 +285,8 @@ export const zh = {
         deleteDesc: "在删除时触发",
         mention: "提及",
         mentionDesc: "在提及时触发",
+        clear: "清除",
+        clearDesc: "当组件值被清除时触发",
 
     },
     themeDetail: {

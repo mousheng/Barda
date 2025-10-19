@@ -217,6 +217,7 @@ export const SelectUIView = (
     onChange={props.onChange}
     onFocus={() => props.onEvent("focus")}
     onBlur={() => props.onEvent("blur")}
+    onClear={() => props.onEvent("clear")}
     onSearch={
       props.showSearch
         ? (value: string) => {
