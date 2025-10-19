@@ -78,13 +78,14 @@ const LabelWrapper = styled.div<{
 const Label = styled.span<{ $border: boolean }>`
   ${labelCss};
   ${(props) => props.$border && UnderlineCss};
-  padding-bottom: 2.5px;
+  padding: 0;
   width: fit-content;
   user-select: text;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
   display: inline-block;
+  line-height: 1;
 `;
 
 const ChildrenWrapper = styled.div`
