@@ -336,6 +336,12 @@ const CommentCompBase = (
   }, []);
 
   const onChange = useCallback((value: string) => {
+    const subObject = {
+      user: userInfo,
+      value: value.trim(),
+      createdAt: dayjs().format(),
+    };
+    submitedItem.onChange(subObject);
     setContext(value);
     // 延迟执行以确保DOM已更新
     setTimeout(() => {
