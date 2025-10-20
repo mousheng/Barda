@@ -61,6 +61,7 @@ export const en = {
     focus: "Set focus",
     focusOptions: "Focus options. See HTMLElement.focus()",
     blur: "Remove focus",
+    submit: "Submit",
     click: "Click",
     select: "Select all the text",
     setSelectionRange: "Set the start and end positions of the current text selection",

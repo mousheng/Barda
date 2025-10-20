@@ -17,7 +17,6 @@ import { IconControl } from "comps/controls/iconControl";
 import { RefControl } from "comps/controls/refControl";
 import { styleControl } from "comps/controls/styleControl";
 import {
-  formatBoxValuesWithUnit,
   InputLikeStyle,
   InputLikeStyleType,
 } from "comps/controls/styleControlConstants";
@@ -36,9 +35,10 @@ import { trans } from "i18n";
 import _ from "lodash";
 import { pinyin } from "pinyin-pro";
 import { FilterFunc } from "rc-select/lib/Select";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { UICompBuilder, withDefault } from "../../generators";
+import { withMethodExposing } from "../../generators/withMethodExposing";
 import { FormDataPropertyView } from "../formComp/formDataConstants";
 import { AllPinyinOption, FirstPinyinOption } from "../selectInputComp/selectCompConstants";
 import {
@@ -167,7 +167,7 @@ let AutoCompleteCompBase = (function () {
     } = props;
 
 
-    const getTextInputValidate = () => {
+    const getTextInputValidate = useCallback(() => {
       return {
         value: { value: props.value.value },
         required: props.required,
@@ -177,7 +177,15 @@ let AutoCompleteCompBase = (function () {
         regex: props.regex,
         customRule: props.customRule,
       };
-    };
+    }, [
+      props.value.value,
+      props.required,
+      props?.minLength,
+      props?.maxLength,
+      props.validationType,
+      props.regex,
+      props.customRule,
+    ]);
 
     const [activationFlag, setActivationFlag] = useState(false);
     const [searchtext, setsearchtext] = useState<string>(props.value.value);
@@ -185,11 +193,9 @@ let AutoCompleteCompBase = (function () {
     const [PYCache, setPYCache] = useState({})
 
     //   是否中文环境
-    const [chineseEnv, setChineseEnv] = useState(getDayJSLocale() === "zh-cn");
+    const [chineseEnv] = useState(getDayJSLocale() === "zh-cn");
     useEffect(()=>{
-      if(props.defaultValue.value.length > 0){
         props.value.onChange(props.defaultValue.value);
-      }
     },[props.defaultValue.value])
 
     useEffect(() => {
@@ -204,6 +210,8 @@ let AutoCompleteCompBase = (function () {
       props.validationType,
       props.regex,
       props.customRule,
+      activationFlag,
+      getTextInputValidate,
     ]);
 
     useEffect(() => {
@@ -437,7 +445,21 @@ AutoCompleteCompBase = class extends AutoCompleteCompBase {
   }
 };
 
-export const AutoCompleteComp = withExposingConfigs(AutoCompleteCompBase, [
+let AutoCompleteCompWithMethods = withMethodExposing(AutoCompleteCompBase, [
+  {
+    method: {
+      name: "submit",
+      description: trans("method.submit"),
+      params: [],
+    },
+    execute: (comp, values) => {
+      comp.children.onEvent.getView()("submit");
+      return Promise.resolve();
+    },
+  },
+]);
+
+export const AutoCompleteComp = withExposingConfigs(AutoCompleteCompWithMethods, [
   new NameConfig("value", trans("export.inputValueDesc")),
   new NameConfig("selectObject", trans("autoComplete.selectObjectDesc")),
   new NameConfig("valueInItems", trans("autoComplete.valueInItems")),

@@ -60,6 +60,7 @@ export const zh = {
         focus: "设置焦点",
         focusOptions: "焦点选项,参考HTMLElement.focus()方法",
         blur: "移除焦点",
+        submit: "提交",
         click: "点击",
         select: "选择所有文本",
         setSelectionRange: "设置当前文本选择的起始和结束位置",

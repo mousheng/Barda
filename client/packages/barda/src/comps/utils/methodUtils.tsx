@@ -49,3 +49,10 @@ export const setRangeTextMethod: MethodConfig<"setRangeText"> = {
     { name: "end", type: "number", description: trans("method.replaceEnd") },
   ],
 };
+
+export const submitMethod: MethodConfig<"submit"> = {
+  name: "submit",
+  description: trans("method.submit"),
+  params: [],
+};
+

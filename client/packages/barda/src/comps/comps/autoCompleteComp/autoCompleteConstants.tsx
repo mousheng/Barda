@@ -9,6 +9,7 @@ import {
   focusWithOptions,
   selectMethod,
   setSelectionRangeMethod,
+  submitMethod,
 } from "comps/utils/methodUtils";
 
 export const autoCompleteRefMethods = [
