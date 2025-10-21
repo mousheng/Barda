@@ -48,7 +48,7 @@ export type SelectSourceType = "editor" | "leftPanel" | "addComp" | "rightPanel"
 
 /**
  * *所有编辑器状态都放置在此处，并且仍然是不可变的。
- * 
+ *
  * 注意:
  * 1.需要持久化的状态由comp维护，这里的状态不是持久化的。
  * 2.所有setter都不会更改当前editorState实例，而是生成新实例。
@@ -60,22 +60,22 @@ export type SelectSourceType = "editor" | "leftPanel" | "addComp" | "rightPanel"
 export class EditorState {
   readonly rootComp: ESRootCompType;
   readonly showPropertyPane: boolean = false; //显示属性面板
-  readonly selectedCompNames: Set<string> = new Set();  //已选择的的组件名
+  readonly selectedCompNames: Set<string> = new Set(); //已选择的的组件名
   readonly isDragging: boolean = false; //正在拖动标识
   readonly draggingCompType: string = "button"; //正在拖动的组件类型
   readonly forceShowGrid: boolean = false; // 强制显示网格线
   readonly disableInteract: boolean = false; // 禁用comp的交互（如点击按钮事件）
-  readonly selectedBottomResName: string = "";  //选中的底部查询名
+  readonly selectedBottomResName: string = ""; //选中的底部查询名
   readonly selectedBottomResType?: BottomResTypeEnum; //选中的底部查询类型
   readonly showResultCompName: string = "";
   readonly selectSource?: SelectSourceType; // the source of select type
   readonly isPasting: boolean = false; // 是否正在粘贴组件
+  readonly isCodeEditorPanelOpen: boolean = false; // CodeEditorPanel是否打开
 
   private __nameAndExposingInfoCache__: NameAndExposingInfo = {}; // 组件名称和暴露信息缓存
   private __uiCompByNameCache__: Record<string, any> = {}; // 按名称缓存的UI组件
 
   private readonly setEditorState: (fn: (editorState: EditorState) => EditorState) => void;
-
 
   /**
    * 构造函数
@@ -222,12 +222,7 @@ export class EditorState {
     const stateComInfoList = this.getTempStateCompInfoList();
     const transformerComInfoList = this.getTransformerCompInfoList();
     const dataResponderInfoList = this.getDataResponderInfoList();
-    return [
-      ...queryComInfoList,
-      ...stateComInfoList,
-      ...transformerComInfoList,
-      ...dataResponderInfoList,
-    ];
+    return [...queryComInfoList, ...stateComInfoList, ...transformerComInfoList, ...dataResponderInfoList];
   }
 
   /**
@@ -379,12 +374,12 @@ export class EditorState {
 
   /**
    * 获取选定的组件
-   * 
+   *
    * 此方法用于从所有组件中筛选出选定的组件具体步骤如下：
    * 1. 获取所有组件的映射
    * 2. 使用lodash的pickBy方法筛选组件映射中符合选定条件的组件
    * 3. 筛选条件是组件的子元素名称在选定的组件名称列表中
-   * 
+   *
    * @returns 返回一个对象，包含所有选定的组件
    */
   selectedComps() {
@@ -397,10 +392,10 @@ export class EditorState {
 
   /**
    * 选择容器组件
-   * 
+   *
    * 此函数旨在确定当前选中的容器组件如果选中的组件为空，则返回当前UI组件的根组件
    * 如果选中的组件是容器类型，则返回该容器类型的子组件否则，返回第一个选中的组件或根组件
-   * 
+   *
    * @returns {UIComponent} 当前选中的容器组件或根组件
    */
   selectedContainer() {
@@ -419,28 +414,25 @@ export class EditorState {
 
   /**
    * 根据组件键查找容器
-   * 
+   *
    * 此方法旨在通过组件键（compKey）查找对应的容器，首先尝试在UI组件中查找，
    * 如果未找到，则继续在hooks组件中查找这种方式确保了查找过程的灵活性和高效性
-   * 
+   *
    * @param compKey 组件的唯一键，用于标识特定的组件
    * @returns 返回找到的容器，如果没有找到则可能返回undefined或特定的默认值
    */
   findContainer(compKey: string) {
-    return (
-      this.getUIComp().getComp()?.findContainer?.(compKey) ||
-      this.getHooksComp().findContainer(compKey)
-    );
+    return this.getUIComp().getComp()?.findContainer?.(compKey) || this.getHooksComp().findContainer(compKey);
   }
 
   /**
    * 查找UI父容器组件
-   * 
+   *
    * 此方法旨在寻找指定组件的父容器组件它首先通过`getUIComp()`方法获取UI组件实例，
    * 并尝试在其上执行`findParentContainer`方法如果未找到，则通过`getHooksComp()`方法
    * 获取Hooks组件实例，并在其上执行相同方法这种冗余检查确保了在两个可能的组件实例中
    * 寻找到合适的父容器组件
-   * 
+   *
    * @param compName 组件名称，用于标识需要查找父容器的目标组件
    * @param containerCompType 可选参数，指定父容器组件的类型如果不传入此参数，
    * 将返回任何类型的父容器组件
@@ -455,9 +447,9 @@ export class EditorState {
 
   /**
    * 确定组件是否被选中，无论其是否处于多选状态。
-   * 
+   *
    * 该方法主要基于组件名称检查当前状态下组件是否被选中。它首先通过 `getAllCompMap` 获取所有组件的映射，然后遍历该映射以查找名称匹配的组件。如果找到该组件且其已被选中（即名称存在于 `selectedCompNames` 中），则返回该组件。这允许快速检查组件的选中状态，而不受其他选中组件的影响。
-   * 
+   *
    * @param compName 要检查的组件名称。
    * @returns 返回与当前组件名称对应的组件，无论其是否处于多选状态。
    */
@@ -516,7 +508,7 @@ export class EditorState {
     this.changeStateFn((editorState) => {
       return {
         rootComp: compFn(editorState.rootComp),
-        isPasting: false // 重置粘贴状态
+        isPasting: false, // 重置粘贴状态
       };
     });
   }
@@ -545,6 +537,12 @@ export class EditorState {
 
   setIsPasting(isPasting: boolean) {
     this.changeState({ isPasting });
+  }
+
+  setCodeEditorPanelOpen(isOpen: boolean) {
+    if (this.isCodeEditorPanelOpen !== isOpen) {
+      this.changeState({ isCodeEditorPanelOpen: isOpen });
+    }
   }
 
   getUIComp() {

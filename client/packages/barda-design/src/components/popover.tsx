@@ -1,10 +1,11 @@
-import { SuspensionBox } from "./SuspensionBox";
 import { Popover, PopoverProps } from "antd";
-import { Children, cloneElement, MouseEvent, ReactNode, useEffect, useState } from "react";
-import styled from "styled-components";
+import { EditorContext } from "barda/src/comps/editorState";
 import { ActiveTextColor, GreyTextColor } from "constants/style";
 import { trans } from "i18n/design";
 import { PointIcon } from "icons";
+import { Children, cloneElement, MouseEvent, ReactNode, useContext, useEffect, useState } from "react";
+import styled from "styled-components";
+import { SuspensionBox } from "./SuspensionBox";
 
 const Wedge = styled.div`
   height: 8px;
@@ -53,13 +54,25 @@ const SimplePopover = (props: {
   content: JSX.Element | React.ReactNode;
 }) => {
   const { visible, setVisible } = props;
+  const editorState = useContext(EditorContext);
   const contentWithBox = (
-    <SuspensionBox
-      title={props.title}
-      onClose={() => setVisible?.(false)}
-      content={props.content}
-    />
+    <SuspensionBox title={props.title} onClose={() => setVisible?.(false)} content={props.content} />
   );
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open && visible) {
+      if (editorState.isCodeEditorPanelOpen) {
+        return;
+      }
+      setTimeout(() => {
+        if (!editorState.isCodeEditorPanelOpen) {
+          setVisible?.(false);
+        }
+      }, 100);
+    } else {
+      setVisible?.(open);
+    }
+  };
   return (
     <Popover
       align={{
@@ -69,7 +82,7 @@ const SimplePopover = (props: {
       content={contentWithBox}
       trigger="click"
       open={visible}
-      onOpenChange={setVisible}
+      onOpenChange={handleOpenChange}
       placement="left"
       overlayStyle={{ width: "310px" }}
     >
@@ -119,7 +132,11 @@ const CustomPopover = (props: {
   );
 };
 
-export type EditPopoverItemType = { text: ReactNode; onClick: () => void; type?: "delete" };
+export type EditPopoverItemType = {
+  text: ReactNode;
+  onClick: () => void;
+  type?: "delete";
+};
 
 export interface EditPopoverProps extends PopoverProps {
   children?: React.ReactElement;
@@ -178,9 +195,7 @@ const EditPopover = (props: EditPopoverProps) => {
                 hide();
               }}
             >
-              <HandleText $color={item.type === "delete" ? "#F73131" : "#333333"}>
-                {item.text}
-              </HandleText>
+              <HandleText $color={item.type === "delete" ? "#F73131" : "#333333"}>{item.text}</HandleText>
             </Handle>
           ))}
           {add && (
@@ -244,4 +259,4 @@ const EditPopover = (props: EditPopoverProps) => {
     </Popover>
   );
 };
-export { SimplePopover, CustomPopover, EditPopover };
+export { CustomPopover, EditPopover, SimplePopover };

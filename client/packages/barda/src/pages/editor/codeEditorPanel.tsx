@@ -2,12 +2,12 @@ import { PushpinFilled, PushpinOutlined } from "@ant-design/icons";
 import { CodeEditorCloseIcon, CodeEditorOpenIcon, DragIcon } from "barda-design";
 import { isEmpty } from "lodash";
 import Trigger from "rc-trigger";
-import { ReactNode, useContext, useMemo, useRef, useState } from "react";
+import { ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Draggable from "react-draggable";
 import { Resizable, ResizeCallbackData } from "react-resizable";
 import { useWindowSize } from "react-use";
 import styled from "styled-components";
-import { CompNameContext } from "../../comps/editorState";
+import { CompNameContext, EditorContext } from "../../comps/editorState";
 import { Layers } from "../../constants/Layers";
 import Handle from "../../layout/handler";
 import { getPanelStyle, savePanelStyle } from "../../util/localStorageUtil";
@@ -21,7 +21,7 @@ const Wrapper = styled.div`
   left: 50%;
   border-radius: 8px;
   background: #ffffff;
-  box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.3);
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.3);
   border: 1px solid #b6b6b6;
 `;
 const HeaderWrapper = styled.div`
@@ -101,7 +101,7 @@ export const CloseButton = styled.div`
 
 const ButtonWrapper = styled.div`
   display: flex;
-`
+`;
 
 export const CodeEditorPanel = (props: {
   editor: ReactNode;
@@ -125,6 +125,15 @@ export const CodeEditorPanel = (props: {
   const [pinned, setpinned] = useState(false);
 
   const compName = useContext(CompNameContext);
+  const editorState = useContext(EditorContext);
+
+  const updateEditorState = useCallback(() => {
+    editorState.setCodeEditorPanelOpen(visible);
+  }, [visible]);
+
+  useEffect(() => {
+    updateEditorState();
+  }, [updateEditorState]);
 
   return (
     <Trigger
@@ -160,12 +169,12 @@ export const CodeEditorPanel = (props: {
             height={size.h}
             onResize={(event, { size }) => setSize({ w: size.width, h: size.height })}
             onResizeStop={(e: React.SyntheticEvent, data: ResizeCallbackData) => {
-              const targetRect = draggableRef.current?.getBoundingClientRect()
-              const newHeight = targetRect && targetRect?.top < 0 ? targetRect.bottom + targetRect?.top : size.h
-              setSize({ w: size.w, h: newHeight })
-              savePanelStyle({ ...panelStyle, codeEditor: { w: size.w, h: newHeight } })
-            }
-            }
+              const targetRect = draggableRef.current?.getBoundingClientRect();
+              const newHeight =
+                targetRect && targetRect?.top < 0 ? targetRect.bottom + targetRect?.top : size.h;
+              setSize({ w: size.w, h: newHeight });
+              savePanelStyle({ ...panelStyle, codeEditor: { w: size.w, h: newHeight } });
+            }}
             handle={Handle}
             resizeHandles={["s", "n", "w", "e", "sw", "nw", "se", "ne"]}
             minConstraints={[480, 360]}
@@ -183,7 +192,12 @@ export const CodeEditorPanel = (props: {
                   <CloseButton onClick={() => setpinned(!pinned)}>
                     {pinned ? <PushpinFilled rotate={-45} /> : <PushpinOutlined />}
                   </CloseButton>
-                  <CloseButton onClick={() => { setVisible(false); setpinned(false) }}>
+                  <CloseButton
+                    onClick={() => {
+                      setVisible(false);
+                      setpinned(false);
+                    }}
+                  >
                     <CodeEditorCloseIcon />
                   </CloseButton>
                 </ButtonWrapper>
