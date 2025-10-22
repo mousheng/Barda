@@ -35,23 +35,62 @@ export function filterData(
   data: Array<RecordType>,
   searchValue: string,
   filter: TableFilter,
-  showFilter: boolean
+  showFilter: boolean,
+  columnInfo?: {
+    dataIndexes: Array<string>;
+    hides: Array<{ value: boolean }>;
+    tempHides: Array<boolean>;
+    columnSetting: boolean;
+  }
 ) {
   let resultData = data;
+  
+  let visibleColumns: string[] | null = null;
+  
+  if (columnInfo) {
+    const { dataIndexes, hides, tempHides, columnSetting } = columnInfo;
+    const visibleSet = new Set<string>();
+    
+    dataIndexes.forEach((dataIndex, idx) => {
+      const isHidden = columnHide({
+        hide: hides[idx]?.value || false,
+        tempHide: tempHides[idx] || false,
+        enableColumnSetting: columnSetting,
+      });
+      
+      if (!isHidden) {
+        visibleSet.add(dataIndex);
+      }
+    });
+    
+    visibleColumns = Array.from(visibleSet);
+  }
+  
   if (searchValue) {
     resultData = resultData.filter((row) => {
       let searchLower = searchValue?.toLowerCase();
       if (!searchLower) {
         return true;
       } else {
-        return Object.values(row).find((v) => v?.toString().toLowerCase().includes(searchLower));
+        const searchableValues = visibleColumns 
+          ? visibleColumns.map(col => row[col]).filter(v => v !== undefined)
+          : Object.values(row);
+        return searchableValues.find((v) => v?.toString().toLowerCase().includes(searchLower));
       }
     });
   }
+  
   if (showFilter && filter.filters.length > 0) {
+    const visibleFilters = visibleColumns 
+      ? filter.filters.filter(f => visibleColumns!.includes(f.columnKey))
+      : filter.filters;
+    
+    if (visibleFilters.length === 0) {
+      return resultData;
+    }
+    
     resultData = resultData.filter((row) => {
-      // filter
-      for (let f of filter.filters) {
+      for (let f of visibleFilters) {
         const columnValue = row[f.columnKey];
         const result = tableFilterOperatorMap[f.operator].filter(f.filterValue, columnValue);
         if (filter.stackType === "or" && result) {
@@ -62,7 +101,7 @@ export function filterData(
           return false;
         }
       }
-      if (filter.filters.length === 0) {
+      if (visibleFilters.length === 0) {
         return true;
       } else if (filter.stackType === "and") {
         return true;

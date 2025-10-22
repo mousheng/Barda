@@ -302,10 +302,19 @@ export class TableImplComp extends TableInitComp implements IContainer {
       searchValue: this.children.toolbar.children.searchText.node(),
       filter: this.children.toolbar.children.filter.node(),
       showFilter: this.children.toolbar.children.showFilter.node(),
+      dataIndexes: this.children.columns.getColumnsNode("dataIndex"),
+      hides: this.children.columns.getColumnsNode("hide"),
+      tempHides: this.children.columns.getColumnsNode("tempHide"),
+      columnSetting: this.children.toolbar.children.columnSetting.node(),
     };
     const filteredDataNode = withFunction(fromRecord(nodes), (input) => {
-      const { data, searchValue, filter, showFilter } = input;
-      const filteredData = filterData(data, searchValue.value, filter, showFilter.value);
+      const { data, searchValue, filter, showFilter, dataIndexes, hides, tempHides, columnSetting } = input;
+      const filteredData = filterData(data, searchValue.value, filter, showFilter.value, {
+        dataIndexes: Object.values(dataIndexes),
+        hides: Object.values(hides).map(h => ({ value: h.value })),
+        tempHides: Object.values(tempHides),
+        columnSetting: columnSetting.value,
+      });
       // console.info("filterNode. data: ", data, " filter: ", filter, " filteredData: ", filteredData);
       return filteredData.map((row) => tranToTableRecord(row, row[OB_ROW_ORI_INDEX]));
     });
