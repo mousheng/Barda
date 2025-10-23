@@ -1,25 +1,17 @@
 import { getDayJSLocale } from "@barda/i18n/dayjsLocale";
-import {
-  InputRef
-} from "antd";
-import { default as AntAutoComplete } from 'antd/es/auto-complete';
-import { default as AntInput } from 'antd/es/input';
+import { InputRef } from "antd";
+import { default as AntAutoComplete } from "antd/es/auto-complete";
+import { default as AntInput } from "antd/es/input";
 import { BaseOptionType, DefaultOptionType } from "antd/es/select";
 import { Input, Section, sectionNames } from "barda-design";
 import { BoolControl } from "comps/controls/boolControl";
 import { jsonControl } from "comps/controls/codeControl";
-import {
-  booleanExposingStateControl,
-  jsonObjectExposingStateControl,
-} from "comps/controls/codeStateControl";
+import { booleanExposingStateControl, jsonObjectExposingStateControl } from "comps/controls/codeStateControl";
 import { dropdownControl } from "comps/controls/dropdownControl";
 import { IconControl } from "comps/controls/iconControl";
 import { RefControl } from "comps/controls/refControl";
 import { styleControl } from "comps/controls/styleControl";
-import {
-  InputLikeStyle,
-  InputLikeStyleType,
-} from "comps/controls/styleControlConstants";
+import { InputLikeStyle, InputLikeStyleType } from "comps/controls/styleControlConstants";
 import {
   NameConfig,
   NameConfigPlaceHolder,
@@ -27,10 +19,7 @@ import {
   withExposingConfigs,
 } from "comps/generators/withExposing";
 import { hasIcon } from "comps/utils";
-import {
-  allowClearPropertyView,
-  hiddenPropertyView,
-} from "comps/utils/propertyUtils";
+import { allowClearPropertyView, hiddenPropertyView } from "comps/utils/propertyUtils";
 import { trans } from "i18n";
 import _ from "lodash";
 import { pinyin } from "pinyin-pro";
@@ -47,7 +36,7 @@ import {
   TextInputConfigs,
   TextInputInteractionSection,
   textInputValidate,
-  TextInputValidationSection
+  TextInputValidationSection,
 } from "../textInputComp/textInputConstants";
 import {
   autoCompleteDate,
@@ -56,50 +45,50 @@ import {
   autoCompleteType,
   convertAutoCompleteData,
   itemsDataTooltip,
-  valueOrLabelOption
+  valueOrLabelOption,
 } from "./autoCompleteConstants";
 
-const SearchStyle = styled(AntInput.Search) <{ $style: InputLikeStyleType }>`
+const SearchStyle = styled(AntInput.Search)<{ $style: InputLikeStyleType }>`
   .ant-input-affix-wrapper {
-    background-color: ${props => props.$style.background};
-    color: ${props => props.$style.text};
-    border-color: ${props => props.$style.border};
-    border-radius: ${props => props.$style.radius} 0 0 ${props => props.$style.radius}!important;
-    
+    background-color: ${(props) => props.$style.background};
+    color: ${(props) => props.$style.text};
+    border-color: ${(props) => props.$style.border};
+    border-radius: ${(props) => props.$style.radius} 0 0 ${(props) => props.$style.radius}!important;
+
     &:hover {
-      border-color: ${props => props.$style.accent};
+      border-color: ${(props) => props.$style.accent};
     }
-    
+
     &:focus,
     &.ant-input-affix-wrapper-focused {
-      border-color: ${props => props.$style.accent};
+      border-color: ${(props) => props.$style.accent};
     }
   }
-   button {
-    border-radius: 0 ${props => props.$style.radius} ${props => props.$style.radius} 0!important;
+  button {
+    border-radius: 0 ${(props) => props.$style.radius} ${(props) => props.$style.radius} 0 !important;
   }
 `;
 
-const InputStyle = styled(Input) <{ $style: InputLikeStyleType }>`
-  border-radius: ${props => props.$style.radius};
-  
+const InputStyle = styled(Input)<{ $style: InputLikeStyleType }>`
+  border-radius: ${(props) => props.$style.radius};
+
   &:not(.ant-input-disabled, .ant-input-affix-wrapper-disabled),
   input {
-    color: ${props => props.$style.text};
-    background-color: ${props => props.$style.background};
-    border-color: ${props => props.$style.border};
+    color: ${(props) => props.$style.text};
+    background-color: ${(props) => props.$style.background};
+    border-color: ${(props) => props.$style.border};
 
     &:focus,
     &.ant-input-affix-wrapper-focused {
-      border-color: ${props => props.$style.accent};
+      border-color: ${(props) => props.$style.accent};
     }
 
     &:hover {
-      border-color: ${props => props.$style.accent};
+      border-color: ${(props) => props.$style.accent};
     }
 
     &::-webkit-input-placeholder {
-      color: ${props => props.$style.text};
+      color: ${(props) => props.$style.text};
       opacity: 0.4;
     }
 
@@ -107,7 +96,7 @@ const InputStyle = styled(Input) <{ $style: InputLikeStyleType }>`
     .ant-input-prefix,
     .ant-input-suffix svg {
       opacity: 0.45;
-      color: ${props => props.$style.text};
+      color: ${(props) => props.$style.text};
     }
 
     .ant-input-clear-icon svg:hover {
@@ -116,13 +105,10 @@ const InputStyle = styled(Input) <{ $style: InputLikeStyleType }>`
   }
 `;
 
-
-const AutoCompleteStyle = styled(AntAutoComplete) <{ $style: InputLikeStyleType }>`
+const AutoCompleteStyle = styled(AntAutoComplete)<{ $style: InputLikeStyleType }>`
   width: 100%;
   height: auto;
-
 `;
-
 
 const childrenMap = {
   ...textInputChildren,
@@ -144,11 +130,7 @@ const childrenMap = {
 };
 
 const getValidate = (value: any): "" | "warning" | "error" | undefined => {
-  if (
-    value.hasOwnProperty("validateStatus") &&
-    value["validateStatus"] === "error"
-  )
-    return "error";
+  if (value.hasOwnProperty("validateStatus") && value["validateStatus"] === "error") return "error";
   return "";
 };
 
@@ -165,7 +147,6 @@ let AutoCompleteCompBase = (function () {
       autoCompleteType,
       autocompleteIconColor,
     } = props;
-
 
     const getTextInputValidate = useCallback(() => {
       return {
@@ -190,18 +171,17 @@ let AutoCompleteCompBase = (function () {
     const [activationFlag, setActivationFlag] = useState(false);
     const [searchtext, setsearchtext] = useState<string>(props.value.value);
     const [validateState, setvalidateState] = useState({});
-    const [PYCache, setPYCache] = useState({})
+    const [PYCache, setPYCache] = useState({});
 
     //   是否中文环境
     const [chineseEnv] = useState(getDayJSLocale() === "zh-cn");
-    useEffect(()=>{
-        props.value.onChange(props.defaultValue.value);
-    },[props.defaultValue.value])
+    useEffect(() => {
+      props.value.onChange(props.defaultValue.value);
+    }, [props.defaultValue.value]);
 
     useEffect(() => {
       setsearchtext(props.value.value);
-      activationFlag &&
-        setvalidateState(textInputValidate(getTextInputValidate()));
+      activationFlag && setvalidateState(textInputValidate(getTextInputValidate()));
     }, [
       props.value.value,
       props.required,
@@ -215,105 +195,95 @@ let AutoCompleteCompBase = (function () {
     ]);
 
     useEffect(() => {
-      var temp = _.reduce(props.items, (obj: any, item: any) => {
-        if (item?.value) obj[item.value] = {
-          first: pinyin(item!.value, FirstPinyinOption),
-          all: pinyin(item!.value, AllPinyinOption),
-        }
-        if (item?.label) obj[item.label] = {
-          first: pinyin(item!.label, FirstPinyinOption),
-          all: pinyin(item!.label, AllPinyinOption),
-        }
-        return obj
-      }, {})
-      setPYCache(temp)
-    }, [props.items])
+      var temp = _.reduce(
+        props.items,
+        (obj: any, item: any) => {
+          if (item?.value)
+            obj[item.value] = {
+              first: pinyin(item!.value, FirstPinyinOption),
+              all: pinyin(item!.value, AllPinyinOption),
+            };
+          if (item?.label)
+            obj[item.label] = {
+              first: pinyin(item!.label, FirstPinyinOption),
+              all: pinyin(item!.label, AllPinyinOption),
+            };
+          return obj;
+        },
+        {}
+      );
+      setPYCache(temp);
+    }, [props.items]);
 
     const onChange = (value: unknown) => {
       props.valueInItems.onChange(false);
       setvalidateState(textInputValidate(getTextInputValidate()));
       setsearchtext(value as string);
       props.value.onChange(value as string);
-      props.onEvent("change")
-    }
+      props.onEvent("change");
+    };
     const onFocus = () => {
-      setActivationFlag(true)
-      props.onEvent("focus")
-    }
+      setActivationFlag(true);
+      props.onEvent("focus");
+    };
     const onBlur = () => {
-      props.onEvent("blur")
-    }
+      props.onEvent("blur");
+    };
     const onSelect = (data: unknown, option: BaseOptionType) => {
       setsearchtext(option[valueOrLabel]);
       props.valueInItems.onChange(true);
       props.value.onChange(option[valueOrLabel]);
       props.selectObject.onChange(option);
       props.onEvent("submit");
-    }
+    };
 
     const onPressEnter = () => {
       props.onEvent("submit");
-    }
+    };
 
-    const filterOption: FilterFunc<DefaultOptionType | BaseOptionType> = (inputValue: string, option?: BaseOptionType) => {
-      var InputValueLowerCase = inputValue.toLowerCase()
+    const filterOption: FilterFunc<DefaultOptionType | BaseOptionType> = (
+      inputValue: string,
+      option?: BaseOptionType
+    ) => {
+      var InputValueLowerCase = inputValue.toLowerCase();
       if (ignoreCase) {
-        if (
-          option!.label
-            .toLowerCase()
-            .indexOf(InputValueLowerCase) !== -1
-        )
-          return true;
+        if (option!.label.toLowerCase().indexOf(InputValueLowerCase) !== -1) return true;
       } else {
-        if (option!.label.indexOf(inputValue) !== -1)
-          return true;
+        if (option!.label.indexOf(inputValue) !== -1) return true;
       }
       if (
         chineseEnv &&
         searchFirstPY &&
-        _.get(PYCache, `${option!.label}.first`, '')
-          .indexOf(InputValueLowerCase) >= 0
+        _.get(PYCache, `${option!.label}.first`, "").indexOf(InputValueLowerCase) >= 0
       )
         return true;
       if (
         chineseEnv &&
         searchCompletePY &&
-        _.get(PYCache, `${option!.label}.all`, '')
-          .indexOf(InputValueLowerCase) >= 0
+        _.get(PYCache, `${option!.label}.all`, "").indexOf(InputValueLowerCase) >= 0
       )
         return true;
       if (!searchLabelOnly) {
         if (ignoreCase) {
-          if (
-            option!.value
-              .toLowerCase()
-              .indexOf(InputValueLowerCase) !== -1
-          )
-            return true;
+          if (option!.value.toLowerCase().indexOf(InputValueLowerCase) !== -1) return true;
         } else {
-          if (
-            option!.value.indexOf(inputValue) !== -1
-          )
-            return true;
+          if (option!.value.indexOf(inputValue) !== -1) return true;
         }
         if (
           chineseEnv &&
           searchFirstPY &&
-          _.get(PYCache, `${option!.value}.first`, '')
-            .indexOf(InputValueLowerCase) >= 0
+          _.get(PYCache, `${option!.value}.first`, "").indexOf(InputValueLowerCase) >= 0
         )
           return true;
         if (
           chineseEnv &&
           searchCompletePY &&
-          _.get(PYCache, `${option!.value}.all`, '')
-            .indexOf(InputValueLowerCase) >= 0
+          _.get(PYCache, `${option!.value}.all`, "").indexOf(InputValueLowerCase) >= 0
         )
           return true;
       }
       return false;
-    }
-
+    };
 
     return props.label({
       required: props.required,
@@ -338,7 +308,11 @@ let AutoCompleteCompBase = (function () {
               ref={props.viewRef}
               onPressEnter={onPressEnter}
               status={getValidate(validateState)}
-              onSubmit={() => props.onEvent("submit")}
+              onSearch={(value) => {
+                if (value.length > 0) {
+                  props.onEvent("submit");
+                }
+              }}
             />
           ) : (
             <InputStyle
@@ -352,9 +326,7 @@ let AutoCompleteCompBase = (function () {
               onPressEnter={onPressEnter}
             />
           )}
-
         </AutoCompleteStyle>
-
       ),
       style: props.style,
       ...validateState,
@@ -418,13 +390,9 @@ let AutoCompleteCompBase = (function () {
 
           {<TextInputValidationSection {...children} />}
 
-          <Section name={sectionNames.layout}>
-            {hiddenPropertyView(children)}
-          </Section>
+          <Section name={sectionNames.layout}>{hiddenPropertyView(children)}</Section>
 
-          <Section name={sectionNames.style}>
-            {children.style.getPropertyView()}
-          </Section>
+          <Section name={sectionNames.style}>{children.style.getPropertyView()}</Section>
         </>
       );
     })
