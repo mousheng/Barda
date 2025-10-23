@@ -258,23 +258,54 @@ export function getColumnsAggr(
   oriDisplayData: JSONObject[],
   dataIndexWithParamsDict: NodeToValue<
     ReturnType<InstanceType<typeof ColumnListComp>["withParamsNode"]>
-  >
+  >,
+  changeSet?: Record<string, Record<string, JSONValue>>
 ): ColumnsAggrData {
   return _.mapValues(dataIndexWithParamsDict, (withParams, dataIndex) => {
     const compType = (withParams.wrap() as any).compType;
     const res: Record<string, JSONValue> & { compType: string } = { compType };
-    if (compType === "tag") {
-      res.uniqueTags = _(oriDisplayData)
+    if (compType === "tag" || compType === "tags") {
+      // 收集原始数据中的标签
+      const originalTags = _(oriDisplayData)
         .map((row) => row[dataIndex]!)
         .filter((tag) => !!tag)
         .flatMap((tag) => {
           if (_.isArray(tag)) {
-            return tag.map(item => String(item));
+            return tag.map((item: any) => {
+              // 如果是对象数组，提取text字段
+              if (typeof item === 'object' && item !== null && 'text' in item) {
+                return String(item.text);
+              }
+              return String(item);
+            });
           }
           return [String(tag)];
         })
-        .uniq()
         .value();
+      
+      // 收集changeSet中的临时标签值
+      const changeSetTags: string[] = [];
+      if (changeSet) {
+        _.forEach(changeSet, (rowChanges) => {
+          const changedValue = rowChanges[dataIndex];
+          if (changedValue !== undefined) {
+            if (_.isArray(changedValue)) {
+              changedValue.forEach((item: any) => {
+                if (typeof item === 'object' && item !== null && 'text' in item) {
+                  changeSetTags.push(String((item as {text: any}).text));
+                } else {
+                  changeSetTags.push(String(item));
+                }
+              });
+            } else if (changedValue) {
+              changeSetTags.push(String(changedValue));
+            }
+          }
+        });
+      }
+      
+      // 合并并去重
+      res.uniqueTags = _.uniq([...originalTags, ...changeSetTags]);
     } else if (compType === "badgeStatus") {
       res.uniqueStatus = _(oriDisplayData)
         .map((row) => {

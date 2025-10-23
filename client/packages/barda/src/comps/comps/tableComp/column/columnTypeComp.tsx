@@ -1,9 +1,9 @@
+import { Dropdown } from "barda-design";
 import { CellProps } from "components/table/EditableCell";
 import { DateTimeComp } from "comps/comps/tableComp/column/columnTypeComps/columnDateTimeComp";
 import { ButtonComp } from "comps/comps/tableComp/column/simpleColumnTypeComps";
 import { withType } from "comps/generators";
 import { trans } from "i18n";
-import { Dropdown } from "barda-design";
 import { BooleanComp } from "./columnTypeComps/columnBooleanComp";
 import { DateComp } from "./columnTypeComps/columnDateComp";
 import { ImageComp } from "./columnTypeComps/columnImgComp";
@@ -13,6 +13,7 @@ import { ColumnMarkdownComp } from "./columnTypeComps/columnMarkdownComp";
 import { ProgressComp } from "./columnTypeComps/columnProgressComp";
 import { RatingComp } from "./columnTypeComps/columnRatingComp";
 import { BadgeStatusComp } from "./columnTypeComps/columnStatusComp";
+import { ColumnTagComp } from "./columnTypeComps/columnTagComp";
 import { ColumnTagsComp } from "./columnTypeComps/columnTagsComp";
 import { SimpleTextComp } from "./columnTypeComps/simpleTextComp";
 
@@ -32,6 +33,10 @@ const actionOptions = [
   {
     label: trans("table.tag"),
     value: "tag",
+  },
+  {
+    label: trans("table.tags"),
+    value: "tags",
   },
   {
     label: trans("table.badgeStatus"),
@@ -76,7 +81,8 @@ export const ColumnTypeCompMap = {
   button: ButtonComp,
   badgeStatus: BadgeStatusComp,
   link: LinkComp,
-  tag: ColumnTagsComp,
+  tag: ColumnTagComp,
+  tags: ColumnTagsComp,
   links: ColumnLinksComp,
   image: ImageComp,
   markdown: ColumnMarkdownComp,

@@ -47,7 +47,6 @@ type StatusEditPropsType = {
 const StatusEdit = (props: StatusEditPropsType) => {
   const defaultStatus = useContext(StatusContext);
   const [status, setStatus] = useState(defaultStatus);
-  const [open, setOpen] = useState(true);
   return (
     <Wrapper>
       <CustomSelect
@@ -55,7 +54,6 @@ const StatusEdit = (props: StatusEditPropsType) => {
         defaultOpen
         variant="borderless"
         optionLabelProp="children"
-        open={open}
         defaultValue={props.value.value}
         style={{ width: "100%" }}
         suffixIcon={<PackUpIcon />}
@@ -95,7 +93,6 @@ const StatusEdit = (props: StatusEditPropsType) => {
             props.onChangeEnd();
           }
         }}
-        onClick={() => setOpen(!open)}
       >
         {status.map((value, index) => (
           <CustomSelect.Option value={value.text} key={index}>

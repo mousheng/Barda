@@ -426,13 +426,14 @@ export class TableImplComp extends TableInitComp implements IContainer {
       filtedData: this.filterNode(),
       withParams: this.children.columns.withParamsNode(),
       dataIndexes: this.children.columns.getColumnsNode("dataIndex"),
+      changeSet: this.changeSetNode(),
     };
     const resNode = withFunction(fromRecord(nodes), (input) => {
       const dataIndexWithParamsDict = _(input.dataIndexes)
         .mapValues((dataIndex, idx) => input.withParams[idx])
         .mapKeys((withParams, idx) => input.dataIndexes[idx])
         .value();
-      const res = getColumnsAggr(input.filtedData, dataIndexWithParamsDict);
+      const res = getColumnsAggr(input.filtedData, dataIndexWithParamsDict, input.changeSet);
       // console.info("columnAggrNode: ", res);
       return res;
     });
