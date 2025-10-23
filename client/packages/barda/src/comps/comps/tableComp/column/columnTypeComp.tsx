@@ -16,6 +16,7 @@ import { BadgeStatusComp } from "./columnTypeComps/columnStatusComp";
 import { ColumnTagComp } from "./columnTypeComps/columnTagComp";
 import { ColumnTagsComp } from "./columnTypeComps/columnTagsComp";
 import { SimpleTextComp } from "./columnTypeComps/simpleTextComp";
+import { SwitchComp } from "./columnTypeComps/columnSwitchComp";
 
 const actionOptions = [
   {
@@ -74,6 +75,10 @@ const actionOptions = [
     label: trans("table.progress"),
     value: "progress",
   },
+  {
+    label: trans("table.switch"),
+    value: "switch",
+  },
 ] as const;
 
 export const ColumnTypeCompMap = {
@@ -91,6 +96,7 @@ export const ColumnTypeCompMap = {
   rating: RatingComp,
   progress: ProgressComp,
   date: DateComp,
+  switch: SwitchComp,
 };
 
 type ColumnTypeMapType = typeof ColumnTypeCompMap;
