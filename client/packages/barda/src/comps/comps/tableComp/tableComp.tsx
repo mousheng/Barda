@@ -23,8 +23,6 @@ import { HidableView } from "comps/generators/uiCompBuilder";
 import { withDispatchHook } from "comps/generators/withDispatchHook";
 import {
   CompDepsConfig,
-  depsConfig,
-  DepsConfig,
   NameConfig,
   withExposingConfigs,
 } from "comps/generators/withExposing";
@@ -573,12 +571,12 @@ TableTmpComp = withMethodExposing(TableTmpComp, [
 
 // exposing data
 export const TableComp = withExposingConfigs(TableTmpComp, [
-  new DepsConfig(
+  new CompDepsConfig(
     "selectedRow",
-    (children) => {
+    (comp) => {
       return {
-        selectedRowKey: children.selection.children.selectedRowKey.node(),
-        data: children.data.exposingNode(),
+        selectedRowKey: comp.children.selection.children.selectedRowKey.node(),
+        data: comp.children.data.exposingNode(),
       };
     },
     (input) => {
@@ -589,12 +587,12 @@ export const TableComp = withExposingConfigs(TableTmpComp, [
     },
     trans("table.selectedRowDesc")
   ),
-  new DepsConfig(
+  new CompDepsConfig(
     "selectedRows",
-    (children) => {
+    (comp) => {
       return {
-        selectedRowKeys: children.selection.children.selectedRowKeys.node(),
-        data: children.data.exposingNode(),
+        selectedRowKeys: comp.children.selection.children.selectedRowKeys.node(),
+        data: comp.children.data.exposingNode(),
       };
     },
     (input) => {
@@ -655,24 +653,24 @@ export const TableComp = withExposingConfigs(TableTmpComp, [
     },
     trans("table.toUpdateRowsDesc")
   ),
-  new DepsConfig(
+  new CompDepsConfig(
     "pageNo",
-    (children) => {
+    (comp) => {
       return {
-        pageNo: children.pagination.children.pageNo.exposingNode(),
+        pageNo: comp.children.pagination.children.pageNo.exposingNode(),
       };
     },
     (input) => input.pageNo,
     trans("table.pageNoDesc")
   ),
-  new DepsConfig(
+  new CompDepsConfig(
     "pageSize",
-    (children) => {
+    (comp) => {
       return {
-        showSizeChanger: children.pagination.children.showSizeChanger.node(),
-        changeablePageSize: children.pagination.children.changeablePageSize.node(),
-        pageSize: children.pagination.children.pageSize.node(),
-        pageSizeOptions: children.pagination.children.pageSizeOptions.node(),
+        showSizeChanger: comp.children.pagination.children.showSizeChanger.node(),
+        changeablePageSize: comp.children.pagination.children.changeablePageSize.node(),
+        pageSize: comp.children.pagination.children.pageSize.node(),
+        pageSizeOptions: comp.children.pagination.children.pageSizeOptions.node(),
       };
     },
     (input) => {
@@ -685,12 +683,12 @@ export const TableComp = withExposingConfigs(TableTmpComp, [
     },
     trans("table.pageSizeDesc")
   ),
-  new DepsConfig(
+  new CompDepsConfig(
     "sortColumn",
-    (children) => {
+    (comp) => {
       return {
-        sort: children.sort.node(),
-        columns: children.columns.node()!,
+        sort: comp.children.sort.node(),
+        columns: comp.children.columns.node()!,
       };
     },
     (input) => {
@@ -706,23 +704,27 @@ export const TableComp = withExposingConfigs(TableTmpComp, [
     },
     trans("table.sortColumnDesc")
   ),
-  depsConfig({
-    name: "sortDesc",
-    desc: trans("table.sortDesc"),
-    depKeys: ["sort"],
-    func: (input) => {
+  new CompDepsConfig(
+    "sortDesc",
+    (comp) => {
+      return {
+        sort: comp.children.sort.node(),
+      };
+    },
+    (input) => {
       return input.sort[0]?.desc || false;
     },
-  }),
-  new DepsConfig(
+    trans("table.sortDesc")
+  ),
+  new CompDepsConfig(
     "pageOffset",
-    (children) => {
+    (comp) => {
       return {
-        showSizeChanger: children.pagination.children.showSizeChanger.node(),
-        changeablePageSize: children.pagination.children.changeablePageSize.node(),
-        pageSize: children.pagination.children.pageSize.node(),
-        pageSizeOptions: children.pagination.children.pageSizeOptions.node(),
-        pageNo: children.pagination.children.pageNo.node(),
+        showSizeChanger: comp.children.pagination.children.showSizeChanger.node(),
+        changeablePageSize: comp.children.pagination.children.changeablePageSize.node(),
+        pageSize: comp.children.pagination.children.pageSize.node(),
+        pageSizeOptions: comp.children.pagination.children.pageSizeOptions.node(),
+        pageNo: comp.children.pagination.children.pageNo.node(),
       };
     },
     (input) => {
@@ -769,11 +771,11 @@ export const TableComp = withExposingConfigs(TableTmpComp, [
     },
     trans("table.displayDataDesc")
   ),
-  new DepsConfig(
+  new CompDepsConfig(
     "filter",
-    (children) => {
+    (comp) => {
       return {
-        filter: children.toolbar.children.filter.node(),
+        filter: comp.children.toolbar.children.filter.node(),
       };
     },
     (input) => {

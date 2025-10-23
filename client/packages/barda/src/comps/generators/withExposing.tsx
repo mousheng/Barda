@@ -267,7 +267,8 @@ class NodeRecordCacheContent implements CacheContent {
 
 /**
  * @deprecated
- * 请参考 depsConfig
+ * 已弃用，待删除的类
+ * 参考 depsConfig
  */
 export class DepsConfig<ChildrenType extends Record<string, Comp<unknown>>, T extends NodeRecord>
   implements ExposingConfig<ChildrenToComp<ChildrenType>>
