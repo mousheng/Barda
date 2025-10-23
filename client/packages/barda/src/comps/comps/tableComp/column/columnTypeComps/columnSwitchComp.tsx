@@ -1,16 +1,15 @@
-import { BoolCodeControl, StringControl } from "comps/controls/codeControl";
-import { trans } from "i18n";
+import { BoolControl } from "@barda/comps/controls/boolControl";
 import { Switch } from "antd";
+import { changeChildAction } from "barda-core";
+import { BoolCodeControl, StringControl } from "comps/controls/codeControl";
+import { changeEvent, eventHandlerControl } from "comps/controls/eventHandlerControl";
+import { useStyle } from "comps/controls/styleControl";
+import { SwitchStyle, SwitchStyleType } from "comps/controls/styleControlConstants";
+import { trans } from "i18n";
+import _ from "lodash";
+import styled, { css } from "styled-components";
 import { ColumnTypeCompBuilder, ColumnTypeViewFn } from "../columnTypeCompBuilder";
 import { ColumnValueTooltip } from "../simpleColumnTypeComps";
-import styled, { css } from "styled-components";
-import { SwitchStyle, SwitchStyleType } from "comps/controls/styleControlConstants";
-import { useStyle } from "comps/controls/styleControl";
-import React from "react";
-import { changeChildAction } from "barda-core";
-import { eventHandlerControl } from "comps/controls/eventHandlerControl";
-import { changeEvent } from "comps/controls/eventHandlerControl";
-import { BoolControl } from "@barda/comps/controls/boolControl";
 
 const getStyle = ($style: SwitchStyleType) => {
   return css`
@@ -60,6 +59,7 @@ export const SwitchComp = (function () {
     childrenMap,
     (props, dispatch) => {
       const value = props.changeValue ?? getBaseValue(props, dispatch);
+      const baseValue = getBaseValue(props, dispatch);
       const checkedChildren = props.checkedChildren;
       const unCheckedChildren = props.unCheckedChildren;
       const SwitchDisplayComp = () => {
@@ -74,7 +74,8 @@ export const SwitchComp = (function () {
             unCheckedChildren={unCheckedChildren}
             disabled={disabled}
             onChange={(checked) => {
-              dispatch(changeChildAction("changeValue", checked, false));
+              const newValue = _.isEqual(checked, baseValue) ? null : checked;
+              dispatch(changeChildAction("changeValue", newValue, false));
               props.onEvent("change");
               props.onEvent(checked ? "true" : "false");
             }}
