@@ -15,12 +15,15 @@ import {
   Section,
   sectionNames,
 } from "barda-design";
-import { SelectOptionControl } from "../../controls/optionsControl";
+import { SelectOptionControl, optionsControl } from "../../controls/optionsControl";
 import { SelectEventHandlerControl } from "../../controls/eventHandlerControl";
 import { Select as AntdSelect } from "antd";
 import { ControlParams } from "../../controls/controlParams";
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
+import { MultiCompBuilder } from "../../generators";
+import { IconControl } from "../../controls/iconControl";
+import { ColorControl } from "../../controls/colorControl";
 import {
   SelectInputValidationChildren,
   SelectInputValidationSection,
@@ -283,3 +286,33 @@ export const SelectPropertyView = (
 );
 
 export const baseSelectRefMethods = refMethods<BaseSelectRef>([focusMethod, blurMethod]);
+
+// ColorMapOption for color mapping
+let ColorMapOption = new MultiCompBuilder(
+  {
+    label: StringControl,
+    color: ColorControl,
+    icon: IconControl,
+  },
+  (props) => props
+).build();
+
+ColorMapOption = class extends ColorMapOption {
+  propertyView(param: { autoMap?: boolean }) {
+    return (
+      <>
+        {this.children.label.propertyView({
+          label: trans("label"),
+          placeholder: param.autoMap ? "{{item}}" : "",
+        })}
+        {this.children.color.propertyView({ label: trans("color") })}
+        {this.children.icon.propertyView({ label: trans("icon") })}
+      </>
+    );
+  }
+};
+
+export const ColorMapOptionControl = optionsControl(ColorMapOption, {
+  initOptions: [],
+  uniqField: "label",
+});

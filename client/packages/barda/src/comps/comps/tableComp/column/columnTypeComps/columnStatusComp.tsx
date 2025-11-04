@@ -5,7 +5,7 @@ import {
 } from "comps/comps/tableComp/column/columnTypeCompBuilder";
 import { trans } from "i18n";
 import { StringControl, stringUnionControl } from "comps/controls/codeControl";
-import { DropdownStyled, Wrapper } from "./columnTagsComp";
+import { DropdownStyled, Wrapper } from "./columnTypeUtils/tagUtils";
 import { ReactNode, useContext, useState } from "react";
 import { StatusContext } from "components/table/EditableCell";
 import { CustomSelect, PackUpIcon, ScrollBar } from "barda-design";

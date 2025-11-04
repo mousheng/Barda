@@ -637,19 +637,116 @@ export const TableComp = withExposingConfigs(TableTmpComp, [
   ),
   new CompDepsConfig(
     "changeSet",
-    (comp) => ({
-      changeSet: comp.changeSetNode(),
-    }),
-    (input) => input.changeSet,
+    (comp) => {
+      return {
+        changeSet: comp.changeSetNode(),
+        dataIndexes: comp.children.columns.getColumnsNode("dataIndex"),
+        renders: comp.children.columns.getColumnsNode("render"),
+      };
+    },
+    (input) => {
+      if (!input || !input.changeSet) return input?.changeSet;
+
+      const tagsColumns = new Set(
+        Object.keys(input.renders).flatMap((idx: any) => {
+          const compType = (input as any)?.renders?.[idx]?.__comp__?.comp?.compType;
+          if (compType === "tags") {
+            const dataIndex = (input as any)?.dataIndexes?.[idx];
+            return dataIndex ? [dataIndex] : [];
+          }
+          return [];
+        })
+      );
+      const tagColumns = new Set(
+        Object.keys(input.renders).flatMap((idx: any) => {
+          const compType = (input as any)?.renders?.[idx]?.__comp__?.comp?.compType;
+          if (compType === "tag") {
+            const dataIndex = (input as any)?.dataIndexes?.[idx];
+            return dataIndex ? [dataIndex] : [];
+          }
+          return [];
+        })
+      );
+      if (tagsColumns.size === 0 && tagColumns.size === 0) return input.changeSet;
+
+      const isTagObj = (v: any) => v && typeof v === "object" && "text" in v;
+
+      return _.mapValues(input.changeSet, (rowChanges: any) => {
+        const hasTargetKey = Object.keys(rowChanges).some(
+          (k) => (tagsColumns.has(k) || tagColumns.has(k)) && isTagObj(rowChanges[k])
+        );
+        if (!hasTargetKey) return rowChanges;
+        return _.mapValues(rowChanges, (val: any, dataIndex: string) => {
+          if (tagsColumns.has(dataIndex) && isTagObj(val)) {
+            return (val as any).text || [];
+          }
+          if (tagColumns.has(dataIndex) && isTagObj(val)) {
+            const t = (val as any).text;
+            return Array.isArray(t) ? t.join(",") : t ?? "";
+          }
+          return val;
+        });
+      });
+    },
     trans("table.changeSetDesc")
-  ),
+  ),  
   new CompDepsConfig(
     "toUpdateRows",
     (comp) => ({
       toUpdateRows: comp.toUpdateRowsNode(),
+      dataIndexes: comp.children.columns.getColumnsNode("dataIndex"),
+      renders: comp.children.columns.getColumnsNode("render"),
     }),
     (input) => {
-      return input.toUpdateRows;
+      const rows = input.toUpdateRows;
+      if (!rows) return rows;
+
+      const tagsColumns = Object.keys(input.renders).flatMap((idx: any) => {
+        const compType = (input as any)?.renders?.[idx]?.__comp__?.comp?.compType;
+        if (compType === "tags") {
+          const dataIndex = (input as any)?.dataIndexes?.[idx];
+          return dataIndex ? [dataIndex] : [];
+        }
+        return [];
+      });
+      const tagColumns = Object.keys(input.renders).flatMap((idx: any) => {
+        const compType = (input as any)?.renders?.[idx]?.__comp__?.comp?.compType;
+        if (compType === "tag") {
+          const dataIndex = (input as any)?.dataIndexes?.[idx];
+          return dataIndex ? [dataIndex] : [];
+        }
+        return [];
+      });
+      if (tagsColumns.length === 0 && tagColumns.length === 0) return rows;
+
+      const isTagObj = (v: any) => v && typeof v === "object" && "text" in v;
+
+      return rows.map((row: any) => {
+        let changed = false;
+        let cloned: any = row;
+        for (const dataIndex of tagsColumns) {
+          const val = (row as any)[dataIndex];
+          if (isTagObj(val)) {
+            if (!changed) {
+              cloned = { ...row };
+              changed = true;
+            }
+            cloned[dataIndex] = (val as any).text || [];
+          }
+        }
+        for (const dataIndex of tagColumns) {
+          const val = (row as any)[dataIndex];
+          if (isTagObj(val)) {
+            if (!changed) {
+              cloned = { ...row };
+              changed = true;
+            }
+            const t = (val as any).text;
+            cloned[dataIndex] = Array.isArray(t) ? t.join(",") : t ?? "";
+          }
+        }
+        return cloned;
+      });
     },
     trans("table.toUpdateRowsDesc")
   ),

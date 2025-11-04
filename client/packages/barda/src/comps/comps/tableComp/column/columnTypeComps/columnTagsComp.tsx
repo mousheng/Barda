@@ -1,191 +1,114 @@
 import { Select, Tag } from "antd";
-import { PresetStatusColorTypes } from "antd/lib/_util/colors";
 import { ScrollBar } from "barda-design";
 import { TagsContext } from "components/table/EditableCell";
 import { ColumnTypeCompBuilder, ColumnTypeViewFn } from "comps/comps/tableComp/column/columnTypeCompBuilder";
 import { ColumnValueTooltip } from "comps/comps/tableComp/column/simpleColumnTypeComps";
-import { codeControl, jsonObjectControl } from "comps/controls/codeControl";
+import { codeControl } from "comps/controls/codeControl";
 import { trans } from "i18n";
-import _ from "lodash";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { toJson } from "really-relaxed-json";
-import styled from "styled-components";
 import { JSONObject } from "util/jsonTypes";
-import { hashToNum } from "util/stringUtils";
+import { ColorMapOptionControl } from "comps/comps/selectInputComp/selectCompConstants";
+import {
+  ColorMapContext,
+  DEFAULT_COLOR_KEY,
+  isStringArray,
+  toColorMap,
+  getIconFromOptions,
+  getTagColor,
+  WrapperMulti,
+  DropdownStyled,
+} from "./columnTypeUtils/tagUtils";
 
-export const ColorMapContext = createContext<JSONObject | undefined>(undefined);
+/* ------------------------------ 工具函数区 ------------------------------ */
 
-const colors = PresetStatusColorTypes;
+// 统一解析 value 为字符串数组
+export const parseTagsData = (value: unknown): string[] => {
+  if (isStringArray(value)) return value.map(String);
 
-// 检查是否为字符串数组
-const isStringArray = (value: unknown): value is (string | number | boolean)[] => {
-  return (
-    _.isArray(value) &&
-    value.every((v) => {
-      const type = typeof v;
-      return type === "string" || type === "number" || type === "boolean";
-    })
-  );
-};
-
-// 解析标签数据为字符串数组
-const parseTagsData = (value: unknown): string[] => {
-  if (isStringArray(value)) {
-    return (value as (string | number | boolean)[]).map((text) => String(text));
-  }
-  if (typeof value === "string") {
-    try {
-      const result = JSON.parse(toJson(value));
-      if (isStringArray(result)) {
-        return (result as (string | number | boolean)[]).map((text) => String(text));
-      }
-      return [value];
-    } catch (e) {
-      return [value];
+  if (["string", "number", "boolean"].includes(typeof value)) {
+    if (typeof value === "string") {
+      try {
+        const result = JSON.parse(toJson(value));
+        if (isStringArray(result)) return result.map(String);
+      } catch (_) {}
     }
-  }
-  if (typeof value === "number" || typeof value === "boolean") {
     return [String(value)];
   }
+
   return [];
 };
 
-// 字符串数组输入控制
-const TagsArrayControl = codeControl<string[]>(
-  (value: unknown) => {
-    if (isStringArray(value)) {
-      return (value as (string | number | boolean)[]).map((text) => String(text));
-    }
-    const valueType = typeof value;
-    if (valueType === "string") {
-      try {
-        const result = JSON.parse(toJson(value));
-        if (isStringArray(result)) {
-          return (result as (string | number | boolean)[]).map((text) => String(text));
-        }
-        return [String(value)];
-      } catch (e) {
-        return [String(value)];
-      }
-    } else if (valueType === "number" || valueType === "boolean") {
-      return [String(value)];
-    }
-    throw new TypeError(`Type "Array<string>" is required, but find value: ${JSON.stringify(value)}`);
-  },
-  { expectedType: "Array<string>", codeType: "JSON" }
-);
+/* ------------------------------ 控件配置 ------------------------------ */
 
-// 颜色映射控制（JSON对象）
-const ColorMapControl = jsonObjectControl({});
-
-// 根据文本和颜色映射获取标签颜色
-function getTagColor(text: string, colorMap?: JSONObject): string {
-  // 如果有颜色映射，先检查是否有给定key的颜色
-  if (colorMap && typeof colorMap[text] === "string") {
-    return colorMap[text] as string;
-  }
-
-  // 检查是否有default key
-  if (colorMap && typeof colorMap["default"] === "string") {
-    return colorMap["default"] as string;
-  }
-
-  // 使用PresetStatusColorTypes计算颜色
-  const index = Math.abs(hashToNum(text)) % colors.length;
-  return colors[index];
-}
+const TagsArrayControl = codeControl<string[]>(parseTagsData, {
+  expectedType: "Array<string>",
+  codeType: "JSON",
+});
 
 const childrenMap = {
   text: TagsArrayControl,
-  colorMap: ColorMapControl,
+  colorMap: ColorMapOptionControl,
 };
+
+/* ------------------------------ 数据基础转换 ------------------------------ */
 
 const getBaseValue: ColumnTypeViewFn<
   typeof childrenMap,
-  { text: string[]; colorMap?: JSONObject },
-  { text: string[]; colorMap?: JSONObject }
-> = (props) => ({ text: props.text, colorMap: props.colorMap });
+  { text: string[]; colorMap?: JSONObject; colorMapOptions?: any[] },
+  { text: string[]; colorMap?: JSONObject; colorMapOptions?: any[] }
+> = (props) => {
+  const colorMapOptions = props.colorMap;
+  if (Array.isArray(colorMapOptions)) {
+    return {
+      text: props.text,
+      colorMap: toColorMap(colorMapOptions),
+      colorMapOptions: colorMapOptions,
+    };
+  }
+  return { text: props.text, colorMap: colorMapOptions };
+};
 
-type TagsArrayEditPropsType = {
+/* ------------------------------ 编辑组件 ------------------------------ */
+
+type TagsArrayEditProps = {
   value: string[];
   onChange: (value: string[]) => void;
   onChangeEnd: () => void;
   colorMap?: JSONObject;
 };
 
-export const Wrapper = styled.div`
-  display: inline-flex;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  background: transparent !important;
-  > div {
-    width: 100%;
-    height: 100%;
-  }
-  .ant-select {
-    height: 100%;
-    .ant-select-selector {
-      padding: 0 7px;
-      height: 100%;
-      overflow: hidden;
-      flex-wrap: wrap;
-      display: flex;
-      align-content: center;
-      .ant-select-selection-item {
-        display: inline-flex;
-        align-items: center;
-        padding-right: 24px;
-      }
-    }
-    .ant-select-selector .ant-select-selection-search {
-      left: 7px;
-      input {
-        height: 100%;
-      }
-    }
-    &.ant-select-open {
-      .ant-select-arrow {
-        border-right: none;
-        border-left: 1px solid #d7d9e0;
-        svg g path {
-          fill: #315efb;
-        }
-      }
-      .ant-select-selection-item {
-        opacity: 0.4;
-      }
-    }
-  }
-`;
-
-export const DropdownStyled = styled.div`
-  .ant-select-item {
-    padding: 4px 12px;
-  }
-`;
-
-const TagsArrayEdit = (props: TagsArrayEditPropsType) => {
+const TagsArrayEdit = ({ value, onChange, onChangeEnd, colorMap }: TagsArrayEditProps) => {
   const defaultTags = useContext(TagsContext);
-  const colorMapFromContext = useContext(ColorMapContext);
-  const colorMap = props.colorMap || colorMapFromContext;
+  const contextValue = useContext(ColorMapContext);
+  const mergedColorMap = colorMap || contextValue?.colorMap;
+  const colorMapOptions = contextValue?.colorMapOptions;
 
-  const [availableTags] = useState<string[]>(() =>
-    defaultTags.flatMap((item) => (item.includes(",") ? item.split(",") : [item]))
-  );
+  // 从 colorMapOptions 中提取有效的标签 label
+  const colorMapLabels = useMemo(() => {
+    if (!Array.isArray(colorMapOptions)) return [];
+    return colorMapOptions
+      .map(opt => opt?.label)
+      .filter((label): label is string => typeof label === "string" && label !== DEFAULT_COLOR_KEY);
+  }, [colorMapOptions]);
 
+  // 生成所有可选标签
+  const availableTags = useMemo(() => {
+    const validDefaults = defaultTags.filter((t): t is string => typeof t === "string");
+    const splitDefaults = validDefaults.flatMap(t => t.split(","));
+    return [...new Set([...splitDefaults, ...colorMapLabels])];
+  }, [defaultTags, colorMapLabels]);
+
+  const [currentTags, setCurrentTags] = useState(() => parseTagsData(value));
   const [searchValue, setSearchValue] = useState("");
-  const [currentTags, setCurrentTags] = useState<string[]>(() => parseTagsData(props.value));
 
   // 同步外部值变化
   useEffect(() => {
-    setCurrentTags(parseTagsData(props.value));
-  }, [props.value]);
-
+    setCurrentTags(parseTagsData(value));
+  }, [value]);
+  
   return (
-    <Wrapper>
+    <WrapperMulti>
       <Select
         autoFocus
         mode="tags"
@@ -193,39 +116,37 @@ const TagsArrayEdit = (props: TagsArrayEditPropsType) => {
         showSearch
         defaultOpen
         value={currentTags}
-        style={{ width: "100%" }}
-        placeholder={trans("table.selectTags")}
         searchValue={searchValue}
+        placeholder={trans("table.selectTags")}
+        style={{ width: "100%" }}
         onSearch={setSearchValue}
-        onChange={(selectedTexts) => {
-          setCurrentTags(selectedTexts);
-          props.onChange(selectedTexts);
+        onChange={(vals) => {
+          setCurrentTags(vals);
+          onChange(vals);
           setSearchValue("");
         }}
         onBlur={(e) => {
-          // 点击Select外部才触发onChangeEnd
-          if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-            props.onChangeEnd();
-          }
+          if (!e.currentTarget.contains(e.relatedTarget as Node)) onChangeEnd();
         }}
-        dropdownRender={(originNode) => (
+        dropdownRender={(menu) => (
           <DropdownStyled>
-            <ScrollBar style={{ maxHeight: "256px" }}>{originNode}</ScrollBar>
+            <ScrollBar style={{ maxHeight: 256 }}>{menu}</ScrollBar>
           </DropdownStyled>
         )}
-        tagRender={(tagProps) => {
-          const { label, closable, onClose } = tagProps;
-          const labelStr = String(label || "");
-          const color = getTagColor(labelStr, colorMap);
-          const onPreventMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-            e.preventDefault();
-            e.stopPropagation();
-          };
+        tagRender={(props) => {
+          const { label, closable, onClose } = props;
+          const labelStr = String(label);
+          const color = getTagColor(labelStr, mergedColorMap);
+          const icon = getIconFromOptions(labelStr, colorMapOptions);
           return (
             <Tag
               color={color}
+              icon={icon}
               closable={closable}
-              onMouseDown={onPreventMouseDown}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
               onClose={(e) => {
                 e.stopPropagation();
                 onClose?.(e);
@@ -236,61 +157,70 @@ const TagsArrayEdit = (props: TagsArrayEditPropsType) => {
           );
         }}
       >
-        {availableTags.map((tag, index) => (
-          <Select.Option value={tag} key={index}>
+        {availableTags.map((tag) => (
+          <Select.Option key={tag} value={tag}>
             {tag}
           </Select.Option>
         ))}
       </Select>
-    </Wrapper>
+    </WrapperMulti>
   );
 };
 
-export const ColumnTagsComp = (function () {
-  return new ColumnTypeCompBuilder(
-    childrenMap,
-    (props, dispatch) => {
-      const value = props.changeValue ?? getBaseValue(props, dispatch);
-      const tags = parseTagsData(value.text);
-      const colorMap = value.colorMap;
-      const view = tags.map((tag, index) => {
-        return (
-          <Tag color={getTagColor(tag, colorMap)} key={index}>
-            {tag}
-          </Tag>
-        );
-      });
-      return view;
-    },
-    (nodeValue) => {
-      const text = nodeValue.text.value;
-      const tags = parseTagsData(text);
-      return tags;
-    },
-    getBaseValue
-  )
-    .setEditViewFn((props) => {
+/* ------------------------------ 列组件构建 ------------------------------ */
+
+export const ColumnTagsComp = new ColumnTypeCompBuilder(
+  childrenMap,
+  (props, dispatch) => {
+    // 获取最新的 colorMapOptions
+    const latestColorMapOptions = props.colorMap as any;
+    const latestColorMap = Array.isArray(latestColorMapOptions)
+      ? toColorMap(latestColorMapOptions)
+      : latestColorMapOptions;
+    
+    // 如果有 changeValue，合并最新的 colorMap 配置
+    const baseValue = getBaseValue(props, dispatch);
+    const value = props.changeValue 
+      ? { ...props.changeValue, colorMap: latestColorMap, colorMapOptions: latestColorMapOptions }
+      : baseValue;
+    
+    const tags = parseTagsData(value.text);
+
+    return tags.map((tag, i) => {
+      const icon = getIconFromOptions(tag, latestColorMapOptions);
       return (
-        <ColorMapContext.Provider value={props.value.colorMap}>
-          <TagsArrayEdit
-            value={props.value.text}
-            onChange={(newText) => props.onChange({ text: newText, colorMap: props.value.colorMap })}
-            onChangeEnd={props.onChangeEnd}
-          />
-        </ColorMapContext.Provider>
+        <Tag color={getTagColor(tag, latestColorMap)} icon={icon} key={i}>
+          {tag}
+        </Tag>
       );
-    })
-    .setPropertyViewFn((children) => (
-      <>
-        {children.text.propertyView({
-          label: trans("table.columnValue"),
-          tooltip: ColumnValueTooltip,
-        })}
-        {children.colorMap.propertyView({
-          label: trans("table.colorMap") as any,
-          tooltip: trans("table.colorMapTooltip") as any,
-        })}
-      </>
-    ))
-    .build();
-})();
+    });
+  },
+  (nodeValue) => parseTagsData(nodeValue.text.value),
+  getBaseValue
+)
+  .setEditViewFn((props) => {
+    if (!props.value || typeof props.value !== 'object') return null;
+    const value = props.value as { text: string[]; colorMap?: JSONObject; colorMapOptions?: any[] };
+    return (
+      <ColorMapContext.Provider value={{ colorMap: value.colorMap, colorMapOptions: value.colorMapOptions }}>
+        <TagsArrayEdit
+          value={value.text}
+          colorMap={value.colorMap}
+          onChange={(text) => props.onChange({ text, colorMap: value.colorMap, colorMapOptions: value.colorMapOptions })}
+          onChangeEnd={props.onChangeEnd}
+        />
+      </ColorMapContext.Provider>
+    );
+  })
+  .setPropertyViewFn((children) => (
+    <>
+      {children.text.propertyView({
+        label: trans("table.columnValue"),
+        tooltip: ColumnValueTooltip,
+      })}
+      {children.colorMap.propertyView({
+        title: trans("table.colorMap"),
+      })}
+    </>
+  ))
+  .build();

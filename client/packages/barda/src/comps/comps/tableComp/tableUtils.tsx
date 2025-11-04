@@ -254,6 +254,26 @@ export function transformDispalyData(
 
 export type ColumnsAggrData = Record<string, Record<string, JSONValue> & { compType: string }>;
 
+function extractTags(input: unknown): string[] {
+  if (Array.isArray(input)) {
+    return input.flatMap((item) => extractTags(item));
+  }
+
+  if (typeof input === "object" && input !== null) {
+    if ("text" in input) {
+      return extractTags((input as any).text);
+    }
+    return [];
+  }
+
+  if (["string", "number", "boolean"].includes(typeof input)) {
+    return [String(input)];
+  }
+
+  return [];
+}
+
+
 export function getColumnsAggr(
   oriDisplayData: JSONObject[],
   dataIndexWithParamsDict: NodeToValue<
@@ -262,69 +282,44 @@ export function getColumnsAggr(
   changeSet?: Record<string, Record<string, JSONValue>>
 ): ColumnsAggrData {
   return _.mapValues(dataIndexWithParamsDict, (withParams, dataIndex) => {
-    const compType = (withParams.wrap() as any).compType;
+    const { compType } = withParams.wrap() as any;
     const res: Record<string, JSONValue> & { compType: string } = { compType };
-    if (compType === "tag" || compType === "tags") {
-      // 收集原始数据中的标签
-      const originalTags = _(oriDisplayData)
-        .map((row) => row[dataIndex]!)
-        .filter((tag) => !!tag)
-        .flatMap((tag) => {
-          if (_.isArray(tag)) {
-            return tag.map((item: any) => {
-              // 如果是对象数组，提取text字段
-              if (typeof item === 'object' && item !== null && 'text' in item) {
-                return String(item.text);
-              }
-              return String(item);
-            });
-          }
-          return [String(tag)];
-        })
-        .value();
-      
-      // 收集changeSet中的临时标签值
-      const changeSetTags: string[] = [];
-      if (changeSet) {
-        _.forEach(changeSet, (rowChanges) => {
-          const changedValue = rowChanges[dataIndex];
-          if (changedValue !== undefined) {
-            if (_.isArray(changedValue)) {
-              changedValue.forEach((item: any) => {
-                if (typeof item === 'object' && item !== null && 'text' in item) {
-                  changeSetTags.push(String((item as {text: any}).text));
-                } else {
-                  changeSetTags.push(String(item));
-                }
-              });
-            } else if (changedValue) {
-              changeSetTags.push(String(changedValue));
-            }
-          }
-        });
+
+    switch (compType) {
+      case "tag":
+      case "tags": {
+        const originalTags = _(oriDisplayData)
+          .map((row) => extractTags(row[dataIndex]))
+          .flatten()
+          .filter((t) => Boolean(t))
+          .value();
+
+        const changeSetTags = changeSet
+          ? _(changeSet)
+              .flatMap((rowChanges) => extractTags(rowChanges[dataIndex]))
+              .filter((t) => Boolean(t))
+              .value()
+          : [];
+
+        res.uniqueTags = _.uniq([...originalTags, ...changeSetTags]);
+        break;
       }
-      
-      // 合并并去重
-      res.uniqueTags = _.uniq([...originalTags, ...changeSetTags]);
-    } else if (compType === "badgeStatus") {
-      res.uniqueStatus = _(oriDisplayData)
-        .map((row) => {
-          const value = row[dataIndex] as any;
-          if (value.split(" ")[1]) {
-            return {
-              status: value.slice(0, value.indexOf(" ")),
-              text: value.slice(value.indexOf(" ") + 1),
-            };
-          } else {
-            return {
-              status: value,
-              text: "",
-            };
-          }
-        })
-        .uniqBy("text")
-        .value();
+
+      case "badgeStatus": {
+        res.uniqueStatus = _(oriDisplayData)
+          .map((row) => {
+            const value = row[dataIndex] as string;
+            const spaceIndex = value.indexOf(" ");
+            return spaceIndex !== -1
+              ? { status: value.slice(0, spaceIndex), text: value.slice(spaceIndex + 1) }
+              : { status: value, text: "" };
+          })
+          .uniqBy("text")
+          .value();
+        break;
+      }
     }
+
     return res;
   });
 }

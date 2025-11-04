@@ -1,162 +1,110 @@
 import { Tag } from "antd";
-import { PresetStatusColorTypes } from "antd/lib/_util/colors";
 import { TagsContext } from "components/table/EditableCell";
 import {
   ColumnTypeCompBuilder,
   ColumnTypeViewFn,
 } from "comps/comps/tableComp/column/columnTypeCompBuilder";
 import { ColumnValueTooltip } from "comps/comps/tableComp/column/simpleColumnTypeComps";
-import { codeControl, jsonObjectControl } from "comps/controls/codeControl";
+import { codeControl } from "comps/controls/codeControl";
 import { trans } from "i18n";
-import styled from "styled-components";
 import _ from "lodash";
-import { ReactNode, useContext, useState, createContext } from "react";
+import React, { ReactNode, useContext, useState, useMemo } from "react";
 import { toJson } from "really-relaxed-json";
-import { hashToNum } from "util/stringUtils";
 import { CustomSelect, PackUpIcon } from "barda-design";
 import { ScrollBar } from "barda-design";
 import { JSONObject } from "util/jsonTypes";
+import { ColorMapOptionControl } from "comps/comps/selectInputComp/selectCompConstants";
+import {
+  ColorMapContext,
+  DEFAULT_COLOR_KEY,
+  isStringArray,
+  toColorMap,
+  getIconFromOptions,
+  getTagColor,
+  Wrapper,
+  DropdownStyled,
+} from "./columnTypeUtils/tagUtils";
 
-export const ColorMapContext = createContext<JSONObject | undefined>(undefined);
+/* ------------------------------ 工具函数区 ------------------------------ */
 
-const colors = PresetStatusColorTypes;
+// 解析 value 为字符串（Tag单选专用）
+// 如果是数组，合并为逗号分隔的字符串
+export const parseTagData = (value: unknown): string => {
+  if (isStringArray(value)) {
+    return value.map(String).join(",");
+  }
 
-const isStringArray = (value: any) => {
-  return (
-    _.isArray(value) &&
-    value.every((v) => {
-      const type = typeof v;
-      return type === "string" || type === "number" || type === "boolean";
-    })
-  );
-};
-
-// accept string, number, boolean and array input
-const TagsControl = codeControl<Array<string> | string>(
-  (value) => {
-    if (isStringArray(value)) {
-      return value;
-    }
-    const valueType = typeof value;
-    if (valueType === "string") {
+  if (["string", "number", "boolean"].includes(typeof value)) {
+    if (typeof value === "string") {
       try {
         const result = JSON.parse(toJson(value));
         if (isStringArray(result)) {
-          return result;
+          return result.map(String).join(",");
         }
-        return value;
-      } catch (e) {
-        return value;
-      }
-    } else if (valueType === "number" || valueType === "boolean") {
-      return value;
+      } catch (_) {}
     }
-    throw new TypeError(
-      `Type "Array<string> | string" is required, but find value: ${JSON.stringify(value)}`
-    );
-  },
-  { expectedType: "string | Array<string>", codeType: "JSON" }
-);
-
-// 根据文本和颜色映射获取标签颜色
-function getTagColor(text: string, colorMap?: JSONObject): string {
-  // 如果有颜色映射，先检查是否有给定key的颜色
-  if (colorMap && typeof colorMap[text] === "string") {
-    return colorMap[text] as string;
+    return String(value);
   }
-  
-  // 检查是否有default key
-  if (colorMap && typeof colorMap["default"] === "string") {
-    return colorMap["default"] as string;
-  }
-  
-  // 使用PresetStatusColorTypes计算颜色
-  const index = Math.abs(hashToNum(text)) % colors.length;
-  return colors[index];
-}
 
-const childrenMap = {
-  text: TagsControl,
-  colorMap: jsonObjectControl({}),
+  return "";
 };
 
-const getBaseValue: ColumnTypeViewFn<typeof childrenMap, { text: string | string[]; colorMap?: JSONObject }, { text: string | string[]; colorMap?: JSONObject }> = (
-  props
-) => ({ text: props.text, colorMap: props.colorMap });
+/* ------------------------------ 控件配置 ------------------------------ */
+
+// Tag单选控件：接受 string | string[]，统一转为字符串
+const TagControl = codeControl<string>(parseTagData, {
+  expectedType: "string",
+  codeType: "JSON",
+});
+
+const childrenMap = {
+  text: TagControl,
+  colorMap: ColorMapOptionControl,
+};
+
+/* ------------------------------ 数据基础转换 ------------------------------ */
+
+const getBaseValue: ColumnTypeViewFn<
+  typeof childrenMap,
+  { text: string; colorMap?: JSONObject; colorMapOptions?: any[] },
+  { text: string; colorMap?: JSONObject; colorMapOptions?: any[] }
+> = (props) => {
+  const colorMapOptions = props.colorMap;
+  if (Array.isArray(colorMapOptions)) {
+    return {
+      text: props.text,
+      colorMap: toColorMap(colorMapOptions),
+      colorMapOptions: colorMapOptions,
+    };
+  }
+  return { text: props.text, colorMap: colorMapOptions };
+};
+
+/* ------------------------------ 编辑组件 ------------------------------ */
 
 type TagEditPropsType = {
-  value: string | string[];
-  onChange: (value: string | string[]) => void;
+  value: string;
+  onChange: (value: string) => void;
   onChangeEnd: () => void;
   colorMap?: JSONObject;
 };
 
-export const Wrapper = styled.div`
-  display: inline-flex;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  background: transparent !important;
-  > div {
-    width: 100%;
-    height: 100%;
-  }
-  .ant-select {
-    height: 100%;
-    .ant-select-selector {
-      padding: 0 7px;
-      height: 100%;
-      overflow: hidden;
-      .ant-select-selection-item {
-        display: inline-flex;
-        align-items: center;
-        padding-right: 24px;
-      }
-    }
-    .ant-select-selector .ant-select-selection-search {
-      left: 7px;
-      input {
-        height: 100%;
-      }
-    }
-    &.ant-select-open {
-      .ant-select-arrow {
-        border-right: none;
-        border-left: 1px solid #d7d9e0;
-        svg g path {
-          fill: #315efb;
-        }
-      }
-      .ant-select-selection-item {
-        opacity: 0.4;
-      }
-    }
-  }
-`;
-
-export const DropdownStyled = styled.div`
-  .ant-select-item {
-    padding: 3px 8px;
-    margin: 0 0 2px 8px;
-    border-radius: 4px;
-  }
-  .ant-select-item-option-content {
-    display: flex;
-    align-items: center;
-  }
-  .ant-tag {
-    margin-right: 0;
-  }
-`;
-
 const TagEdit = (props: TagEditPropsType) => {
   const defaultTags = useContext(TagsContext);
-  const colorMapFromContext = useContext(ColorMapContext);
-  const colorMap = props.colorMap || colorMapFromContext;
-  
-  const [tags, setTags] = useState(() => {
+  const contextValue = useContext(ColorMapContext);
+  const mergedColorMap = props.colorMap || contextValue?.colorMap;
+  const colorMapOptions = contextValue?.colorMapOptions;
+
+  // 从 colorMapOptions 中提取有效的标签 label
+  const colorMapLabels = useMemo(() => {
+    if (!Array.isArray(colorMapOptions)) return [];
+    return colorMapOptions
+      .map(opt => opt?.label)
+      .filter((label): label is string => typeof label === "string" && label !== DEFAULT_COLOR_KEY);
+  }, [colorMapOptions]);
+
+  // 生成所有可选标签（合并 defaultTags 和 colorMapLabels）
+  const availableTags = useMemo(() => {
     const result: string[] = [];
     defaultTags.forEach((item) => {
       if (item.split(",")[1]) {
@@ -164,24 +112,26 @@ const TagEdit = (props: TagEditPropsType) => {
       }
       result.push(item);
     });
-    return result;
-  });
+    return [...new Set([...result, ...colorMapLabels])];
+  }, [defaultTags, colorMapLabels]);
+
+  const [tags, setTags] = useState(availableTags);
   return (
     <Wrapper>
       <CustomSelect
         autoFocus
         defaultOpen
         variant="borderless"
-        optionLabelProp="children"
+        optionLabelProp="label"
         showSearch
         defaultValue={props.value}
         style={{ width: "100%" }}
         suffixIcon={<PackUpIcon />}
         onSearch={(value) => {
-          if (defaultTags.findIndex((item) => item.includes(value)) < 0) {
-            setTags([...defaultTags, value]);
+          if (availableTags.findIndex((item) => item.includes(value)) < 0) {
+            setTags([...availableTags, value]);
           } else {
-            setTags(defaultTags);
+            setTags(availableTags);
           }
           props.onChange(value);
         }}
@@ -201,60 +151,73 @@ const TagEdit = (props: TagEditPropsType) => {
           }
         }}
       >
-        {tags.map((value, index) => (
-          <CustomSelect.Option value={value} key={index}>
-            {value.split(",")[1] ? (
-              value.split(",").map((item, i) => (
-                <Tag color={getTagColor(item, colorMap)} key={i} style={{ marginRight: "8px" }}>
-                  {item}
-                </Tag>
-              ))
-            ) : (
-              <Tag color={getTagColor(value, colorMap)} key={index}>
-                {value}
-              </Tag>
-            )}
-          </CustomSelect.Option>
-        ))}
+        {tags.map((value, index) => {
+          const icon = getIconFromOptions(value, colorMapOptions);
+          const tagLabel = (
+            <Tag color={getTagColor(value, mergedColorMap)} icon={icon}>
+              {value}
+            </Tag>
+          );
+          return (
+            <CustomSelect.Option value={value} key={index} label={tagLabel}>
+              {value}
+            </CustomSelect.Option>
+          );
+        })}
       </CustomSelect>
     </Wrapper>
   );
 };
 
+/* ------------------------------ 列组件构建 ------------------------------ */
+
 export const ColumnTagComp = (function () {
   return new ColumnTypeCompBuilder(
     childrenMap,
     (props, dispatch) => {
-      const baseValue = props.changeValue ?? getBaseValue(props, dispatch);
-      let value: string | string[] = baseValue.text;
-      value = typeof value === "string" && value.split(",")[1] ? value.split(",") : value;
-      const tags = _.isArray(value) ? value : [value];
-      const colorMap = baseValue.colorMap;
-      const view = tags.map((tag, index) => {
-        // The actual eval value is of type number or boolean
+      // 获取最新的 colorMapOptions
+      const latestColorMapOptions = props.colorMap as any;
+      const latestColorMap = Array.isArray(latestColorMapOptions)
+        ? toColorMap(latestColorMapOptions)
+        : latestColorMapOptions;
+      
+      // 如果有 changeValue，合并最新的 colorMap 配置
+      const baseValue = getBaseValue(props, dispatch);
+      const value = props.changeValue 
+        ? { ...props.changeValue, colorMap: latestColorMap, colorMapOptions: latestColorMapOptions }
+        : baseValue;
+      
+      // 处理值：支持逗号分隔的字符串显示为多个tag
+      let textValue: string | string[] = value.text;
+      textValue = typeof textValue === "string" && textValue.split(",")[1] ? textValue.split(",") : textValue;
+      const tags = _.isArray(textValue) ? textValue : [textValue];
+      
+      return tags.map((tag, index) => {
         const tagText = String(tag);
+        const icon = getIconFromOptions(tagText, latestColorMapOptions);
         return (
-          <Tag color={getTagColor(tagText, colorMap)} key={index}>
+          <Tag color={getTagColor(tagText, latestColorMap)} icon={icon} key={index}>
             {tagText}
           </Tag>
         );
       });
-      return view;
     },
     (nodeValue) => {
+      // 序列化：Tag单选始终返回字符串
       const text = nodeValue.text.value;
-      return _.isArray(text) ? text.join(",") : text;
+      return typeof text === "string" ? text : String(text);
     },
     getBaseValue
   )
     .setEditViewFn((props) => {
-      const text = props.value.text;
-      const value = _.isArray(text) ? text.join(",") : text;
+      if (!props.value || typeof props.value !== 'object') return null;
+      const value = props.value as { text: string; colorMap?: JSONObject; colorMapOptions?: any[] };
       return (
-        <ColorMapContext.Provider value={props.value.colorMap}>
+        <ColorMapContext.Provider value={{ colorMap: value.colorMap, colorMapOptions: value.colorMapOptions }}>
           <TagEdit 
-            value={value} 
-            onChange={(newValue: string | string[]) => props.onChange({ text: newValue, colorMap: props.value.colorMap })} 
+            value={value.text} 
+            colorMap={value.colorMap}
+            onChange={(text) => props.onChange({ text, colorMap: value.colorMap, colorMapOptions: value.colorMapOptions })} 
             onChangeEnd={props.onChangeEnd} 
           />
         </ColorMapContext.Provider>
@@ -267,8 +230,7 @@ export const ColumnTagComp = (function () {
           tooltip: ColumnValueTooltip,
         })}
         {children.colorMap.propertyView({
-          label: trans("table.colorMap") as any,
-          tooltip: trans("table.colorMapTooltip") as any,
+          title: trans("table.colorMap"),
         })}
       </>
     ))
