@@ -6,6 +6,7 @@ import {
 } from "comps/comps/tableComp/column/columnTypeCompBuilder";
 import { ColumnValueTooltip } from "comps/comps/tableComp/column/simpleColumnTypeComps";
 import { codeControl } from "comps/controls/codeControl";
+import { BoolControl } from "comps/controls/boolControl";
 import { trans } from "i18n";
 import _ from "lodash";
 import React, { ReactNode, useContext, useState, useMemo } from "react";
@@ -60,14 +61,15 @@ const TagControl = codeControl<string>(parseTagData, {
 const childrenMap = {
   text: TagControl,
   colorMap: ColorMapOptionControl,
+  allowCustomTags: BoolControl,
 };
 
 /* ------------------------------ 数据基础转换 ------------------------------ */
 
 const getBaseValue: ColumnTypeViewFn<
   typeof childrenMap,
-  { text: string; colorMap?: JSONObject; colorMapOptions?: any[] },
-  { text: string; colorMap?: JSONObject; colorMapOptions?: any[] }
+  { text: string; colorMap?: JSONObject; colorMapOptions?: any[]; allowCustomTags?: boolean },
+  { text: string; colorMap?: JSONObject; colorMapOptions?: any[]; allowCustomTags?: boolean }
 > = (props) => {
   const colorMapOptions = props.colorMap;
   if (Array.isArray(colorMapOptions)) {
@@ -75,9 +77,10 @@ const getBaseValue: ColumnTypeViewFn<
       text: props.text,
       colorMap: toColorMap(colorMapOptions),
       colorMapOptions: colorMapOptions,
+      allowCustomTags: props.allowCustomTags,
     };
   }
-  return { text: props.text, colorMap: colorMapOptions };
+  return { text: props.text, colorMap: colorMapOptions, allowCustomTags: props.allowCustomTags };
 };
 
 /* ------------------------------ 编辑组件 ------------------------------ */
@@ -87,6 +90,7 @@ type TagEditPropsType = {
   onChange: (value: string) => void;
   onChangeEnd: () => void;
   colorMap?: JSONObject;
+  allowCustomTags?: boolean;
 };
 
 const TagEdit = (props: TagEditPropsType) => {
@@ -116,6 +120,8 @@ const TagEdit = (props: TagEditPropsType) => {
   }, [defaultTags, colorMapLabels]);
 
   const [tags, setTags] = useState(availableTags);
+  const allowCustom = props.allowCustomTags !== false; // 默认允许自定义
+  
   return (
     <Wrapper>
       <CustomSelect
@@ -123,17 +129,19 @@ const TagEdit = (props: TagEditPropsType) => {
         defaultOpen
         variant="borderless"
         optionLabelProp="label"
-        showSearch
+        showSearch={allowCustom}
         defaultValue={props.value}
         style={{ width: "100%" }}
         suffixIcon={<PackUpIcon />}
         onSearch={(value) => {
-          if (availableTags.findIndex((item) => item.includes(value)) < 0) {
-            setTags([...availableTags, value]);
-          } else {
-            setTags(availableTags);
+          if (allowCustom) {
+            if (availableTags.findIndex((item) => item.includes(value)) < 0) {
+              setTags([...availableTags, value]);
+            } else {
+              setTags(availableTags);
+            }
+            props.onChange(value);
           }
-          props.onChange(value);
         }}
         onChange={(value) => {
           props.onChange(value);
@@ -211,13 +219,14 @@ export const ColumnTagComp = (function () {
   )
     .setEditViewFn((props) => {
       if (!props.value || typeof props.value !== 'object') return null;
-      const value = props.value as { text: string; colorMap?: JSONObject; colorMapOptions?: any[] };
+      const value = props.value as { text: string; colorMap?: JSONObject; colorMapOptions?: any[]; allowCustomTags?: boolean };
       return (
         <ColorMapContext.Provider value={{ colorMap: value.colorMap, colorMapOptions: value.colorMapOptions }}>
           <TagEdit 
             value={value.text} 
             colorMap={value.colorMap}
-            onChange={(text) => props.onChange({ text, colorMap: value.colorMap, colorMapOptions: value.colorMapOptions })} 
+            allowCustomTags={value.allowCustomTags}
+            onChange={(text) => props.onChange({ text, colorMap: value.colorMap, colorMapOptions: value.colorMapOptions, allowCustomTags: value.allowCustomTags })} 
             onChangeEnd={props.onChangeEnd} 
           />
         </ColorMapContext.Provider>
@@ -230,7 +239,11 @@ export const ColumnTagComp = (function () {
           tooltip: ColumnValueTooltip,
         })}
         {children.colorMap.propertyView({
-          title: trans("table.colorMap"),
+          title: trans("table.tagConfig"),
+        })}
+        {children.allowCustomTags.propertyView({
+          label: trans("table.allowCustomTags"),
+          tooltip: trans("table.allowCustomTagsTooltip"),
         })}
       </>
     ))
