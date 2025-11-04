@@ -6,15 +6,14 @@ import { ControlParams } from "./controlParams";
 import { trans } from "i18n";
 
 const ColorContainer = styled.div`
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  justify-content: space-between;
-  float: right;
   gap: 6px;
-  margin-left: -24px;
+  width: 100%;
 
   > div:nth-of-type(1) {
     margin: 3px 0;
+    flex-shrink: 0;
   }
 `;
 
@@ -27,13 +26,15 @@ const DepIcon = styled(IconDep)`
 const ColorInput = styled.div`
   //position: absolute;
   outline: none;
-  width: 130px;
+  flex: 1;
+  min-width: 0;
   min-height: 30px;
 `;
 
 const DepStyle = styled.div`
   left: 30px;
-  width: 130px;
+  flex: 1;
+  min-width: 0;
   min-height: 30px;
   display: flex;
   align-items: center;
@@ -135,7 +136,7 @@ function ColorItem(props: {
           dispatch={controlThis.dispatch}
           color={param.panelDefaultColor || color || DEFAULT_COLOR}
         />
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", flex: 1, minWidth: 0 }}>
           <DepStyle
             hidden={!showDep}
             onClick={() => {
