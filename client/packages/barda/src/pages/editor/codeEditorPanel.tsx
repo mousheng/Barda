@@ -128,7 +128,7 @@ export const CodeEditorPanel = (props: {
   const editorState = useContext(EditorContext);
 
   const updateEditorState = useCallback(() => {
-    editorState.setCodeEditorPanelOpen(visible);
+    editorState?.setCodeEditorPanelOpen(visible);
   }, [visible]);
 
   useEffect(() => {
