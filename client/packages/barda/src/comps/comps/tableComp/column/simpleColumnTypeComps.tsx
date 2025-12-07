@@ -37,7 +37,7 @@ export const ButtonComp = (function () {
         return (
           <Button100
             type={props.buttonType}
-            onClick={props.onClick}
+            onClick={()=>props.onClick()}
             loading={props.loading}
             disabled={props.disabled}
             $buttonStyle={props.buttonType === "primary" ? style : undefined}

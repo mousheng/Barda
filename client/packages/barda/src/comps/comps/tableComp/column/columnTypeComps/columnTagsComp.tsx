@@ -1,24 +1,26 @@
 import { Select, Tag } from "antd";
+import { updateActionContextAction } from "barda-core";
 import { ScrollBar } from "barda-design";
 import { TagsContext } from "components/table/EditableCell";
+import { ColorMapOptionControl } from "comps/comps/selectInputComp/selectCompConstants";
 import { ColumnTypeCompBuilder, ColumnTypeViewFn } from "comps/comps/tableComp/column/columnTypeCompBuilder";
 import { ColumnValueTooltip } from "comps/comps/tableComp/column/simpleColumnTypeComps";
-import { codeControl } from "comps/controls/codeControl";
+import { ActionSelectorControl } from "comps/controls/actionSelector/actionSelectorControl";
 import { BoolControl } from "comps/controls/boolControl";
+import { codeControl } from "comps/controls/codeControl";
 import { trans } from "i18n";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { toJson } from "really-relaxed-json";
 import { JSONObject } from "util/jsonTypes";
-import { ColorMapOptionControl } from "comps/comps/selectInputComp/selectCompConstants";
 import {
   ColorMapContext,
   DEFAULT_COLOR_KEY,
-  isStringArray,
-  toColorMap,
+  DropdownStyled,
   getIconFromOptions,
   getTagColor,
+  isStringArray,
+  toColorMap,
   WrapperMulti,
-  DropdownStyled,
 } from "./columnTypeUtils/tagUtils";
 
 /* ------------------------------ 工具函数区 ------------------------------ */
@@ -51,6 +53,7 @@ const childrenMap = {
   text: TagsArrayControl,
   colorMap: ColorMapOptionControl,
   allowCustomTags: BoolControl,
+  onTagClick: ActionSelectorControl,
 };
 
 /* ------------------------------ 数据基础转换 ------------------------------ */
@@ -111,7 +114,7 @@ const TagsArrayEdit = ({ value, onChange, onChangeEnd, colorMap, allowCustomTags
   useEffect(() => {
     setCurrentTags(parseTagsData(value));
   }, [value]);
-  
+
   return (
     <WrapperMulti>
       <Select
@@ -184,19 +187,29 @@ export const ColumnTagsComp = new ColumnTypeCompBuilder(
     const latestColorMap = Array.isArray(latestColorMapOptions)
       ? toColorMap(latestColorMapOptions)
       : latestColorMapOptions;
-    
+
     // 如果有 changeValue，合并最新的 colorMap 配置
     const baseValue = getBaseValue(props, dispatch);
-    const value = props.changeValue 
+    const value = props.changeValue
       ? { ...props.changeValue, colorMap: latestColorMap, colorMapOptions: latestColorMapOptions }
       : baseValue;
-    
+
     const tags = parseTagsData(value.text);
 
     return tags.map((tag, i) => {
       const icon = getIconFromOptions(tag, latestColorMapOptions);
       return (
-        <Tag color={getTagColor(tag, latestColorMap)} icon={icon} key={i}>
+        <Tag
+          color={getTagColor(tag, latestColorMap)}
+          icon={icon}
+          key={i}
+          onClick={(e) => {
+            e.stopPropagation();
+            dispatch(updateActionContextAction({ clickedTag: tag }));
+            props.onTagClick({ clickedTag: tag });
+          }}
+          style={{ cursor: "pointer" }}
+        >
           {tag}
         </Tag>
       );
@@ -232,6 +245,9 @@ export const ColumnTagsComp = new ColumnTypeCompBuilder(
       {children.allowCustomTags.propertyView({
         label: trans("table.allowCustomTags"),
         tooltip: trans("table.allowCustomTagsTooltip"),
+      })}
+      {children.onTagClick.propertyView({
+        label: trans("table.onTagClick"),
       })}
     </>
   ))

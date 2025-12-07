@@ -37,11 +37,13 @@ import {
   CompActionTypes,
   deferAction,
   executeQueryAction,
+  isBroadcastAction,
   fromRecord,
   onlyEvalAction,
   routeByNameAction,
   withFunction,
   wrapChildAction,
+  UpdateActionContextAction,
 } from "barda-core";
 import { saveDataAsFile } from "util/fileUtils";
 import { JSONObject, JSONValue } from "util/jsonTypes";
@@ -167,6 +169,18 @@ export class TableImplComp extends TableInitComp implements IContainer {
 
   override reduce(action: CompAction): this {
     let comp = super.reduce(action);
+
+    if (
+      isBroadcastAction<UpdateActionContextAction>(action, CompActionTypes.UPDATE_ACTION_CONTEXT)
+    ) {
+      const clickedTag = action.action.context?.["clickedTag"];
+      if (typeof clickedTag === "string") {
+        const nextClickedTag = comp.children.clickedTag.reduce(
+          comp.children.clickedTag.changeValueAction(clickedTag)
+        );
+        comp = comp.setChild("clickedTag", nextClickedTag);
+      }
+    }
 
     let dataChanged = false;
     if (action.type === CompActionTypes.UPDATE_NODES_V2) {
@@ -880,5 +894,6 @@ export const TableComp = withExposingConfigs(TableTmpComp, [
     },
     trans("table.filterDesc")
   ),
+  new NameConfig("clickedTag", trans("table.onTagClick")),
   new NameConfig("data", trans("table.dataDesc")),
 ]);

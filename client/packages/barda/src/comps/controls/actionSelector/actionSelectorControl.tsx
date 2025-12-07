@@ -283,14 +283,18 @@ function actionSelectorControl(needContext: boolean) {
         );
       }
 
-      return () =>
-        getPromiseAfterExecuteDispatch(
+      // 返回一个函数，可以接受可选的 context 对象参数
+      // 如果传入了对象（不是 undefined），将原 context 和传入的对象进行合并
+      // 如果没有传入，使用原 context
+      return (newContext?: ActionContextType) => {
+        const contextToUse = newContext !== undefined ? { ...this.context, ...newContext } : this.context;
+        return getPromiseAfterExecuteDispatch(
           executor,
           this.dispatch,
           customAction<ActionTriggered>(
             {
               type: ACTION_TRIGGERED_TYPE_STRING,
-              context: this.context,
+              context: contextToUse,
               func: this.children.comp.getView(),
             },
             false
@@ -299,6 +303,7 @@ function actionSelectorControl(needContext: boolean) {
             notHandledError: trans("eventHandler.notHandledError"),
           }
         );
+      };
     }
 
     propertyView({ label, placement }: { label: string; placement?: "query" | "table" }) {

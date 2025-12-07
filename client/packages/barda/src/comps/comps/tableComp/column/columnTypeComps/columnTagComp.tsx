@@ -1,29 +1,30 @@
+import { ActionSelectorControl } from "@barda/comps/controls/actionSelector/actionSelectorControl";
+import { updateActionContextAction } from "@barda/index.sdk";
 import { Tag } from "antd";
+import { CustomSelect, PackUpIcon, ScrollBar } from "barda-design";
 import { TagsContext } from "components/table/EditableCell";
+import { ColorMapOptionControl } from "comps/comps/selectInputComp/selectCompConstants";
 import {
   ColumnTypeCompBuilder,
   ColumnTypeViewFn,
 } from "comps/comps/tableComp/column/columnTypeCompBuilder";
 import { ColumnValueTooltip } from "comps/comps/tableComp/column/simpleColumnTypeComps";
-import { codeControl } from "comps/controls/codeControl";
 import { BoolControl } from "comps/controls/boolControl";
+import { codeControl } from "comps/controls/codeControl";
 import { trans } from "i18n";
 import _ from "lodash";
-import React, { ReactNode, useContext, useState, useMemo } from "react";
+import { ReactNode, useContext, useMemo, useState } from "react";
 import { toJson } from "really-relaxed-json";
-import { CustomSelect, PackUpIcon } from "barda-design";
-import { ScrollBar } from "barda-design";
 import { JSONObject } from "util/jsonTypes";
-import { ColorMapOptionControl } from "comps/comps/selectInputComp/selectCompConstants";
 import {
   ColorMapContext,
   DEFAULT_COLOR_KEY,
-  isStringArray,
-  toColorMap,
+  DropdownStyled,
   getIconFromOptions,
   getTagColor,
+  isStringArray,
+  toColorMap,
   Wrapper,
-  DropdownStyled,
 } from "./columnTypeUtils/tagUtils";
 
 /* ------------------------------ 工具函数区 ------------------------------ */
@@ -62,6 +63,7 @@ const childrenMap = {
   text: TagControl,
   colorMap: ColorMapOptionControl,
   allowCustomTags: BoolControl,
+  onTagClick: ActionSelectorControl,
 };
 
 /* ------------------------------ 数据基础转换 ------------------------------ */
@@ -204,7 +206,15 @@ export const ColumnTagComp = (function () {
         const tagText = String(tag);
         const icon = getIconFromOptions(tagText, latestColorMapOptions);
         return (
-          <Tag color={getTagColor(tagText, latestColorMap)} icon={icon} key={index}>
+          <Tag color={getTagColor(tagText, latestColorMap)} 
+          icon={icon} 
+          key={index}
+          onClick={(e) => {
+            e.stopPropagation();
+            dispatch(updateActionContextAction({ clickedTag: tag }));
+            props.onTagClick({clickedTag: tag});
+          }}
+          >
             {tagText}
           </Tag>
         );
@@ -245,6 +255,9 @@ export const ColumnTagComp = (function () {
           label: trans("table.allowCustomTags"),
           tooltip: trans("table.allowCustomTagsTooltip"),
         })}
+        {children.onTagClick.propertyView({
+        label: trans("table.onTagClick"),
+      })}
       </>
     ))
     .build();

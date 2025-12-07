@@ -1177,6 +1177,7 @@ export const en = {
     lessThan: "less than",
     lessThanOrEquals: "less than or equals",
     action: "Action",
+    onTagClick: "Tag Click",
     columnValue: "Column value",
     columnValueTooltip:
       "'{{currentCell}}': current cell data\n" +

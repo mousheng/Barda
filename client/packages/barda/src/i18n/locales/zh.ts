@@ -1160,6 +1160,7 @@ export const zh = {
         lessThan: "小于",
         lessThanOrEquals: "小于等于",
         action: "操作",
+        onTagClick: "标签点击",
         columnValue: "列值",
         columnValueTooltip:
             "'{{currentCell}}': 当前单元格数据\n" +

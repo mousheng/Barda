@@ -149,6 +149,7 @@ const tableChildrenMap = {
   viewModeResizable: BoolControl,
   // sample data for regenerating columns
   dataRowExample: stateComp<JSONObject | null>(null),
+  clickedTag: stateComp<string>(""),
   onEvent: TableEventControl,
   loading: BoolCodeControl,
   rowColor: RowColorComp,
