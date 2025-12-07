@@ -93,7 +93,7 @@ export default function PropertyView(props: PropertyViewProps) {
   const selectedCompNames = editorState.selectedCompNames;
   const selectedComp = editorState.selectedComp();
   const moduleLayoutComp = uiComp?.getModuleLayoutComp();
-  const AllLayouts = editorState.getUIComp().getComp()?.getAllLayouts();
+  const AllLayouts = editorState.getUIComp().getComp()?.getAllLayouts?.() ?? {};
   const treeLayouts = getTreeDataAndLayout(editorState.getUIComp().getTree(), AllLayouts!, []);
   const treeData: layoutsNodeItem[] = filterTreeData(treeLayouts, selectedCompNames);
   const layoutMode = editorState.getLayoutMode();
