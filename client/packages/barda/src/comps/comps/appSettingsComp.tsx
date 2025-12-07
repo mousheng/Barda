@@ -159,10 +159,11 @@ const childrenMap = {
 type ChildrenInstance = RecordConstructorToComp<typeof childrenMap> & {
   themeList: ThemeType[];
   defaultTheme: string;
+  hideNavOptions?: boolean;
 };
 
 function AppSettingsModal(props: ChildrenInstance) {
-  const { themeList, defaultTheme, themeId, maxWidth, hiddenHeader, layoutMode } = props;
+  const { themeList, defaultTheme, themeId, maxWidth, hiddenHeader, layoutMode, hideNavOptions } = props;
   const THEME_OPTIONS = themeList?.map((theme) => ({
     label: theme.name,
     value: theme.id + "",
@@ -198,7 +199,7 @@ function AppSettingsModal(props: ChildrenInstance) {
     <SettingsStyled>
       <Text strong >{TitleText}</Text>
       <DivStyled>
-        {maxWidth.propertyView({
+        {!hideNavOptions && maxWidth.propertyView({
           dropdownLabel: trans("appSetting.canvasMaxWidth"),
           inputLabel: trans("appSetting.userDefinedMaxWidth"),
           inputPlaceholder: trans("appSetting.inputUserDefinedPxValue"),
@@ -215,7 +216,7 @@ function AppSettingsModal(props: ChildrenInstance) {
           tooltip: trans("appSetting.embeddingModeDes"),
           labelStyle: { margin: "5px 0", color: "#8b8fa3" },
         })}
-        {layoutMode.propertyView({
+        {!hideNavOptions && layoutMode.propertyView({
           label: trans("appSetting.layoutMode"),
           radioButton: true,
           tooltip: trans("appSetting.layoutModeDes"),
@@ -239,39 +240,43 @@ function AppSettingsModal(props: ChildrenInstance) {
       </DivStyled>
       <Text id={anchorItemKey.Shortcuts} strong>{trans("customShortcut.shortcut")}</Text>
       {props.customShortcuts.getPropertyView()}
-      <Divider />
-      <Text id={anchorItemKey.Theme} strong>{trans("settings.theme")}</Text>
-      <Dropdown
-        defaultValue={
-          themeWithDefault === ""
-            ? undefined
-            : themeWithDefault === DEFAULT_THEMEID
-              ? defaultTheme || undefined
-              : themeWithDefault
-        }
-        placeholder={trans("appSetting.themeSettingDefault")}
-        options={THEME_OPTIONS}
-        label={trans("appSetting.themeSetting")}
-        placement="right"
-        labelStyle={{ margin: "12px 0", color: "#8b8fa3" }}
-        dropdownStyle={{ marginBottom: "12px" }}
-        itemNode={(value) => <DropdownItem value={value} />}
-        preNode={() => (
-          <>
-            <CreateDiv onClick={() => window.open(THEME_SETTING)}>
-              <StyledAddIcon />
-              {trans("appSetting.themeCreate")}
-            </CreateDiv>
-            <DividerStyled />
-          </>
-        )}
-        allowClear
-        onChange={(value) => {
-          themeId.dispatchChangeValueAction(
-            value === defaultTheme ? DEFAULT_THEMEID : value || ""
-          );
-        }}
-      />
+      {!hideNavOptions && (
+        <>
+          <Divider />
+          <Text id={anchorItemKey.Theme} strong>{trans("settings.theme")}</Text>
+          <Dropdown
+            defaultValue={
+              themeWithDefault === ""
+                ? undefined
+                : themeWithDefault === DEFAULT_THEMEID
+                  ? defaultTheme || undefined
+                  : themeWithDefault
+            }
+            placeholder={trans("appSetting.themeSettingDefault")}
+            options={THEME_OPTIONS}
+            label={trans("appSetting.themeSetting")}
+            placement="right"
+            labelStyle={{ margin: "12px 0", color: "#8b8fa3" }}
+            dropdownStyle={{ marginBottom: "12px" }}
+            itemNode={(value) => <DropdownItem value={value} />}
+            preNode={() => (
+              <>
+                <CreateDiv onClick={() => window.open(THEME_SETTING)}>
+                  <StyledAddIcon />
+                  {trans("appSetting.themeCreate")}
+                </CreateDiv>
+                <DividerStyled />
+              </>
+            )}
+            allowClear
+            onChange={(value) => {
+              themeId.dispatchChangeValueAction(
+                value === defaultTheme ? DEFAULT_THEMEID : value || ""
+              );
+            }}
+          />
+        </>
+      )}
     </SettingsStyled>
   );
 }
@@ -288,3 +293,5 @@ export const AppSettingsComp = new MultiCompBuilder(childrenMap, (props) => {
     return <AppSettingsModal {...children} themeList={themeList} defaultTheme={defaultTheme} />;
   })
   .build();
+
+export { AppSettingsModal };

@@ -262,6 +262,7 @@ function EditorView(props: EditorViewProps) {
                   application={application}
                   appSettingsComp={appSettingsComp}
                   preloadComp={props.preloadComp}
+                  uiComp={uiComp}
                 />
               )}
             </LeftPanel>
