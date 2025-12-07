@@ -5,7 +5,7 @@ import { getTreeNodeByKey } from "@barda/util/objectUtils";
 import { Key } from "antd/es/table/interface";
 import { layoutsNodeItem, LeftCommon, ScrollBar, SelectedComps } from "barda-design";
 import { EmptyContent } from "components/EmptyContent";
-import UIComp from "comps/comps/uiComp";
+import UIComp, { UiLayoutType } from "comps/comps/uiComp";
 import { EditorContext } from "comps/editorState";
 import { GridCompOperator } from "comps/utils/gridCompOperator";
 import { trans } from "i18n";
@@ -93,6 +93,7 @@ export default function PropertyView(props: PropertyViewProps) {
   const selectedCompNames = editorState.selectedCompNames;
   const selectedComp = editorState.selectedComp();
   const moduleLayoutComp = uiComp?.getModuleLayoutComp();
+  const layoutType = uiComp?.children.compType.getView() as UiLayoutType;
   const AllLayouts = editorState.getUIComp().getComp()?.getAllLayouts?.() ?? {};
   const treeLayouts = getTreeDataAndLayout(editorState.getUIComp().getTree(), AllLayouts!, []);
   const treeData: layoutsNodeItem[] = filterTreeData(treeLayouts, selectedCompNames);
@@ -151,6 +152,8 @@ export default function PropertyView(props: PropertyViewProps) {
     );
   } else if (moduleLayoutComp) {
     propertyView = moduleLayoutComp.getPropertyView();
+  } else if (uiComp?.getComp() &&  (layoutType  === "nav" || layoutType === "mobileTabLayout")) {
+    propertyView = uiComp?.getComp()?.getPropertyView();
   } else {
     propertyView = (
       <EmptyContent style={{ margin: 16 }} text={trans("rightPanel.noSelectedComps")} />
