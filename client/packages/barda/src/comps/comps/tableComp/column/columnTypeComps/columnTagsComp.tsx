@@ -9,7 +9,7 @@ import { ActionSelectorControl } from "comps/controls/actionSelector/actionSelec
 import { BoolControl } from "comps/controls/boolControl";
 import { codeControl } from "comps/controls/codeControl";
 import { trans } from "i18n";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { toJson } from "really-relaxed-json";
 import { JSONObject } from "util/jsonTypes";
 import {
@@ -22,6 +22,9 @@ import {
   toColorMap,
   WrapperMulti,
 } from "./columnTypeUtils/tagUtils";
+
+// Context 用于传递列基础配置的 editable 值
+export const ColumnEditableContext = createContext<boolean | undefined>(undefined);
 
 /* ------------------------------ 工具函数区 ------------------------------ */
 
@@ -233,22 +236,28 @@ export const ColumnTagsComp = new ColumnTypeCompBuilder(
       </ColorMapContext.Provider>
     );
   })
-  .setPropertyViewFn((children) => (
-    <>
-      {children.text.propertyView({
-        label: trans("table.columnValue"),
-        tooltip: ColumnValueTooltip,
-      })}
-      {children.colorMap.propertyView({
-        title: trans("table.tagConfig"),
-      })}
-      {children.allowCustomTags.propertyView({
-        label: trans("table.allowCustomTags"),
-        tooltip: trans("table.allowCustomTagsTooltip"),
-      })}
-      {children.onTagClick.propertyView({
-        label: trans("table.onTagClick"),
-      })}
-    </>
-  ))
+  .setPropertyViewFn((children) => {
+    const PropertyView = () => {
+      const columnEditable = useContext(ColumnEditableContext);
+      return (
+        <>
+          {children.text.propertyView({
+            label: trans("table.columnValue"),
+            tooltip: ColumnValueTooltip,
+          })}
+          {children.colorMap.propertyView({
+            title: trans("table.tagConfig"),
+          })}
+          {columnEditable && children.allowCustomTags.propertyView({
+            label: trans("table.allowCustomTags"),
+            tooltip: trans("table.allowCustomTagsTooltip"),
+          })}
+          {children.onTagClick.propertyView({
+            label: trans("table.onTagClick"),
+          })}
+        </>
+      );
+    };
+    return <PropertyView />;
+  })
   .build();

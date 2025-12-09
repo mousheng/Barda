@@ -1,11 +1,3 @@
-import { BoolControl } from "comps/controls/boolControl";
-import { NumberControl, StringControl } from "comps/controls/codeControl";
-import { dropdownControl, HorizontalAlignmentControl } from "comps/controls/dropdownControl";
-import { MultiCompBuilder, stateComp, valueComp } from "comps/generators";
-import { withSelectedMultiContext } from "comps/generators/withSelectedMultiContext";
-import { genRandomKey } from "comps/utils/idGenerator";
-import { trans } from "i18n";
-import _ from "lodash";
 import {
   changeChildAction,
   changeValueAction,
@@ -20,7 +12,16 @@ import {
   wrapChildAction,
 } from "barda-core";
 import { AlignClose, AlignLeft, AlignRight } from "barda-design";
+import { BoolControl } from "comps/controls/boolControl";
+import { NumberControl, StringControl } from "comps/controls/codeControl";
+import { dropdownControl, HorizontalAlignmentControl } from "comps/controls/dropdownControl";
+import { MultiCompBuilder, stateComp, valueComp } from "comps/generators";
+import { withSelectedMultiContext } from "comps/generators/withSelectedMultiContext";
+import { genRandomKey } from "comps/utils/idGenerator";
+import { trans } from "i18n";
+import _ from "lodash";
 import { ColumnTypeComp, ColumnTypeCompMap } from "./columnTypeComp";
+import { ColumnEditableContext } from "./columnTypeComps/columnTagsComp";
 
 export type Render = ReturnType<ConstructorToComp<typeof RenderComp>["getOriginalComp"]>;
 export const RenderComp = withSelectedMultiContext(ColumnTypeComp);
@@ -114,14 +115,18 @@ export class ColumnComp extends ColumnInitComp {
 
   propertyView(key: string) {
     const columnType = this.children.render.getSelectedComp().getComp().children.compType.getView();
+    const editable = this.children.editable.getView();
+    const columnTypeComp = ColumnTypeCompMap[columnType];
     return (
       <>
         {this.children.title.propertyView({
           label: trans("table.columnTitle"),
         })}
         {/* FIXME: cast type currently, return type of withContext should be corrected later */}
-        {this.children.render.getPropertyView()}
-        {ColumnTypeCompMap[columnType].canBeEditable() &&
+        <ColumnEditableContext.Provider value={editable}>
+          {this.children.render.getPropertyView()}
+        </ColumnEditableContext.Provider>
+        {columnTypeComp.canBeEditable() &&
           this.children.editable.propertyView({ label: trans("table.editable") })}
         {this.children.sortable.propertyView({
           label: trans("table.sortable"),
