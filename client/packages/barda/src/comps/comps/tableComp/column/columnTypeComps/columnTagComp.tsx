@@ -16,6 +16,7 @@ import _ from "lodash";
 import { ReactNode, useContext, useMemo, useState } from "react";
 import { toJson } from "really-relaxed-json";
 import { JSONObject } from "util/jsonTypes";
+import { ColumnEditableContext } from "./columnTagsComp";
 import {
   ColorMapContext,
   DEFAULT_COLOR_KEY,
@@ -242,23 +243,27 @@ export const ColumnTagComp = (function () {
         </ColorMapContext.Provider>
       );
     })
-    .setPropertyViewFn((children) => (
-      <>
-        {children.text.propertyView({
-          label: trans("table.columnValue"),
-          tooltip: ColumnValueTooltip,
-        })}
-        {children.colorMap.propertyView({
-          title: trans("table.tagConfig"),
-        })}
-        {children.allowCustomTags.propertyView({
-          label: trans("table.allowCustomTags"),
-          tooltip: trans("table.allowCustomTagsTooltip"),
-        })}
-        {children.onTagClick.propertyView({
-        label: trans("table.onTagClick"),
-      })}
-      </>
-    ))
+    .setPropertyViewFn((children) => {
+      const columnEditable = useContext(ColumnEditableContext);
+      return (
+        <>
+          {children.text.propertyView({
+            label: trans("table.columnValue"),
+            tooltip: ColumnValueTooltip,
+          })}
+          {children.colorMap.propertyView({
+            title: trans("table.tagConfig"),
+          })}
+          {columnEditable &&
+            children.allowCustomTags.propertyView({
+              label: trans("table.allowCustomTags"),
+              tooltip: trans("table.allowCustomTagsTooltip"),
+            })}
+          {children.onTagClick.propertyView({
+            label: trans("table.onTagClick"),
+          })}
+        </>
+      );
+    })
     .build();
 })();

@@ -99,14 +99,14 @@ const TagsArrayEdit = ({ value, onChange, onChangeEnd, colorMap, allowCustomTags
   const colorMapLabels = useMemo(() => {
     if (!Array.isArray(colorMapOptions)) return [];
     return colorMapOptions
-      .map(opt => opt?.label)
+      .map((opt) => opt?.label)
       .filter((label): label is string => typeof label === "string" && label !== DEFAULT_COLOR_KEY);
   }, [colorMapOptions]);
 
   // 生成所有可选标签
   const availableTags = useMemo(() => {
     const validDefaults = defaultTags.filter((t): t is string => typeof t === "string");
-    const splitDefaults = validDefaults.flatMap(t => t.split(","));
+    const splitDefaults = validDefaults.flatMap((t) => t.split(","));
     return [...new Set([...splitDefaults, ...colorMapLabels])];
   }, [defaultTags, colorMapLabels]);
 
@@ -222,42 +222,52 @@ export const ColumnTagsComp = new ColumnTypeCompBuilder(
   getBaseValue
 )
   .setEditViewFn((props) => {
-    if (!props.value || typeof props.value !== 'object') return null;
-    const value = props.value as { text: string[]; colorMap?: JSONObject; colorMapOptions?: any[]; allowCustomTags?: boolean };
+    if (!props.value || typeof props.value !== "object") return null;
+    const value = props.value as {
+      text: string[];
+      colorMap?: JSONObject;
+      colorMapOptions?: any[];
+      allowCustomTags?: boolean;
+    };
     return (
       <ColorMapContext.Provider value={{ colorMap: value.colorMap, colorMapOptions: value.colorMapOptions }}>
         <TagsArrayEdit
           value={value.text}
           colorMap={value.colorMap}
           allowCustomTags={value.allowCustomTags}
-          onChange={(text) => props.onChange({ text, colorMap: value.colorMap, colorMapOptions: value.colorMapOptions, allowCustomTags: value.allowCustomTags })}
+          onChange={(text) =>
+            props.onChange({
+              text,
+              colorMap: value.colorMap,
+              colorMapOptions: value.colorMapOptions,
+              allowCustomTags: value.allowCustomTags,
+            })
+          }
           onChangeEnd={props.onChangeEnd}
         />
       </ColorMapContext.Provider>
     );
   })
   .setPropertyViewFn((children) => {
-    const PropertyView = () => {
-      const columnEditable = useContext(ColumnEditableContext);
-      return (
-        <>
-          {children.text.propertyView({
-            label: trans("table.columnValue"),
-            tooltip: ColumnValueTooltip,
-          })}
-          {children.colorMap.propertyView({
-            title: trans("table.tagConfig"),
-          })}
-          {columnEditable && children.allowCustomTags.propertyView({
+    const columnEditable = useContext(ColumnEditableContext);
+    return (
+      <>
+        {children.text.propertyView({
+          label: trans("table.columnValue"),
+          tooltip: ColumnValueTooltip,
+        })}
+        {children.colorMap.propertyView({
+          title: trans("table.tagConfig"),
+        })}
+        {columnEditable &&
+          children.allowCustomTags.propertyView({
             label: trans("table.allowCustomTags"),
             tooltip: trans("table.allowCustomTagsTooltip"),
           })}
-          {children.onTagClick.propertyView({
-            label: trans("table.onTagClick"),
-          })}
-        </>
-      );
-    };
-    return <PropertyView />;
+        {children.onTagClick.propertyView({
+          label: trans("table.onTagClick"),
+        })}
+      </>
+    );
   })
   .build();
