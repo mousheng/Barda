@@ -16,6 +16,7 @@ import {
   ColorMapContext,
   DEFAULT_COLOR_KEY,
   DropdownStyled,
+  deriveTagPalette,
   getIconFromOptions,
   getTagColor,
   isStringArray,
@@ -150,10 +151,19 @@ const TagsArrayEdit = ({ value, onChange, onChangeEnd, colorMap, allowCustomTags
           const { label, closable, onClose } = props;
           const labelStr = String(label);
           const color = getTagColor(labelStr, mergedColorMap);
+          const palette = deriveTagPalette(color);
           const icon = getIconFromOptions(labelStr, colorMapOptions);
+          const tagStyle = palette
+            ? {
+                borderColor: palette.borderColor,
+                backgroundColor: palette.backgroundColor,
+                color: palette.textColor,
+              }
+            : { color };
           return (
             <Tag
-              color={color}
+              color={palette ? undefined : color}
+              style={tagStyle}
               icon={icon}
               closable={closable}
               onMouseDown={(e) => {
@@ -200,10 +210,21 @@ export const ColumnTagsComp = new ColumnTypeCompBuilder(
     const tags = parseTagsData(value.text);
 
     return tags.map((tag, i) => {
+      const tagColor = getTagColor(tag, latestColorMap);
+      const palette = deriveTagPalette(tagColor);
+      const tagStyle = palette
+        ? {
+            borderColor: palette.borderColor,
+            backgroundColor: palette.backgroundColor,
+            color: palette.textColor,
+            cursor: "pointer",
+          }
+        : { cursor: "pointer", color: tagColor };
       const icon = getIconFromOptions(tag, latestColorMapOptions);
       return (
         <Tag
-          color={getTagColor(tag, latestColorMap)}
+          color={palette ? undefined : tagColor}
+          style={tagStyle}
           icon={icon}
           key={i}
           onClick={(e) => {
@@ -211,7 +232,6 @@ export const ColumnTagsComp = new ColumnTypeCompBuilder(
             dispatch(updateActionContextAction({ clickedTag: tag }));
             props.onTagClick({ clickedTag: tag });
           }}
-          style={{ cursor: "pointer" }}
         >
           {tag}
         </Tag>

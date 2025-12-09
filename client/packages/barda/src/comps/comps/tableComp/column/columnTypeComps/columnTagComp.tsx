@@ -21,6 +21,7 @@ import {
   ColorMapContext,
   DEFAULT_COLOR_KEY,
   DropdownStyled,
+  deriveTagPalette,
   getIconFromOptions,
   getTagColor,
   isStringArray,
@@ -164,8 +165,17 @@ const TagEdit = (props: TagEditPropsType) => {
       >
         {tags.map((value, index) => {
           const icon = getIconFromOptions(value, colorMapOptions);
+          const tagColor = getTagColor(value, mergedColorMap);
+          const palette = deriveTagPalette(tagColor);
+          const tagStyle = palette
+            ? {
+                borderColor: palette.borderColor,
+                backgroundColor: palette.backgroundColor,
+                color: palette.textColor,
+              }
+            : undefined;
           const tagLabel = (
-            <Tag color={getTagColor(value, mergedColorMap)} icon={icon}>
+            <Tag color={palette ? undefined : tagColor} style={tagStyle} icon={icon}>
               {value}
             </Tag>
           );
@@ -205,16 +215,28 @@ export const ColumnTagComp = (function () {
       
       return tags.map((tag, index) => {
         const tagText = String(tag);
+        const tagColor = getTagColor(tagText, latestColorMap);
+        const palette = deriveTagPalette(tagColor);
+        const tagStyle = palette
+          ? {
+              borderColor: palette.borderColor,
+              backgroundColor: palette.backgroundColor,
+              color: palette.textColor,
+              cursor: "pointer",
+            }
+          : { cursor: "pointer", color: tagColor };
         const icon = getIconFromOptions(tagText, latestColorMapOptions);
         return (
-          <Tag color={getTagColor(tagText, latestColorMap)} 
-          icon={icon} 
-          key={index}
-          onClick={(e) => {
-            e.stopPropagation();
-            dispatch(updateActionContextAction({ clickedTag: tag }));
-            props.onTagClick({clickedTag: tag});
-          }}
+          <Tag
+            color={palette ? undefined : tagColor}
+            style={tagStyle}
+            icon={icon}
+            key={index}
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch(updateActionContextAction({ clickedTag: tag }));
+              props.onTagClick({clickedTag: tag});
+            }}
           >
             {tagText}
           </Tag>

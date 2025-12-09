@@ -65,6 +65,56 @@ export const getTagColor = (text: string, colorMap?: JSONObject): string => {
 };
 
 /**
+ * 基于给定颜色生成 Tag 的边框/背景/文字配色
+ * 规则：
+ *  - 边框：使用原色
+ *  - 背景：原色与白色进行混合
+ *  - 文字：
+ *      · 若输入色过浅 → 使用深色（#333）
+ *      · 若背景与边框对比不足 → 使用深色（#333）
+ *      · 否则 → 使用原色（边框色）
+ */
+export const deriveTagPalette = (
+  color: string,
+  mixRatio: number = 0.75
+): { borderColor: string; backgroundColor: string; textColor: string } | null => {
+  const hexMatch = /^#([0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.exec(color);
+  if (!hexMatch) return null;
+
+  const hex = hexMatch[1].slice(0, 6);
+  const toChannel = (start: number) => parseInt(hex.slice(start, start + 2), 16);
+  const [r, g, b] = [toChannel(0), toChannel(2), toChannel(4)];
+
+  const mix = (v: number) => Math.round(v + (255 - v) * mixRatio);
+  const toHex = (v: number) => v.toString(16).padStart(2, "0");
+
+  // 背景色
+  const bgR = mix(r);
+  const bgG = mix(g);
+  const bgB = mix(b);
+  const backgroundColor = `#${toHex(bgR)}${toHex(bgG)}${toHex(bgB)}`;
+
+  // 相对亮度
+  const luminance = (r: number, g: number, b: number) => {
+    const ck = (v: number) => {
+      v /= 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    };
+    return 0.2126 * ck(r) + 0.7152 * ck(g) + 0.0722 * ck(b);
+  };
+
+  const lumColor = luminance(r, g, b);
+
+  const textColor = lumColor > 0.7 ? "#333333" : color;
+
+  return {
+    borderColor: color,
+    backgroundColor,
+    textColor
+  };
+};
+
+/**
  * 尝试解析JSON字符串为数组
  */
 export const tryParseJSON = (value: string): any => {
