@@ -91,7 +91,7 @@ services:
       - REDIS_URL=${REDIS_URL}
       - JS_EXECUTOR_URI=${JS_EXECUTOR_URI}
     volumes:
-      - ../barda:/barda:delegated
+      - ./:/barda:delegated
       # ssh免密
       - ./develop/.temp/authorized_keys:/root/.ssh/authorized_keys
       # 持久化maven仓库
