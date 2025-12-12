@@ -121,8 +121,36 @@ open_browser() {
 
 # 检查秘钥对是否存在，如果不存在则创建，如果存在，则复制写入到authorized_keys
 check_ssh_authorized_keys() {
-    windows_username=$(/mnt/c/Windows/System32/cmd.exe /c 'echo %USERNAME%' | tr -d '\r\n')
+    # 尝试获取 Windows 用户名
+    windows_username=""
+    
+    # 从 /mnt/c/Users/ 目录中查找实际的用户目录
+    if [ -d /mnt/c/Users ]; then
+        # 排除系统目录，查找第一个实际的用户目录
+        for user_dir in /mnt/c/Users/*; do
+            if [ -d "$user_dir" ]; then
+                dir_name=$(basename "$user_dir")
+                # 排除系统目录
+                if [ "$dir_name" != "All Users" ] && [ "$dir_name" != "Default" ] && [ "$dir_name" != "Default User" ] && [ "$dir_name" != "Public" ] && [ "$dir_name" != "desktop.ini" ]; then
+                    # 检查是否是实际的用户目录（通常包含 Documents、Desktop 等文件夹）
+                    if [ -d "$user_dir/Documents" ] || [ -d "$user_dir/Desktop" ] || [ -d "$user_dir/AppData" ]; then
+                        windows_username="$dir_name"
+                        break
+                    fi
+                fi
+            fi
+        done
+    fi
+    
+    # 如果无法获取 Windows 用户名，提示用户输入
+    if [ -z "$windows_username" ]; then
+        echo "无法自动获取 Windows 用户名，请手动输入："
+        read -p "Windows 用户名: " windows_username
+    fi
+    
     windows_ssh_path="/mnt/c/Users/$windows_username/.ssh"
+    echo "使用 Windows 用户目录: $windows_ssh_path"
+    
     if [ -e "$windows_ssh_path/id_rsa.pub" ]; then
         echo "Windows的SSH公钥已存在，正在复制到authorized_keys"
         mkdir -p ./.temp
