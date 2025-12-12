@@ -76,7 +76,7 @@ services:
       - ./server/node-service:/app/node-service:cached
     ports:
       - 6060:6060
-    command: sh -c "yarn install & yarn start"
+    command: sh -c "yarn install & yarn dev"
     profiles:
       - DevelopFrontAndBack
 
