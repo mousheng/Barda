@@ -10,6 +10,7 @@ services:
     environment:
       - BARDA_API_SERVICE_URL=${BARDA_API_SERVICE_URL}
       - IN_CONTAINER=${IN_CONTAINER}
+      - REACT_NODE_SERVICE_HOST=${REACT_NODE_SERVICE_HOST}
     volumes:
       - ./client:${BARDA_CLIENT_WORKDIR}/client:cached
     ports:

@@ -37,6 +37,7 @@ declare var REACT_APP_EDITION: string;
 declare var REACT_APP_LANGUAGES: string;
 declare var REACT_APP_COMMIT_ID: string;
 declare var REACT_APP_API_HOST: string;
+declare var REACT_NODE_SERVICE_HOST: string;
 declare var REACT_APP_ENV: string;
 declare var REACT_APP_BUILD_ID: string;
 declare var REACT_APP_LOG_LEVEL: string;

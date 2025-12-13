@@ -20,6 +20,10 @@ export const buildVars = [
     defaultValue: "",
   },
   {
+    name: "REACT_NODE_SERVICE_HOST",
+    defaultValue: "",
+  },
+  {
     name: "REACT_APP_ENV",
     defaultValue: "production",
   },
