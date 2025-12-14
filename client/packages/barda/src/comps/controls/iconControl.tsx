@@ -216,9 +216,19 @@ type ChangeModeAction = {
 function IconControlView(props: { value: string }) {
   const { value } = props;
   const icon = useIcon(value);
-  if (icon) {
-    return icon.getView();
+  
+  // 如果 value 是图标名称格式（以 iconPrefix 开头），说明是预设图标
+  // 在异步加载完成前，不应该渲染任何内容，避免将图标名称当作图片 URL 渲染导致显示破损图标
+  const isIconName = value && removeQuote(value).startsWith(iconPrefix);
+  
+  if (isIconName) {
+    // 如果是图标名称，只有在异步加载完成后才渲染图标
+    // 加载完成前返回 null，避免显示破损图标
+    return icon ? icon.getView() : null;
   }
+  
+  // 如果不是图标名称格式，说明是图片 URL，直接渲染图片
+  // 此时 useIcon 总是返回 undefined，所以直接渲染图片
   return <StyledImage src={value} alt="" />;
 }
 
