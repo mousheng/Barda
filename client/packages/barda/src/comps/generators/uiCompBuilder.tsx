@@ -211,9 +211,10 @@ function UIView(props: { comp: any; viewFn: any }) {
     childrenProps["disabled"] = disabled || parentDisabled;
   }
   // 渲染组件，使用HidableView组件包装视图函数的返回值
+  // 传递 comp 对象作为第三个参数，以便访问原始的 children
   return (
     <HidableView hidden={childrenProps.hidden as boolean}>
-      {props.viewFn(childrenProps, comp.dispatch)}
+      {props.viewFn(childrenProps, comp.dispatch, comp)}
     </HidableView>
   );
 }

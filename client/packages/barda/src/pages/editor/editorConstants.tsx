@@ -39,6 +39,7 @@ import {
   TimeLineIcon,
   CommentIcon,
   AutoCompleteCompIcon,
+  LeftStatisticCard,
 } from "barda-design";
 
 export const CompStateIcon: {
@@ -106,4 +107,5 @@ export const CompStateIcon: {
   timeline: <TimeLineIcon />,
   comment: <CommentIcon />,
   autocomplete: <AutoCompleteCompIcon />,
+  statisticCard: <LeftStatisticCard />,
 };

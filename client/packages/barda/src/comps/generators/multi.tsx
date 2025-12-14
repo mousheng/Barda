@@ -7,7 +7,8 @@ import { Comp, CompParams, MultiBaseComp, wrapDispatch } from "barda-core";
 
 type ViewFnType<ViewReturn, ChildrenType> = (
   childrenType: ChildrenType,
-  dispatch: (action: CompAction) => void
+  dispatch: (action: CompAction) => void,
+  comp?: any
 ) => ViewReturn;
 
 export type ToViewReturn<T> = {

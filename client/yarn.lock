@@ -6189,6 +6189,7 @@ __metadata:
     rc-trigger: ^5.3.1
     react: ^18.2.0
     react-colorful: ^5.5.1
+    react-countup: 6.5.3
     react-documents: ^1.2.1
     react-dom: ^18.2.0
     react-draggable: 4.4.6
@@ -7079,6 +7080,13 @@ __metadata:
     path-type: ^4.0.0
     yaml: ^1.10.0
   checksum: c53bf7befc1591b2651a22414a5e786cd5f2eeaa87f3678a3d49d6069835a9d8d1aef223728e98aa8fec9a95bf831120d245096db12abe019fecb51f5696c96f
+  languageName: node
+  linkType: hard
+
+"countup.js@npm:^2.8.0":
+  version: 2.9.0
+  resolution: "countup.js@npm:2.9.0"
+  checksum: d2f94385226e38e6d6c9b522eb917eae076fb3db774a3402fece2a57a7744743861264e434f5da68414baf30d7b75645e8371b2f1263765f76576347d4230955
   languageName: node
   linkType: hard
 
@@ -15446,6 +15454,17 @@ __metadata:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
   checksum: e432b7cb0df57e8f0bcdc3b012d2e93fcbcb6092c9e0f85654788d5ebfc4442536d8cc35b2418061ba3c4afb8b7788cc101c606d86a1732407921de7a9244c8d
+  languageName: node
+  linkType: hard
+
+"react-countup@npm:6.5.3":
+  version: 6.5.3
+  resolution: "react-countup@npm:6.5.3"
+  dependencies:
+    countup.js: ^2.8.0
+  peerDependencies:
+    react: ">= 16.3.0"
+  checksum: c9a9776737a469e68beb035b81334879bac2e7d8edb1721f97d115d7b88e87d6ad62fc99083e329650b4416fe33d85b33211719afd531b83399e12d7ded25f89
   languageName: node
   linkType: hard
 

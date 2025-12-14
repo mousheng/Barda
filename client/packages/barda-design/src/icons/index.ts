@@ -251,6 +251,7 @@ export { ReactComponent as LeftNumberInput } from "./icon-left-comp-numberInput.
 export { ReactComponent as LeftPassword } from "./icon-left-comp-password.svg";
 export { ReactComponent as LeftProgress } from "./icon-left-comp-progress.svg";
 export { ReactComponent as LeftQrCode } from "./icon-left-comp-qrCode.svg";
+export { ReactComponent as LeftStatisticCard } from "./icon-left-comp-statistic-card.svg";
 export { ReactComponent as LeftRadio } from "./icon-left-comp-radio.svg";
 export { ReactComponent as LeftRating } from "./icon-left-comp-rating.svg";
 export { ReactComponent as LeftSegmentedControl } from "./icon-left-comp-segmentedControl.svg";
@@ -288,3 +289,4 @@ export { ReactComponent as CTRLIcon } from "icons/icon-ctrl.svg";
 export { ReactComponent as TimeLineIcon } from "icons/icon-timeline-comp.svg"
 export { ReactComponent as CommentIcon } from "icons/icon-comment-comp.svg";
 export { ReactComponent as AutoCompleteCompIcon } from "icons/icon-autocomplete-comp.svg";
+export { ReactComponent as StatisticCardCompIcon } from "icons/icon-comp-statistic-card.svg";

@@ -760,6 +760,43 @@ export const QRCodeStyle = [
   getMargin(),
 ] as const;
 
+export const StatisticCardStyle = [
+  getBackground(),
+  getStaticBorder(),
+  getRadius(),
+  {
+    name: "titleColor",
+    label: trans("statisticCard.titleColor"),
+    color: "#8B8FA3",
+  },
+  {
+    name: "titleFontSize_UNIT",
+    label: trans("statisticCard.titleFontSize"),
+    default: "14px",
+  },
+  {
+    name: "valueColor",
+    label: trans("statisticCard.valueColor"),
+    color: "#222222",
+  },
+  {
+    name: "valueFontSize_UNIT",
+    label: trans("statisticCard.valueFontSize"),
+    default: "24px",
+  },
+  {
+    name: "iconBackground",
+    label: trans("statisticCard.iconBackground"),
+    color: "#3377FF",
+  },
+  {
+    name: "hoverBackground",
+    label: trans("statisticCard.hoverBackground"),
+    color: "",
+  },
+  getMargin(),
+] as const;
+
 export const TimeLineStyle = [
   getBackground(),
   {
@@ -923,6 +960,7 @@ export type SignatureStyleType = StyleConfigType<typeof SignatureStyle>;
 export type CarouselStyleType = StyleConfigType<typeof CarouselStyle>;
 export type RichTextEditorStyleType = StyleConfigType<typeof RichTextEditorStyle>;
 export type StandardBoxMargin = [number, number, number, number];
+export type StatisticCardStyleType = StyleConfigType<typeof StatisticCardStyle>;
 export type TimeLineStyleType = StyleConfigType<typeof TimeLineStyle>;
 export type CommentStyleType = StyleConfigType<typeof CommentStyle>;
 

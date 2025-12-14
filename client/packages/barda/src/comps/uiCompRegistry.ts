@@ -113,6 +113,7 @@ export type UICompType =
   | "timeline"
   | "comment"
   | "autocomplete"
+  | "statisticCard"
 
 export const uiCompRegistry = {} as Record<UICompType | string, UICompManifest>;
 

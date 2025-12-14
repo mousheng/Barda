@@ -70,6 +70,7 @@ import {
   ProcessCircleCompIcon,
   ProgressCompIcon,
   QRCodeCompIcon,
+  StatisticCardCompIcon,
   RadioCompIcon,
   RangeSliderCompIcon,
   RatingCompIcon,
@@ -104,6 +105,7 @@ import { NavComp } from "./comps/navComp/navComp";
 import { TableComp } from "./comps/tableComp";
 import { registerComp, UICompManifest, UICompType } from "./uiCompRegistry";
 import { QRCodeComp } from "./comps/qrCodeComp";
+import { StatisticCardComp } from "./comps/statisticCardComp";
 import { JsonExplorerComp } from "./comps/jsonComp/jsonExplorerComp";
 import { JsonEditorComp } from "./comps/jsonComp/jsonEditorComp";
 import { TreeComp } from "./comps/treeComp/treeComp";
@@ -491,6 +493,19 @@ const uiCompMap: Registry = {
     layoutInfo: {
       w: 4,
       h: 19,
+    },
+  },
+  statisticCard: {
+    name: trans("uiComp.statisticCardCompName"),
+    enName: "Statistic Card",
+    description: trans("uiComp.statisticCardCompDesc"),
+    categories: ["dataDisplay"],
+    icon: StatisticCardCompIcon,
+    keywords: trans("uiComp.statisticCardCompKeywords"),
+    comp: StatisticCardComp,
+    layoutInfo: {
+      w: 3,
+      h: 8,
     },
   },
   form: {
