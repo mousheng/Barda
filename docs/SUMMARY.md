@@ -39,6 +39,7 @@
     * [连接 REST API](api/rest-api.md)
     * [连接 Barda API](api/bardaAPI.md)
     * [连接 GraphQL](api/graphql.md)
+    * [连接 钉钉](api/dingTalk.md)
 
 查询
 * [查询 (Query)](how-to-write-query.md)
