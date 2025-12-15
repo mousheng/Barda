@@ -161,7 +161,7 @@ const childrenMap = {
 const toolbarOptions = [
   [{ header: [1, 2, 3, false] }],
   ["bold", "italic", "underline", "strike", "blockquote"],
-  [{ list: "ordered" }, { list: "bullet" }],
+  [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
   [{ indent: "-1" }, { indent: "+1" }],
   [{ color: [] }, { background: [] }, { align: [] }],
   ["link", "image"],
