@@ -74,7 +74,7 @@ import { QueryNotificationControl } from "./queryComp/queryNotificationControl";
 import { QueryPropertyView } from "./queryComp/queryPropertyView";
 import { getTriggerType, onlyManualTrigger } from "./queryCompUtils";
 import { messageInstance } from "barda-design";
-import { some, isEmpty } from "lodash-es"
+import { some, isEmpty } from "lodash"
 
 // 定义一个函数来检查 JavaScript 代码是否包含保留字
 const checkoutCodeWithoutReservedWords = (code: String): boolean => {
