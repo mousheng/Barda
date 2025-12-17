@@ -795,6 +795,7 @@ export const StatisticCardStyle = [
     color: "",
   },
   getMargin(),
+  getPadding(""),
 ] as const;
 
 export const TimeLineStyle = [

@@ -1,6 +1,7 @@
 import { Statistic } from "antd";
 import { RecordConstructorToView } from "barda-core";
 import { Section, sectionNames } from "barda-design";
+import { dropdownControl } from "comps/controls/dropdownControl";
 import { BoolControl } from "comps/controls/boolControl";
 import { NumberControl, RangeControl, StringControl } from "comps/controls/codeControl";
 import { ButtonEventHandlerControl } from "comps/controls/eventHandlerControl";
@@ -9,20 +10,29 @@ import { styleControl } from "comps/controls/styleControl";
 import { StatisticCardStyle, StatisticCardStyleType } from "comps/controls/styleControlConstants";
 import { withDefault } from "comps/generators";
 import { UICompBuilder } from "comps/generators/uiCompBuilder";
-import { NameConfig, NameConfigHidden, withExposingConfigs } from "comps/generators/withExposing";
+import { NameConfigHidden, withExposingConfigs } from "comps/generators/withExposing";
 import { hiddenPropertyView } from "comps/utils/propertyUtils";
 import { trans } from "i18n";
 import React, { Suspense } from "react";
 import styled from "styled-components";
 import { hasIcon } from "../utils";
 
+const sizeOptions = [
+  { label: trans("statisticCard.sizeNormal"), value: "normal" },
+  { label: trans("statisticCard.sizeCompact"), value: "compact" },
+] as const;
+
+type StatisticCardSize = (typeof sizeOptions)[number]["value"];
+
 const StatisticCardWrapper = styled.div<{
   $style: StatisticCardStyleType;
   $clickable: boolean;
+  $size: StatisticCardSize;
+  $padding: string;
 }>`
   width: 100%;
   height: 100%;
-  padding: 16px;
+  padding: ${(props) => props.$padding};
   background: ${(props) => props.$style.background};
   border-radius: ${(props) => props.$style.radius};
   border: 1px solid ${(props) => props.$style.border};
@@ -40,14 +50,14 @@ const StatisticCardWrapper = styled.div<{
 
   .statistic-card-content {
     display: flex;
-    align-items: flex-start;
-    gap: 16px;
+    align-items: center;
+    // gap: ${(props) => (props.$size === "compact" ? "12px" : "16px")};
   }
 
   .statistic-card-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 8px;
+    width: ${(props) => (props.$size === "compact" ? "40px" : "48px")};
+    height: ${(props) => (props.$size === "compact" ? "40px" : "48px")};
+    border-radius: ${(props) => (props.$size === "compact" ? "6px" : "8px")};
     display: flex;
     align-items: center;
     justify-content: center;
@@ -55,14 +65,14 @@ const StatisticCardWrapper = styled.div<{
     background: ${(props) => props.$style.iconBackground};
 
     svg {
-      width: 32px !important;
-      height: 32px !important;
+      width: ${(props) => (props.$size === "compact" ? "28px" : "32px")} !important;
+      height: ${(props) => (props.$size === "compact" ? "28px" : "32px")} !important;
       color: #fff;
     }
 
     img {
-      width: 32px;
-      height: 32px;
+      width: ${(props) => (props.$size === "compact" ? "28px" : "32px")};
+      height: ${(props) => (props.$size === "compact" ? "28px" : "32px")};
       object-fit: contain;
     }
   }
@@ -75,10 +85,11 @@ const StatisticCardWrapper = styled.div<{
   .ant-statistic-title {
     font-size: ${(props) => props.$style.titleFontSize_UNIT} !important;
     color: ${(props) => props.$style.titleColor} !important;
-    margin-bottom: 8px;
+    margin-bottom: ${(props) => (props.$size === "compact" ? "6px" : "8px")};
   }
 
   .ant-statistic-content {
+    line-height: 1;
     font-size: ${(props) => props.$style.valueFontSize_UNIT} !important;
     color: ${(props) => props.$style.valueColor} !important;
   }
@@ -93,6 +104,7 @@ const childrenMap = {
   prefix: withDefault(StringControl, ""),
   suffix: withDefault(StringControl, ""),
   precision: RangeControl.closed(0, 20, 0),
+  size: dropdownControl(sizeOptions, "normal"),
   icon: IconControl,
   enableAnimation: withDefault(BoolControl, false),
   onEvent: ButtonEventHandlerControl,
@@ -129,10 +141,20 @@ const AnimatedValue = (props: {
 const StatisticCardView = (
   props: RecordConstructorToView<typeof childrenMap> & { $hasClickHandler?: boolean }
 ) => {
+  const customPadding = props.style.padding_UNIT?.trim();
+  console.log(customPadding);
+  const padding = customPadding && customPadding.length > 0
+    ? customPadding
+    : props.size === "compact"
+    ? "9px"
+    : "16px";
+
   return (
     <StatisticCardWrapper
       $style={props.style}
       $clickable={props.$hasClickHandler ?? false}
+      $size={props.size}
+      $padding={padding}
       onClick={() => {
         props.onEvent?.("click");
       }}
@@ -200,6 +222,11 @@ let StatisticCardBasicComp = (function () {
           {children.precision.propertyView({
             label: trans("statisticCard.precision"),
             tooltip: trans("statisticCard.precisionTooltip"),
+          })}
+          {children.size.propertyView({
+            label: trans("statisticCard.size"),
+            tooltip: trans("statisticCard.sizeTooltip"),
+            radioButton: true,
           })}
           {children.icon.propertyView({
             label: trans("statisticCard.icon"),
