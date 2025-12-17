@@ -53,21 +53,32 @@ const columnFixOptions = [
 ] as const;
 
 export const columnChildrenMap = {
-  // column title
+  // 列标题
   title: StringControl,
   // a custom column or a data column
   isCustom: valueComp<boolean>(false),
-  // If it is a data column, it must be the name of the column and cannot be duplicated as a react key
+  // 如果是一个数据列，则必须是列的名称，不能与react key重复
   dataIndex: valueComp<string>(""),
+  // 是否隐藏列
   hide: BoolControl,
+  // 是否可排序
   sortable: BoolControl,
+  // 列宽度
   width: NumberControl,
+  // 是否自动宽度
   autoWidth: dropdownControl(columnWidthOptions, "auto"),
+  // 渲染组件
   render: RenderComp,
+  // 对齐方式
   align: HorizontalAlignmentControl,
+  // 临时隐藏
   tempHide: stateComp<boolean>(false),
+  // 是否固定列
   fixed: dropdownControl(columnFixOptions, "close"),
+  // 是否可编辑
   editable: BoolControl,
+  // 隐藏时是否允许搜索
+  allowSearchWhenHidden: BoolControl,
 };
 
 /**
@@ -116,7 +127,11 @@ export class ColumnComp extends ColumnInitComp {
   propertyView(key: string) {
     const columnType = this.children.render.getSelectedComp().getComp().children.compType.getView();
     const editable = this.children.editable.getView();
+    const hide = this.children.hide.getView();
     const columnTypeComp = ColumnTypeCompMap[columnType];
+    // 允许搜索的列类型
+    const allowedSearchTypes = ["text", "tag", "tags", "badgeStatus", "markdown"];
+    const shouldShowAllowSearch = hide && allowedSearchTypes.includes(columnType);
     return (
       <>
         {this.children.title.propertyView({
@@ -134,6 +149,10 @@ export class ColumnComp extends ColumnInitComp {
         {this.children.hide.propertyView({
           label: trans("prop.hide"),
         })}
+        {shouldShowAllowSearch &&
+          this.children.allowSearchWhenHidden.propertyView({
+            label: trans("table.allowSearchWhenHidden"),
+          })}
         {this.children.align.propertyView({
           label: trans("table.align"),
           radioButton: true,

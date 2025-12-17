@@ -1232,6 +1232,7 @@ export const en = {
     tableSize: "Table size",
     hideHeader: "Hide table header",
     hideBordered: "Hide column border",
+    allowSearchWhenHidden: "Allow search when hidden",
     deleteColumn: "Delete column",
     confirmDeleteColumn: "Confirm delete column: ",
     small: "S",

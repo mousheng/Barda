@@ -40,16 +40,19 @@ export function filterData(
     dataIndexes: Array<string>;
     hides: Array<{ value: boolean }>;
     tempHides: Array<boolean>;
+    allowSearchWhenHidden?: Array<{ value: boolean }>;
     columnSetting: boolean;
   }
 ) {
   let resultData = data;
   
   let visibleColumns: string[] | null = null;
+  let searchableColumns: string[] | null = null;
   
   if (columnInfo) {
-    const { dataIndexes, hides, tempHides, columnSetting } = columnInfo;
+    const { dataIndexes, hides, tempHides, allowSearchWhenHidden, columnSetting } = columnInfo;
     const visibleSet = new Set<string>();
+    const searchableSet = new Set<string>();
     
     dataIndexes.forEach((dataIndex, idx) => {
       const isHidden = columnHide({
@@ -60,10 +63,17 @@ export function filterData(
       
       if (!isHidden) {
         visibleSet.add(dataIndex);
+        searchableSet.add(dataIndex);
+      } else {
+        // 如果列隐藏了，但允许搜索，则添加到可搜索列集合中
+        if (allowSearchWhenHidden && allowSearchWhenHidden[idx]?.value) {
+          searchableSet.add(dataIndex);
+        }
       }
     });
     
     visibleColumns = Array.from(visibleSet);
+    searchableColumns = Array.from(searchableSet);
   }
   
   if (searchValue) {
@@ -72,7 +82,10 @@ export function filterData(
       if (!searchLower) {
         return true;
       } else {
-        const searchableValues = visibleColumns 
+        // 使用可搜索列（包括隐藏但允许搜索的列）进行搜索
+        const searchableValues = searchableColumns 
+          ? searchableColumns.map(col => row[col]).filter(v => v !== undefined)
+          : visibleColumns
           ? visibleColumns.map(col => row[col]).filter(v => v !== undefined)
           : Object.values(row);
         return searchableValues.find((v) => v?.toString().toLowerCase().includes(searchLower));

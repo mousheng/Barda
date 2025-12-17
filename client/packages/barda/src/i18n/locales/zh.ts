@@ -1215,6 +1215,7 @@ export const zh = {
         tableSize: "表格尺寸",
         hideHeader: "隐藏表头",
         hideBordered: "隐藏列边框",
+        allowSearchWhenHidden: "隐藏时允许搜索",
         deleteColumn: "删除列",
         confirmDeleteColumn: "确认删除列:",
         small: "小",
