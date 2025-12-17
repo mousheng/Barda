@@ -379,6 +379,8 @@ export const en = {
     richTextEditorValueDesc: "Current value of the Editor",
     richTextEditorReadOnlyDesc: "If true, the Editor is read-only",
     richTextEditorHideToolBarDesc: "If true, thr toolbar is hidden",
+    richTextEditorCompletedCountDesc: "Number of completed items",
+    richTextEditorUncompletedCountDesc: "Number of uncompleted items",
     jsonEditorDesc: "Current json data",
     jsonEditorAutoFormat: "Auto Format",
     jsonEditorAutoFormatDesc: "Automatically format JSON content when the user loses focus",

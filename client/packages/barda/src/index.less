@@ -5,7 +5,7 @@
 
 // fixme: move into comps
 @import "github-markdown-css/github-markdown-light.css";
-@import "react-quill/dist/quill.snow.css";
+@import "react-quill-new/dist/quill.snow.css";
 @import "tui-image-editor/dist/tui-image-editor.css";
 @import "tui-color-picker/dist/tui-color-picker.min.css";
 
@@ -93,6 +93,13 @@ code {
   font-display: block;
 }
 
+.ql-timestamp {
+  user-select: none;
+  pointer-events: none;
+  color: #999999;
+  margin-left: 8px;
+}
+
 .dragHandle {
   cursor: move;
 }
@@ -100,5 +107,3 @@ code {
 .ant-select-dropdown {
   z-index: 2001;
 }
-
-

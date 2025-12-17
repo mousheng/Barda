@@ -4,11 +4,11 @@ import { stringExposingStateControl } from "comps/controls/codeStateControl";
 import { AutoHeightControl } from "comps/controls/autoHeightControl";
 import { ChangeEventHandlerControl } from "comps/controls/eventHandlerControl";
 import { UICompBuilder, withDefault } from "comps/generators";
-import { NameConfig, NameConfigHidden, withExposingConfigs } from "comps/generators/withExposing";
+import { NameConfig, NameConfigHidden, withExposingConfigs, depsConfig } from "comps/generators/withExposing";
 import { Section, sectionNames } from "barda-design";
 import React, { Suspense, useEffect, useRef, useState } from "react";
-import type ReactQuill from "react-quill";
-import { useDebounce } from "react-use";
+import type ReactQuill from "react-quill-new";
+import { Quill } from "react-quill-new";
 import styled, { css } from "styled-components";
 import { formDataChildren, FormDataPropertyView } from "./formComp/formDataConstants";
 import { INPUT_DEFAULT_ONCHANGE_DEBOUNCE } from "constants/perf";
@@ -80,6 +80,10 @@ const commonStyle = (style: RichTextEditorStyleType) => css`
 
   & .ql-editor {
     min-height: 85px;
+    &.ql-blank:focus::before,
+    &:focus::before {
+      display: none;
+    }
   }
   & .ql-snow .ql-tooltip.ql-editing {
     input[type="text"] {
@@ -146,11 +150,63 @@ const FixHeightReactQuill = styled.div<Props>`
   ${(props) => (props.$hideToolbar ? hideToolbarStyle(props.$style) : "")};
 `;
 
+const TimestampEmbed = Quill.import("blots/embed") as any;
+
+class TimestampBlot extends TimestampEmbed {
+  static blotName = "timestamp";
+
+  static tagName = "span";
+
+  static className = "ql-timestamp";
+
+  static create(value: string) {
+    const node = super.create() as HTMLElement;
+    const text = typeof value === "string" ? value : "";
+    node.setAttribute("data-timestamp", text);
+    node.setAttribute("contenteditable", "false");
+    node.innerText = ` (${text})`;
+    return node;
+  }
+
+  static value(node: HTMLElement) {
+    return node.getAttribute("data-timestamp") || "";
+  }
+}
+
+Quill.register("formats/timestamp", TimestampBlot);
+
+/**
+ * 统计富文本内容中 checklist 的数量
+ * @param htmlContent HTML 内容字符串
+ * @returns 包含已完成和未完成数量的对象
+ */
+function countChecklistItems(htmlContent: string): { completed: number; uncompleted: number } {
+  if (!htmlContent) {
+    return { completed: 0, uncompleted: 0 };
+  }
+
+  // 使用正则表达式匹配 Quill checklist 的 HTML 结构
+  // Quill 的 checklist 在 HTML 中使用 data-list 属性：<li data-list="checked"> 或 <li data-list="unchecked">
+  // 同时也支持 class 属性格式（兼容性）：<li class="...ql-list-checked...">
+  // 支持单引号、双引号或没有引号的属性值
+  const checkedPattern = /<li[^>]*data-list\s*=\s*["']?checked["']?[^>]*>|<li[^>]*class\s*=\s*["']?[^"'>]*ql-list-checked[^"'>]*["']?[^>]*>/gi;
+  const uncheckedPattern = /<li[^>]*data-list\s*=\s*["']?unchecked["']?[^>]*>|<li[^>]*class\s*=\s*["']?[^"'>]*ql-list-unchecked[^"'>]*["']?[^>]*>/gi;
+
+  const completedMatches = htmlContent.match(checkedPattern);
+  const uncompletedMatches = htmlContent.match(uncheckedPattern);
+
+  return {
+    completed: completedMatches ? completedMatches.length : 0,
+    uncompleted: uncompletedMatches ? uncompletedMatches.length : 0,
+  };
+}
+
 const childrenMap = {
   value: stringExposingStateControl("value"),
   hideToolbar: BoolControl,
   readOnly: BoolControl,
   autoHeight: AutoHeightControl,
+  autoTimestamp: BoolControl,
   placeholder: withDefault(StringControl, trans("richTextEditor.placeholder")),
   onEvent: ChangeEventHandlerControl,
   style: styleControl(RichTextEditorStyle),
@@ -173,19 +229,21 @@ interface IProps {
   placeholder: string;
   hideToolbar: boolean;
   readOnly: boolean;
+  autoTimestamp: boolean;
   autoHeight: boolean;
   onChange: (value: string) => void;
   $style: RichTextEditorStyleType;
 }
 
-const ReactQuillEditor = React.lazy(() => import("react-quill"));
+const ReactQuillEditor = React.lazy(() => import("react-quill-new"));
 
 function RichTextEditor(props: IProps) {
-  const [key, setKey] = useState(0);
   const [content, setContent] = useState("");
   const wrapperRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<ReactQuill>(null);
   const isTypingRef = useRef(0);
+  const listenerRef = useRef<{ handler?: (...args: any[]) => void; mouseHandler?: (e: MouseEvent) => void } | null>(null);
+  const listenerBoundRef = useRef(false);
 
   const debounce = INPUT_DEFAULT_ONCHANGE_DEBOUNCE;
 
@@ -202,16 +260,6 @@ function RichTextEditor(props: IProps) {
       : (v: string) => originOnChangeRef.current?.(v)
   );
 
-  // react-quill will not take effect after the placeholder is updated
-  // re-mount the comp with debounce to solve the problem
-  useDebounce(
-    () => {
-      setKey(Math.random());
-    },
-    500,
-    [props.placeholder]
-  );
-
   const contains = (parent: HTMLElement, descendant: HTMLElement) => {
     try {
       // Firefox inserts inaccessible nodes around video elements
@@ -223,9 +271,123 @@ function RichTextEditor(props: IProps) {
     return parent.contains(descendant);
   };
 
+  const tryBindTimestampListener = () => {
+    if (listenerBoundRef.current) return;
+
+    const editor = (editorRef.current as any)?.getEditor?.();
+    if (!editor) return;
+
+    if (props.readOnly || !props.autoTimestamp) {
+      listenerRef.current = null;
+      return;
+    }
+
+    const formatTimestamp = () => {
+      const d = new Date();
+      const pad = (v: number) => `${v}`.padStart(2, "0");
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(
+        d.getMinutes()
+      )}`;
+    };
+
+    const updateTimestampForLine = (newlineIndex: number, checked: boolean) => {
+      const [line, offset] = editor.getLine(newlineIndex);
+      if (!line) return;
+
+      const lineStart = newlineIndex - offset;
+      const lineLength = line.length();
+      const lineDelta = editor.getContents(lineStart, lineLength);
+      const ops = lineDelta.ops || [];
+      let offsetInLine = 0;
+      let timestampOffset: number | null = null;
+      ops.forEach((op: any) => {
+        const insert = op.insert;
+        const length =
+          typeof insert === "string"
+            ? insert.length
+            : insert
+            ? 1
+            : 0;
+        if (
+          insert &&
+          typeof insert === "object" &&
+          Object.prototype.hasOwnProperty.call(insert, "timestamp")
+        ) {
+          timestampOffset = offsetInLine;
+        }
+        offsetInLine += length;
+      });
+
+      const selection = editor.getSelection();
+      if (checked) {
+        const tsValue = formatTimestamp();
+        if (timestampOffset !== null) {
+          const globalIndex = lineStart + timestampOffset;
+          editor.deleteText(globalIndex, 1, "silent");
+          editor.insertEmbed(globalIndex, "timestamp", tsValue, "silent");
+        } else {
+          const lineEndIndex = lineStart + lineLength - 1;
+          editor.insertEmbed(lineEndIndex, "timestamp", tsValue, "silent");
+        }
+      } else if (timestampOffset !== null) {
+        const globalIndex = lineStart + timestampOffset;
+        editor.deleteText(globalIndex, 1, "silent");
+      }
+
+      if (selection) {
+        editor.setSelection(selection, "silent");
+      }
+    };
+
+    const handler = (delta: any, _old: any, source: string) => {
+      if (source !== "user") return;
+      let index = 0;
+      delta.ops?.forEach((op: any) => {
+        if (op.retain) {
+          const length = typeof op.retain === "number" ? op.retain : 0;
+          const listAttr = op.attributes?.list;
+          if (listAttr === "checked" || listAttr === "unchecked") {
+            const newlineIndex = index + length - 1;
+            updateTimestampForLine(newlineIndex, listAttr === "checked");
+          }
+          index += length;
+        } else if (typeof op.insert === "string") {
+          index += op.insert.length;
+        } else if (op.insert) {
+          index += 1;
+        }
+      });
+    };
+
+    const mouseHandler = (event: MouseEvent) => {
+      const root = editor.root as HTMLElement | undefined;
+      if (!root) return;
+      const target = event.target as HTMLElement | null;
+      if (!target || !root.contains(target)) return;
+      const quillAny = Quill as any;
+      const lineElement = target.closest("p, li, div") as HTMLElement | null;
+      if (!lineElement || !root.contains(lineElement)) return;
+      const timestampNode = lineElement.querySelector(".ql-timestamp") as HTMLElement | null;
+      if (!timestampNode) return;
+      const tsRect = timestampNode.getBoundingClientRect();
+      if (event.clientX < tsRect.left) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const blot = quillAny.find(timestampNode);
+      if (!blot) return;
+      const index = editor.getIndex(blot);
+      editor.setSelection(index, 0, "silent");
+    };
+
+    editor.on("text-change", handler);
+    editor.root.addEventListener("mousedown", mouseHandler);
+    listenerRef.current = { handler, mouseHandler };
+    listenerBoundRef.current = true;
+  };
+
   const handleChange = (value: string) => {
     setContent(value);
-    // props.onChange(value);
+    tryBindTimestampListener();
     onChangeRef.current(value);
   };
 
@@ -238,19 +400,40 @@ function RichTextEditor(props: IProps) {
   }, [props.value]);
 
   const handleClickWrapper = (e: React.MouseEvent<HTMLDivElement>) => {
-    // grid item prevents bubbling, quill can't listen to events on document.body, so it can't close the toolbar drop-down box
-    // Refer to the source code of quill, actively close
-    // https://github.com/quilljs/quill/blob/4262023ad1/themes/base.js#L71
-    const editor = editorRef.current?.editor as any;
-    editor.theme.pickers?.forEach((i: any) => {
-      if (!contains(i.container, e.nativeEvent.target as HTMLElement)) {
-        i.close();
-      }
-    });
+    const editor = (editorRef.current as any)?.getEditor?.();
+    if (!editor) return;
+    if (editor.theme?.pickers) {
+      editor.theme.pickers.forEach((i: any) => {
+        if (!contains(i.container, e.nativeEvent.target as HTMLElement)) {
+          i.close();
+        }
+      });
+    }
   };
 
   const id = "rtf-editor";
   const Wrapper = props.autoHeight ? AutoHeightReactQuill : FixHeightReactQuill;
+
+  useEffect(() => {
+    const editor = (editorRef.current as any)?.getEditor?.();
+    return () => {
+      if (editor && listenerBoundRef.current) {
+        editor.off("text-change");
+        if (listenerRef.current?.mouseHandler) {
+          editor.root.removeEventListener("mousedown", listenerRef.current.mouseHandler);
+        }
+        listenerBoundRef.current = false;
+        listenerRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const editor = (editorRef.current as any)?.getEditor?.();
+    if (!editor) return;
+    editor.root.dataset.placeholder = props.placeholder;
+  }, [props.placeholder]);
+
   return (
     <Wrapper
       id={id}
@@ -261,7 +444,6 @@ function RichTextEditor(props: IProps) {
     >
       <Suspense fallback={<Skeleton />}>
         <ReactQuillEditor
-          key={key}
           ref={editorRef}
           bounds={`#${id}`}
           modules={{
@@ -289,6 +471,7 @@ const RichTextEditorCompBase = new UICompBuilder(childrenMap, (props) => {
       autoHeight={props.autoHeight}
       hideToolbar={props.hideToolbar}
       readOnly={props.readOnly}
+      autoTimestamp={props.autoTimestamp}
       value={props.value.value}
       placeholder={props.placeholder}
       onChange={handleChange}
@@ -311,6 +494,7 @@ const RichTextEditorCompBase = new UICompBuilder(childrenMap, (props) => {
         <Section name={sectionNames.layout}>
           {children.hideToolbar.propertyView({ label: trans("richTextEditor.hideToolbar") })}
           {children.autoHeight.getPropertyView()}
+          {children.autoTimestamp.propertyView({ label: "自动添加时间戳" })}
           {hiddenPropertyView(children)}
         </Section>
         <Section name={sectionNames.style}>{children.style.getPropertyView()}</Section>
@@ -329,5 +513,23 @@ export const RichTextEditorComp = withExposingConfigs(RichTextEditorCompAutoHeig
   new NameConfig("value", trans("export.richTextEditorValueDesc")),
   new NameConfig("readOnly", trans("export.richTextEditorReadOnlyDesc")),
   new NameConfig("hideToolbar", trans("export.richTextEditorHideToolBarDesc")),
+  depsConfig({
+    name: "completedCount",
+    desc: trans("export.richTextEditorCompletedCountDesc" as any),
+    depKeys: ["value"],
+    func: (input) => {
+      const value = (input.value as string) || "";
+      return countChecklistItems(value).completed;
+    },
+  }),
+  depsConfig({
+    name: "uncompletedCount",
+    desc: trans("export.richTextEditorUncompletedCountDesc" as any),
+    depKeys: ["value"],
+    func: (input) => {
+      const value = (input.value as string) || "";
+      return countChecklistItems(value).uncompleted;
+    },
+  }),
   NameConfigHidden,
 ]);

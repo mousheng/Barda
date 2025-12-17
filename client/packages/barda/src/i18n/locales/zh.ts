@@ -375,6 +375,8 @@ export const zh = {
         richTextEditorValueDesc: "编辑器的当前值",
         richTextEditorReadOnlyDesc: "如果为true,则编辑器为只读",
         richTextEditorHideToolBarDesc: "如果为true,则隐藏工具栏",
+        richTextEditorCompletedCountDesc: "已完成的数量",
+        richTextEditorUncompletedCountDesc: "未完成的数量",
         jsonEditorDesc: "当前的JSON数据",
     jsonEditorAutoFormat: "自动格式化",
     jsonEditorAutoFormatDesc: "当用户失去焦点时，自动格式化 JSON 内容",
