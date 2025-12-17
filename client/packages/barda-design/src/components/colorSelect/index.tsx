@@ -35,7 +35,7 @@ export const ColorSelect = (props: ColorSelectProps) => {
   return (
     <Popover
       trigger={trigger}
-      destroyTooltipOnHide={true}
+      destroyOnHidden={true}
       onOpenChange={(value) => {
         pickerColor.current = toRGBA(color);
         setVisible(value);

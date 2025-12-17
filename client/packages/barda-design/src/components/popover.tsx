@@ -78,7 +78,7 @@ const SimplePopover = (props: {
       align={{
         offset: [-12, 0, 0, 0],
       }}
-      destroyTooltipOnHide
+      destroyOnHidden
       content={contentWithBox}
       trigger="click"
       open={visible}
