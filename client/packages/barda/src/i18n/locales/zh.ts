@@ -985,6 +985,7 @@ export const zh = {
     richTextEditor: {
         placeholder: "请输入...",
         hideToolbar: "隐藏工具栏",
+        autoTimestamp: "自动添加时间戳",
         content: "内容",
         title: "标题",
         save: "保存",

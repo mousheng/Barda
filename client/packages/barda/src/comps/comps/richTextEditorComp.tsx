@@ -627,6 +627,7 @@ const RichTextEditorCompBase = new UICompBuilder(childrenMap, (props) => {
         <Section name={sectionNames.basic}>
           {children.value.propertyView({ label: trans("prop.defaultValue") })}
           {placeholderPropertyView(children)}
+          {children.autoTimestamp.propertyView({ label: trans("richTextEditor.autoTimestamp") })}
         </Section>
         <FormDataPropertyView {...children} />
         <Section name={sectionNames.interaction}>
@@ -636,7 +637,6 @@ const RichTextEditorCompBase = new UICompBuilder(childrenMap, (props) => {
         <Section name={sectionNames.layout}>
           {children.hideToolbar.propertyView({ label: trans("richTextEditor.hideToolbar") })}
           {children.autoHeight.getPropertyView()}
-          {children.autoTimestamp.propertyView({ label: "自动添加时间戳" })}
           {hiddenPropertyView(children)}
         </Section>
         <Section name={sectionNames.style}>{children.style.getPropertyView()}</Section>

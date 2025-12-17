@@ -1000,6 +1000,7 @@ export const en = {
   richTextEditor: {
     placeholder: "Please input...",
     hideToolbar: "Hide toolbar",
+    autoTimestamp: "Auto add timestamp",
     content: "Content",
     title: "Title",
     save: "Save",
