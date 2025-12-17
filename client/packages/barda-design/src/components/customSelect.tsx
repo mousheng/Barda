@@ -82,13 +82,29 @@ function CustomSelect(props: CustomSelectProps & AntdSelectProps) {
     innerRef,
     className,
     border,
-    popupClassName = "custom-ant-select-dropdown",
+    classNames,
     ...restProps
   } = props;
+  
+  const mergedClassNames =
+    classNames && typeof classNames === "object"
+      ? {
+          ...classNames,
+          popup: {
+            root: classNames.popup?.root || "custom-ant-select-dropdown",
+            ...(typeof classNames.popup === "object" ? classNames.popup : {}),
+          },
+        }
+      : {
+          popup: {
+            root: "custom-ant-select-dropdown",
+          },
+        };
+
   return (
     <SelectWrapper className={className} ref={innerRef} $border={border}>
       <AntdSelect
-        popupClassName={popupClassName}
+        classNames={mergedClassNames}
         popupMatchSelectWidth={false}
         suffixIcon={<PackUpIcon />}
         {...restProps}
