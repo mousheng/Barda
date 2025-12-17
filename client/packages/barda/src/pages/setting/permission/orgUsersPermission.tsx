@@ -179,7 +179,7 @@ function OrgUsersPermission(props: UsersPermissionProp) {
           render={(value: any, record: OrgUser) => (
             <CustomSelect
               style={{ width: "96px", height: "32px" }}
-              dropdownStyle={{ width: "149px" }}
+              styles={{ popup: { root: { width: "149px" } } }}
               defaultValue={record.role}
               key={record.role}
               optionLabelProp="label"

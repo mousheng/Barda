@@ -213,9 +213,7 @@ export const SelectUIView = (
     popupRender={(originNode: ReactNode) => (
       <DropdownStyled $style={props.style as MultiSelectStyleType}>{originNode}</DropdownStyled>
     )}
-    dropdownStyle={{
-      padding: 0,
-    }}
+    styles={{ popup: { root: { padding: 0 } } }}
     menuItemSelectedIcon={props.mode ? <MultiselectTagIcon $title="" /> : ""}
     onChange={props.onChange}
     onFocus={() => props.onEvent("focus")}
