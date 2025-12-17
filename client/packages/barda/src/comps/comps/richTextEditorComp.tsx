@@ -242,8 +242,9 @@ function RichTextEditor(props: IProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<ReactQuill>(null);
   const isTypingRef = useRef(0);
-  const listenerRef = useRef<{ handler?: (...args: any[]) => void; mouseHandler?: (e: MouseEvent) => void } | null>(null);
+  const listenerRef = useRef<{ handler?: (...args: any[]) => void; mouseHandler?: (e: MouseEvent) => void; keyHandler?: (e: KeyboardEvent) => void } | null>(null);
   const listenerBoundRef = useRef(false);
+  const isHandlingEnterRef = useRef(false);
 
   const debounce = INPUT_DEFAULT_ONCHANGE_DEBOUNCE;
 
@@ -290,7 +291,7 @@ function RichTextEditor(props: IProps) {
       )}`;
     };
 
-    const updateTimestampForLine = (newlineIndex: number, checked: boolean) => {
+    const updateTimestampForLine = (newlineIndex: number, checked: boolean, preserveSelection: boolean = true) => {
       const [line, offset] = editor.getLine(newlineIndex);
       if (!line) return;
 
@@ -334,13 +335,18 @@ function RichTextEditor(props: IProps) {
         editor.deleteText(globalIndex, 1, "silent");
       }
 
-      if (selection) {
+      // 只有在 preserveSelection 为 true 时才恢复选择位置
+      if (preserveSelection && selection) {
         editor.setSelection(selection, "silent");
       }
     };
 
     const handler = (delta: any, _old: any, source: string) => {
       if (source !== "user") return;
+      
+      // 如果正在处理回车键，不恢复选择位置，避免光标跳动
+      const preserveSelection = !isHandlingEnterRef.current;
+      
       let index = 0;
       delta.ops?.forEach((op: any) => {
         if (op.retain) {
@@ -348,7 +354,7 @@ function RichTextEditor(props: IProps) {
           const listAttr = op.attributes?.list;
           if (listAttr === "checked" || listAttr === "unchecked") {
             const newlineIndex = index + length - 1;
-            updateTimestampForLine(newlineIndex, listAttr === "checked");
+            updateTimestampForLine(newlineIndex, listAttr === "checked", preserveSelection);
           }
           index += length;
         } else if (typeof op.insert === "string") {
@@ -357,6 +363,138 @@ function RichTextEditor(props: IProps) {
           index += 1;
         }
       });
+    };
+    
+    // 处理回车键按下事件
+    const handleEnterKey = (e: KeyboardEvent) => {
+      // 只处理回车键
+      if (e.key !== "Enter" || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) {
+        return;
+      }
+      
+      // 设置标志，告诉 handler 不要恢复选择位置
+      isHandlingEnterRef.current = true;
+      
+      // 延迟处理，确保 Quill 先完成换行操作
+      setTimeout(() => {
+        try {
+          const selection = editor.getSelection();
+          if (!selection) return;
+          
+          const currentIndex = selection.index;
+          let targetCursorIndex = currentIndex;
+          
+          // 先检查上一行（换行前的原行）是否是 checked 状态
+          if (currentIndex > 0) {
+            const prevIndex = currentIndex - 1;
+            const [prevLine, prevOffset] = editor.getLine(prevIndex);
+            if (prevLine) {
+              const prevLineIndex = prevIndex - prevOffset;
+              const prevLineStart = prevLineIndex;
+              const prevLineLength = prevLine.length();
+              const prevLineDelta = editor.getContents(prevLineStart, prevLineLength);
+              const prevLineOps = prevLineDelta.ops || [];
+              
+              let prevLineIsChecked = false;
+              prevLineOps.forEach((lineOp: any) => {
+                if (lineOp.attributes?.list === "checked") {
+                  prevLineIsChecked = true;
+                }
+              });
+              
+              // 如果上一行是 checked 状态，更新时间戳但不恢复选择位置
+              if (prevLineIsChecked) {
+                updateTimestampForLine(prevLineIndex, true, false);
+                return
+              }
+            }
+          }
+          
+          // 然后检查当前行（换行后的新行）是否是 checked 状态
+          const [currentLine, currentOffset] = editor.getLine(currentIndex);
+          if (currentLine) {
+            const currentLineIndex = currentIndex - currentOffset;
+            const currentLineStart = currentLineIndex;
+            const currentLineLength = currentLine.length();
+            const currentLineDelta = editor.getContents(currentLineStart, currentLineLength);
+            const currentLineOps = currentLineDelta.ops || [];
+            
+            let currentLineIsChecked = false;
+            currentLineOps.forEach((lineOp: any) => {
+              if (lineOp.attributes?.list === "checked") {
+                currentLineIsChecked = true;
+              }
+            });
+            
+            // 如果当前行是 checked 状态，确保有时间戳
+            if (currentLineIsChecked) {
+              updateTimestampForLine(currentLineIndex, true, false);
+              
+              // 重新获取当前行信息（因为添加时间戳后行长度可能变化）
+              const [updatedCurrentLine, updatedCurrentOffset] = editor.getLine(currentIndex);
+              if (updatedCurrentLine) {
+                const updatedCurrentLineIndex = currentIndex - updatedCurrentOffset;
+                const updatedCurrentLineStart = updatedCurrentLineIndex;
+                const updatedCurrentLineLength = updatedCurrentLine.length();
+                const updatedCurrentLineDelta = editor.getContents(updatedCurrentLineStart, updatedCurrentLineLength);
+                const updatedCurrentLineOps = updatedCurrentLineDelta.ops || [];
+                
+                // 找到时间戳的位置和文本长度
+                let textLengthBeforeTimestamp = 0;
+                let hasTimestamp = false;
+                updatedCurrentLineOps.forEach((op: any) => {
+                  const insert = op.insert;
+                  if (
+                    insert &&
+                    typeof insert === "object" &&
+                    Object.prototype.hasOwnProperty.call(insert, "timestamp")
+                  ) {
+                    hasTimestamp = true;
+                    return;
+                  }
+                  if (!hasTimestamp) {
+                    const length =
+                      typeof insert === "string"
+                        ? insert.length
+                        : insert
+                        ? 1
+                        : 0;
+                    textLengthBeforeTimestamp += length;
+                  }
+                });
+                
+                // 计算目标光标位置：如果新行有文本，光标应该在文本末尾（时间戳之前）
+                // 如果新行只有时间戳，光标应该在行首
+                targetCursorIndex = textLengthBeforeTimestamp > 0 
+                  ? updatedCurrentLineStart + textLengthBeforeTimestamp 
+                  : updatedCurrentLineStart;
+              }
+            } else {
+              // 如果当前行不是 checked 状态，光标应该在新行的开始位置
+              targetCursorIndex = currentLineStart;
+            }
+          }
+          
+          // 最后，明确将光标设置到新行的目标位置
+          // 使用 requestAnimationFrame 确保在所有操作完成后设置光标
+          requestAnimationFrame(() => {
+            try {
+              editor.setSelection(targetCursorIndex, 0, "silent");
+              // 清除标志，允许后续的 text-change 事件正常恢复选择位置
+              setTimeout(() => {
+                isHandlingEnterRef.current = false;
+              }, 100);
+            } catch (e) {
+              console.warn("Error setting cursor position:", e);
+              isHandlingEnterRef.current = false;
+            }
+          });
+        } catch (e) {
+          // 忽略错误，避免影响正常编辑
+          console.warn("Error handling enter key:", e);
+          isHandlingEnterRef.current = false;
+        }
+      }, 0);
     };
 
     const mouseHandler = (event: MouseEvent) => {
@@ -381,7 +519,8 @@ function RichTextEditor(props: IProps) {
 
     editor.on("text-change", handler);
     editor.root.addEventListener("mousedown", mouseHandler);
-    listenerRef.current = { handler, mouseHandler };
+    editor.root.addEventListener("keydown", handleEnterKey);
+    listenerRef.current = { handler, mouseHandler, keyHandler: handleEnterKey };
     listenerBoundRef.current = true;
   };
 
@@ -421,6 +560,9 @@ function RichTextEditor(props: IProps) {
         editor.off("text-change");
         if (listenerRef.current?.mouseHandler) {
           editor.root.removeEventListener("mousedown", listenerRef.current.mouseHandler);
+        }
+        if (listenerRef.current?.keyHandler) {
+          editor.root.removeEventListener("keydown", listenerRef.current.keyHandler);
         }
         listenerBoundRef.current = false;
         listenerRef.current = null;
