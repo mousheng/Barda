@@ -676,7 +676,7 @@ export const CreateForm = (props: { onCreate: CreateHandler }) => {
       >
         <CustomModal
           open={visible}
-          destroyOnClose={true}
+          destroyOnHidden={true}
           title={trans("formComp.generateForm")}
           footer={null}
           onCancel={() => setVisible(false)}

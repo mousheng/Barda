@@ -64,7 +64,6 @@ const handleClick = (
   Picker.prompt({
     getContainer: () => document.querySelector(`#${CanvasContainerID}`) || document.body,
     mouseWheel: true,
-    destroyOnClose: true,
     closeOnMaskClick: true,
     columns: (values) => {
       const time = dayjs(values.join(":"), TimeParser);

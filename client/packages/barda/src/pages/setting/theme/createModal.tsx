@@ -96,7 +96,7 @@ function CreateModal(props: CreateModalProp) {
       onOk={handleOk}
       okButtonProps={{ disabled: !name || !selectId }}
       onCancel={handleCancel}
-      destroyOnClose
+      destroyOnHidden
       draggable={true}
     >
       <ModalNameDiv>

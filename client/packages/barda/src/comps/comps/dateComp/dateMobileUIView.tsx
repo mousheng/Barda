@@ -30,7 +30,6 @@ const handleClick = async (
   MobileDatePicker.prompt({
     getContainer: () => document.querySelector(`#${CanvasContainerID}`) || document.body,
     mouseWheel: true,
-    destroyOnClose: true,
     closeOnMaskClick: true,
     min: min.isValid() ? min.toDate() : undefined,
     max: max.isValid() ? max.toDate() : undefined,
