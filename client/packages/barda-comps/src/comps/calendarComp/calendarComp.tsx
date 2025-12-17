@@ -23,8 +23,12 @@ import {
   Tooltip,
   ArrayStringControl,
   getDayJSLocale,
+  eventHandlerControl,
+  clickEvent,
+  changeEvent,
+  deleteEvent,
 } from "barda-sdk";
-import { Input, Form, Select } from "antd";
+import { Input, Form, Select, Popconfirm } from "antd";
 import { trans } from "../../i18n/comps";
 import { createRef, useContext, useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
@@ -58,10 +62,29 @@ import multiMonthPlugin from '@fullcalendar/multimonth';
 import { v4 as uuidv4 } from 'uuid';
 import { BorderOutlined } from "@ant-design/icons";
 
+// 定义添加事件类型
+const addEvent = {
+  label: trans("calendar.addEvent"),
+  value: "add",
+  description: trans("calendar.addEventDesc"),
+} as const;
+
+// 定义编辑事件类型
+const editEvent = {
+  label: trans("calendar.editEventLabel"),
+  value: "edit",
+  description: trans("calendar.editEventDesc"),
+} as const;
+
+const CalendarEventHandlerControl = eventHandlerControl(
+  [changeEvent, clickEvent, deleteEvent, addEvent, editEvent] as const
+);
 
 const childrenMap = {
   events: jsonValueExposingStateControl("events", defaultData),
-  onEvent: ChangeEventHandlerControl,
+  currentEvent: jsonValueExposingStateControl("currentEvent", null),
+  confirmDelete: withDefault(BoolControl, false),
+  onEvent: CalendarEventHandlerControl,
   editable: withDefault(BoolControl, true),
   defaultDate: withDefault(StringControl, "{{ new Date() }}"),
   defaultView: dropdownControl(DefaultViewOptions, "timeGridWeek"),
@@ -107,6 +130,7 @@ let CalendarBasicComp = (function () {
       style,
       firstDay,
       editable,
+      confirmDelete,
     } = props;
 
     function renderEventContent(eventInfo: EventContentArg) {
@@ -128,6 +152,22 @@ let CalendarBasicComp = (function () {
           ? "past"
           : "";
 
+      const handleDelete = (e?: React.MouseEvent) => {
+        e?.stopPropagation();
+        const deletedEvent = events.find(
+          (item: EventType) => item.id === eventInfo.event.id
+        );
+        if (deletedEvent) {
+          // 统一写入当前事件（删除的事件）
+          props.currentEvent.onChange(deletedEvent);
+          // 触发删除事件
+          props.onEvent("delete");
+        }
+        const event = events.filter((item: EventType) => item.id !== eventInfo.event.id);
+        props.events.onChange(event);
+        props.onEvent("change");
+      };
+
       return (
         <Event
           className={`event ${sizeClass} ${stateClass}`}
@@ -138,22 +178,44 @@ let CalendarBasicComp = (function () {
         >
           <div className="event-time">{eventInfo.timeText}</div>
           <div className="event-title">{eventInfo.event.title}</div>
-          <Remove
-            $isList={isList}
-            className="event-remove"
-            onClick={(e) => {
-              e.stopPropagation();
-              props.onEvent("change");
-              const event = events.filter((item: EventType) => item.id !== eventInfo.event.id);
-              props.events.onChange(event);
-            }}
-            onMouseDown={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-            }}
-          >
-            <CalendarDeleteIcon />
-          </Remove>
+          {confirmDelete ? (
+            <Popconfirm
+              title={trans("calendar.deleteConfirmTitle")}
+              description={trans("calendar.deleteConfirmDesc")}
+              onConfirm={() => handleDelete()}
+              onCancel={(e) => {
+                // 阻止点击气泡内容触发事件冒泡
+                e?.stopPropagation();
+              }}
+            >
+              <Remove
+                $isList={isList}
+                className="event-remove"
+                onClick={(e) => {
+                  // 仅阻止冒泡，真正删除逻辑在 Popconfirm.onConfirm 中
+                  e.stopPropagation();
+                }}
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+              >
+                <CalendarDeleteIcon />
+              </Remove>
+            </Popconfirm>
+          ) : (
+            <Remove
+              $isList={isList}
+              className="event-remove"
+              onClick={handleDelete}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+              }}
+            >
+              <CalendarDeleteIcon />
+            </Remove>
+          )}
         </Event>
       );
     }
@@ -265,13 +327,18 @@ let CalendarBasicComp = (function () {
             if (ifEdit) {
               const changeEvents = (props.events.value as EventType[]).map((item: EventType) => {
                 if (item.id === eventId) {
-                  return {
+                  const updatedEvent = {
                     ...item,
                     title,
                     id,
                     ...(groupId !== undefined ? { groupId } : null),
                     ...(color !== undefined ? { color } : null),
                   };
+                  // 统一写入当前事件（编辑后的事件）
+                  props.currentEvent.onChange(updatedEvent);
+                  // 触发编辑事件
+                  props.onEvent("edit");
+                  return updatedEvent;
                 } else {
                   return item;
                 }
@@ -287,6 +354,10 @@ let CalendarBasicComp = (function () {
                 ...(groupId !== undefined ? { groupId } : null),
                 ...(color !== undefined ? { color } : null),
               };
+              // 统一写入当前事件（新增的事件）
+              props.currentEvent.onChange(createInfo);
+              // 触发添加事件
+              props.onEvent("add");
               props.events.onChange([...(props.events.value as EventType[]), createInfo]);
             }
             props.onEvent("change");
@@ -365,6 +436,12 @@ let CalendarBasicComp = (function () {
           select={(info) => handleCreate(info)}
           eventClick={(info) => {
             const event = events.find((item: EventType) => item.id === info.event.id);
+            if (event) {
+              // 统一写入当前事件（点击的事件）
+              props.currentEvent.onChange(event);
+              // 触发点击事件
+              props.onEvent("click");
+            }
             editEvent.current = event;
             setTimeout(() => {
               editEvent.current = undefined;
@@ -410,6 +487,10 @@ let CalendarBasicComp = (function () {
           <Section name={sectionNames.advanced}>
             {children.editable.propertyView({
               label: trans("calendar.editable"),
+            })}
+            {children.confirmDelete.propertyView({
+              label: trans("calendar.confirmDelete"),
+              tooltip: trans("calendar.confirmDeleteTooltip"),
             })}
             {children.defaultDate.propertyView({
               label: trans("calendar.defaultDate"),
@@ -468,5 +549,6 @@ CalendarBasicComp = class extends CalendarBasicComp {
 
 export const CalendarComp = withExposingConfigs(CalendarBasicComp, [
   new NameConfig("events", trans("calendar.events")),
+  new NameConfig("currentEvent", trans("calendar.currentEvent")),
   NameConfigHidden,
 ]);
