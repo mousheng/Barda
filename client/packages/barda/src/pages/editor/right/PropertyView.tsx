@@ -10,7 +10,7 @@ import { EditorContext } from "comps/editorState";
 import { GridCompOperator } from "comps/utils/gridCompOperator";
 import { trans } from "i18n";
 import _ from "lodash";
-import { ReactNode, useContext } from "react";
+import { ReactElement, ReactNode, useContext } from "react";
 import { CompStateIcon } from "../editorConstants";
 
 const ScrollWrapper = (props: { children: ReactNode }) => (
@@ -98,6 +98,7 @@ export default function PropertyView(props: PropertyViewProps) {
   const treeLayouts = getTreeDataAndLayout(editorState.getUIComp().getTree(), AllLayouts!, []);
   const treeData: layoutsNodeItem[] = filterTreeData(treeLayouts, selectedCompNames);
   const layoutMode = editorState.getLayoutMode();
+  const renderIcon = (type?: UICompType) => (type ? (CompStateIcon[type] || <LeftCommon />) as ReactElement<any> : null);
 
   let propertyView;
   if (selectedComp) {
@@ -107,11 +108,7 @@ export default function PropertyView(props: PropertyViewProps) {
       <SelectedComps
         layoutMode={layoutMode}
         treeData={treeData}
-        icon={(props: any) => props.type && (
-          <div style={{ margin: '3px 4px 0 -14px' }}>
-            {CompStateIcon[props.type as UICompType] || <LeftCommon />}
-          </div>
-        )}
+        icon={(props: any) => renderIcon(props.type as UICompType)}
         onSelect={(selectedKeys: Key[], info) => {
           if (info?.node?.title) {
             editorState.setSelectedCompNames(new Set([info.node.title as string]));

@@ -21,6 +21,17 @@ const Detail = styled.p`
   line-height: 13px;
   margin: 12px 0px;
 `;
+const TreeWrapper = styled.div`
+  .ant-tree-icon__customize > * {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    min-height: 16px;
+    max-width: 16px;
+    max-height: 16px;
+    object-fit: contain;
+  }
+`;
 const Comp = styled(BigButtonStyle)`
   height: 36px;
   width: 280px;
@@ -96,7 +107,7 @@ export const SelectedComps = (props: Iprops) => {
     <Container>
       <Title>{trans("comp.selectedCompsTitle", { selectCompNum: Object.keys(treeData).length })}</Title>
       <Detail>{trans("comp.selectedCompsDetail")}</Detail>
-      <div>
+      <TreeWrapper>
         <Tree
           showIcon
           blockNode
@@ -106,7 +117,7 @@ export const SelectedComps = (props: Iprops) => {
           onSelect={onSelect}
           icon={icon}
         />
-      </div>
+      </TreeWrapper>
       <DelBtn onClick={() => props.delete()}>{trans("comp.batchDelete")}</DelBtn>
     </Container>
   );
