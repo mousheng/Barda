@@ -337,7 +337,7 @@ const FormSelect = (props: any) => {
         }}
         popupMatchSelectWidth={false}
         placeholder={props.placeholder}
-        dropdownRender={props.dropdownRender}
+        popupRender={props.popupRender}
       >
         {props.options?.map((item: any) => {
           return (
@@ -353,7 +353,7 @@ const FormSelect = (props: any) => {
 
 export interface FormSelectItemProps<T extends OptionsType>
   extends FormItemProps,
-  Pick<SelectProps, "mode" | "open"> {
+  Pick<SelectProps, "mode" | "open" | "popupRender"> {
   options: T;
   afterChange?: (value: ValueFromOption<T>) => void;
 }

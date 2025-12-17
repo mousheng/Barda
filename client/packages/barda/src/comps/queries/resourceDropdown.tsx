@@ -157,7 +157,7 @@ export const ResourceDropdown = (props: ResourceDropdownProps) => {
           props.changeResource(datasourceId, datasourceType);
         }}
         onDropdownVisibleChange={onDropdownVisibleChange}
-        dropdownRender={
+        popupRender={
           Object.keys(dataSourceTypesMap).length > 0
             ? (menu) => (
                 <DropdownWrapper>

@@ -204,7 +204,7 @@ export function Dropdown<T extends OptionsType>(props: DropdownProps<T>) {
               allowClear={props.allowClear}
               placeholder={props.placeholder}
               optionLabelProp={props.optionLabelProp}
-              dropdownRender={(menu) =>
+              popupRender={(menu) =>
                 props.preNode ? (
                   <>
                     {props.preNode()}

@@ -150,7 +150,7 @@ const TagEdit = (props: TagEditPropsType) => {
         onChange={(value) => {
           props.onChange(value);
         }}
-        dropdownRender={(originNode: ReactNode) => (
+        popupRender={(originNode: ReactNode) => (
           <DropdownStyled>
             <ScrollBar style={{ maxHeight: "256px" }}>{originNode}</ScrollBar>
           </DropdownStyled>

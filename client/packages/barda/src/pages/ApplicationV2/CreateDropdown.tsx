@@ -257,7 +257,7 @@ export const CreateDropdown = (props: { defaultVisible?: boolean; mode: HomeLayo
         trigger={["hover"]}
         getPopupContainer={(node: any) => node}
         onOpenChange={() => setCreateDropdownVisible(!createDropdownVisible)}
-        dropdownRender={() =>
+        popupRender={() =>
         (<CreateDropdownMenu
           items={[
             getCreateMenuItem(HomeResTypeEnum.Application, mode),

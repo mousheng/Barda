@@ -210,7 +210,7 @@ export const SelectUIView = (
         return option?.label && option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
       }
     }}
-    dropdownRender={(originNode: ReactNode) => (
+    popupRender={(originNode: ReactNode) => (
       <DropdownStyled $style={props.style as MultiSelectStyleType}>{originNode}</DropdownStyled>
     )}
     dropdownStyle={{

@@ -81,7 +81,7 @@ const StatusEdit = (props: StatusEditPropsType) => {
             status: status.find((item) => item.text === value)?.status || "none",
           });
         }}
-        dropdownRender={(originNode: ReactNode) => (
+        popupRender={(originNode: ReactNode) => (
           <DropdownStyled>
             <ScrollBar style={{ maxHeight: "256px" }}>{originNode}</ScrollBar>
           </DropdownStyled>

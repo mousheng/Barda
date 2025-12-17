@@ -142,7 +142,7 @@ const TagsArrayEdit = ({ value, onChange, onChangeEnd, colorMap, allowCustomTags
         onBlur={(e) => {
           if (!e.currentTarget.contains(e.relatedTarget as Node)) onChangeEnd();
         }}
-        dropdownRender={(menu) => (
+        popupRender={(menu) => (
           <DropdownStyled>
             <ScrollBar style={{ maxHeight: 256 }}>{menu}</ScrollBar>
           </DropdownStyled>

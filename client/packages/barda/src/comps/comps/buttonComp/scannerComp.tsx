@@ -180,7 +180,7 @@ const ScannerTmpComp = (function () {
                     trigger={["click"]}
                     open={dropdownShow}
                     onOpenChange={(value) => setDropdownShow(value)}
-                    dropdownRender={() => (
+                    popupRender={() => (
                       <Menu
                         items={modeList}
                         onClick={(value) =>

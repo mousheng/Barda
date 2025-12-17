@@ -245,7 +245,7 @@ export default function ProfileDropdown(props: DropDownProps) {
   return (
     <>
       <StyledDropdown
-        dropdownRender={() => menu}
+        popupRender={() => menu}
         trigger={["click"]}
       >
         <div>

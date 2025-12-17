@@ -100,7 +100,7 @@ export const ColumnLinksComp = (function () {
               />
             ))}
           {menu && (
-            <Dropdown dropdownRender={() => menu} trigger={["hover"]}>
+            <Dropdown popupRender={() => menu} trigger={["hover"]}>
               <EllipsisOutlined onClick={(e) => e.preventDefault()} />
             </Dropdown>
           )}

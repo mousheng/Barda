@@ -423,7 +423,7 @@ export const HelpDropdown = memo((props: HelpDropdownProps) => {
           <ShortcutListPopup setShowShortcutList={props.setShowShortcutList} />
         )}
         <Dropdown
-          dropdownRender={overlayMenus}
+          popupRender={overlayMenus}
           placement="topRight"
           trigger={["click"]}
           open={showDropdown}
