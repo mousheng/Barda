@@ -1238,6 +1238,7 @@ export const zh = {
         filterDesc: "表格筛选参数",
         dataDesc: "当前表格使用的原始数据",
         saveChanges: "保存更改",
+        change: "更改",
         cancelChanges: "取消更改",
         rowSelectChange: "行选中变化",
         rowClick: "行点击",

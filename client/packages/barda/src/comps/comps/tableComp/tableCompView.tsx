@@ -609,6 +609,19 @@ export function TableCompView(props: {
     };
   }, [pagination, data]);
 
+  const lastChangeSetRef = useRef(changeSet);
+
+  useEffect(() => {
+    if (!compChildren.onEvent.isBind("change")) {
+      lastChangeSetRef.current = changeSet;
+      return;
+    }
+    if (!_.isEqual(lastChangeSetRef.current, changeSet)) {
+      lastChangeSetRef.current = changeSet;
+      onEvent("change");
+    }
+  }, [changeSet, compChildren.onEvent, onEvent]);
+
   const handleChangeEvent = useCallback(
     (eventName: TableEventOptionValues) => {
       if (eventName === "saveChanges" && !compChildren.onEvent.isBind(eventName)) {

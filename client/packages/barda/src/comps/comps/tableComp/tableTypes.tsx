@@ -55,6 +55,11 @@ export const TableEventOptions = [
     description: trans("table.saveChanges"),
   },
   {
+    label: trans("table.change"),
+    value: "change",
+    description: trans("table.change"),
+  },
+  {
     label: trans("table.cancelChanges"),
     value: "cancelChanges",
     description: trans("table.cancelChanges"),

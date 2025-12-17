@@ -1255,6 +1255,7 @@ export const en = {
     filterDesc: "Table Filtering Parameters",
     dataDesc: "The raw data used in the current table",
     saveChanges: "Save changes",
+    change: "Changed",
     cancelChanges: "Cancel changes",
     rowSelectChange: "Row select change",
     rowClick: "Row click",
