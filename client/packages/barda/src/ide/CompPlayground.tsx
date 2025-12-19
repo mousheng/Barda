@@ -113,10 +113,12 @@ interface IProps {
   initialValue?: any;
   compFactory: Comp<any>;
   layoutInfo: UICompLayoutInfo;
+  showJsonView?: boolean;
+  showPropertyPanel?: boolean;
 }
 
 export function CompPlayground(props: IProps) {
-  const { compFactory, layoutInfo, initialValue } = props;
+  const { compFactory, layoutInfo, initialValue, showJsonView = true, showPropertyPanel = true } = props;
   const [methodParams, setMethodParams] = useState<string[]>([]);
 
   const handleChangeMethodParams = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -149,15 +151,17 @@ export function CompPlayground(props: IProps) {
   return (
     <Container>
       <div className="main">
-        <div className="panel data-panel">
-          <div className="panel-title">{trans("playground.data")}</div>
-          <div className="panel-content">
-            <JsonView
-              src={comp.exposingValues}
-              enableClipboard={false}
-            />
+        {showJsonView && (
+          <div className="panel data-panel">
+            <div className="panel-title">{trans("playground.data")}</div>
+            <div className="panel-content">
+              <JsonView
+                src={comp.exposingValues}
+                enableClipboard={false}
+              />
+            </div>
           </div>
-        </div>
+        )}
         <div className="panel preview-panel">
           <div className="panel-title">{trans("playground.preview")}</div>
           <div
@@ -218,10 +222,12 @@ export function CompPlayground(props: IProps) {
             </div>
           </div>
         </div>
-        <div className="panel property-panel">
-          <div className="panel-title">{trans("playground.property")}</div>
-          <div className="panel-content">{comp.getPropertyView()}</div>
-        </div>
+        {showPropertyPanel && (
+          <div className="panel property-panel">
+            <div className="panel-title">{trans("playground.property")}</div>
+            <div className="panel-content">{comp.getPropertyView()}</div>
+          </div>
+        )}
       </div>
     </Container>
   );
