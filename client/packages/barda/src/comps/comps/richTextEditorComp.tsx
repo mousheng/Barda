@@ -2,7 +2,7 @@ import { StringControl } from "comps/controls/codeControl";
 import { BoolControl } from "comps/controls/boolControl";
 import { stringExposingStateControl } from "comps/controls/codeStateControl";
 import { AutoHeightControl } from "comps/controls/autoHeightControl";
-import { ChangeEventHandlerControl } from "comps/controls/eventHandlerControl";
+import { blurEvent, changeEvent, eventHandlerControl } from "comps/controls/eventHandlerControl";
 import { UICompBuilder, withDefault } from "comps/generators";
 import { NameConfig, NameConfigHidden, withExposingConfigs, depsConfig } from "comps/generators/withExposing";
 import { Section, sectionNames } from "barda-design";
@@ -208,7 +208,7 @@ const childrenMap = {
   autoHeight: AutoHeightControl,
   autoTimestamp: BoolControl,
   placeholder: withDefault(StringControl, trans("richTextEditor.placeholder")),
-  onEvent: ChangeEventHandlerControl,
+  onEvent: eventHandlerControl([changeEvent, blurEvent] as const),
   style: styleControl(RichTextEditorStyle),
 
   ...formDataChildren,
@@ -232,6 +232,7 @@ interface IProps {
   autoTimestamp: boolean;
   autoHeight: boolean;
   onChange: (value: string) => void;
+  onBlur: () => void;
   $style: RichTextEditorStyleType;
 }
 
@@ -530,6 +531,10 @@ function RichTextEditor(props: IProps) {
     onChangeRef.current(value);
   };
 
+  const handleBlur = () => {
+    props.onBlur?.();
+  };
+
   useEffect(() => {
     let finalValue = props.value;
     if (!/^<\w+>.+<\/\w+>$/.test(props.value)) {
@@ -596,6 +601,7 @@ function RichTextEditor(props: IProps) {
           placeholder={props.placeholder}
           readOnly={props.readOnly}
           onChange={handleChange}
+          onBlur={handleBlur}
         />
       </Suspense>
     </Wrapper>
@@ -608,6 +614,10 @@ const RichTextEditorCompBase = new UICompBuilder(childrenMap, (props) => {
     props.onEvent("change");
   };
 
+  const handleBlur = () => {
+    props.onEvent("blur");
+  };
+
   return (
     <RichTextEditor
       autoHeight={props.autoHeight}
@@ -617,6 +627,7 @@ const RichTextEditorCompBase = new UICompBuilder(childrenMap, (props) => {
       value={props.value.value}
       placeholder={props.placeholder}
       onChange={handleChange}
+      onBlur={handleBlur}
       $style={props.style}
     />
   );
