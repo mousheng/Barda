@@ -143,6 +143,7 @@ export function chartPropertyView(
           ),
         })}
       </Section>
+      <Section name={sectionNames.interaction}>{children.onEvent.getPropertyView()}</Section>
       <Section name={sectionNames.layout}>{hiddenPropertyView(children)}</Section>
     </>
   );

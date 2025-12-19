@@ -240,6 +240,8 @@ export const chartChildrenMap = {
       value?: any;
     }>
   >([]),
+  clickPayload: stateComp<any>(null),
+  selectedPayload: stateComp<any>(null),
   ...chartUiModeChildren,
 };
 

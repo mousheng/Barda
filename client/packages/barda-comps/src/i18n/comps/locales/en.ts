@@ -59,6 +59,8 @@ export const en = {
     selectDesc: "Triggered when the user selects part of the data in the chart",
     unselectDesc: "Triggered when the user unselects part of the data in the chart",
     selectedPointsDesc: "Selected points",
+    clickPayloadDesc: "The payload data when clicking on the chart",
+    selectedPayloadDesc: "The payload data when selected on the chart",
     dataDesc: "The raw data used in the current chart",
     titleDesc: "Current chart title",
     scatterShape: "Scatter shape",

@@ -80,6 +80,8 @@ ChartTmpComp = withViewFn(ChartTmpComp, (comp) => {
     echartsCompInstance.on("selectchanged", (param: any) => {
       const option: any = echartsCompInstance.getOption();
       //log.log("chart select change", param);
+      comp.dispatch(changeChildAction("clickPayload", {seriesIndex:param?.fromActionPayload?.seriesIndex, dataIndex:param?.fromActionPayload?.dataIndexInside}));
+      comp.dispatch(changeChildAction("selectedPayload", param?.selected));
       if (param.fromAction === "select") {
         comp.dispatch(changeChildAction("selectedPoints", getSelectedPoints(param, option)));
         onEvent("select");
@@ -215,6 +217,22 @@ const ChartComp = withExposingConfigs(ChartTmpComp, [
     depKeys: ["selectedPoints"],
     func: (input) => {
       return input.selectedPoints;
+    },
+  }),
+  depsConfig({
+    name: "clickPayload",
+    desc: trans("chart.clickPayloadDesc"),
+    depKeys: ["clickPayload"],
+    func: (input) => {
+      return input.clickPayload;
+    },
+  }),
+  depsConfig({
+    name: "selectedPayload",
+    desc: trans("chart.selectedPayloadDesc"),
+    depKeys: ["selectedPayload"],
+    func: (input) => {
+      return input.selectedPayload;
     },
   }),
   depsConfig({
