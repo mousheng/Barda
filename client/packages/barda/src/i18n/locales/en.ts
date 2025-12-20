@@ -1045,6 +1045,9 @@ export const en = {
     autoColumnsTooltip:
       "The auto column layout automatically rearranges the order as space permits and displays as multiple columns",
   },
+  segmented: {
+    layout: "Layout",
+  },
   cascader: {
     options: "Structure",
   },

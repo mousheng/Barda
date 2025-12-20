@@ -1029,6 +1029,9 @@ export const zh = {
         autoColumns: "自动列",
         autoColumnsTooltip: "自动列布局根据空间自动调整顺序,以多列显示",
     },
+    segmented: {
+        layout: "布局",
+    },
     cascader: {
         options: "结构",
     },

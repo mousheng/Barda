@@ -2,6 +2,7 @@ import { Segmented as AntdSegmented, Badge } from "antd";
 import { Section, sectionNames } from "barda-design";
 import { BoolCodeControl } from "comps/controls/codeControl";
 import { stringExposingStateControl } from "comps/controls/codeStateControl";
+import { dropdownControl } from "comps/controls/dropdownControl";
 import { ChangeEventHandlerControl } from "comps/controls/eventHandlerControl";
 import { LabelControl } from "comps/controls/labelControl";
 import { SelectOptionControl } from "comps/controls/optionsControl";
@@ -22,6 +23,11 @@ import {
   SelectInputValidationSection,
   useSelectInputValidate,
 } from "./selectInputConstants";
+
+export const SegmentedLayoutOptions = [
+  { label: trans("radio.horizontal"), value: "horizontal" },
+  { label: trans("radio.vertical"), value: "vertical" },
+] as const;
 
 const getStyle = (style: SegmentStyleType) => {
   return css`
@@ -50,9 +56,9 @@ const getStyle = (style: SegmentStyleType) => {
   `;
 };
 
-const Segmented = styled(AntdSegmented) <{ $style: SegmentStyleType }>`
+const Segmented = styled(AntdSegmented) <{ $style: SegmentStyleType; $layout?: "horizontal" | "vertical" }>`
   width: 100%;
-  height: 32px; // keep the height unchanged when there are no options
+  height: ${(props) => (props.$layout === "vertical" ? "auto" : "32px")};
   ${(props) => props.$style && getStyle(props.$style)}
 `;
 
@@ -64,6 +70,7 @@ const SegmentChildrenMap = {
   onEvent: ChangeEventHandlerControl,
   options: SelectOptionControl,
   style: styleControl(SegmentStyle),
+  layout: dropdownControl(SegmentedLayoutOptions, "horizontal"),
   viewRef: RefControl<HTMLDivElement>,
 
   ...SelectInputValidationChildren,
@@ -82,11 +89,13 @@ const SegmentedControlBasicComp = (function () {
       style: props.style,
       children: (
         <Segmented
+          vertical={props.layout === "vertical"}
           ref={props.viewRef}
           block
           disabled={props.disabled}
           value={props.value.value}
           $style={props.style}
+          $layout={props.layout}
           onChange={(value: any) => handleChange(value.toString())}
           options={props.options
             .filter((option) => option.value !== undefined && !option.hidden)
@@ -123,7 +132,13 @@ const SegmentedControlBasicComp = (function () {
 
         <SelectInputValidationSection {...children} />
 
-        <Section name={sectionNames.layout}>{hiddenPropertyView(children)}</Section>
+        <Section name={sectionNames.layout}>
+          {children.layout.propertyView({
+            label: trans("segmented.layout"),
+            radioButton: true,
+          })}
+          {hiddenPropertyView(children)}
+        </Section>
         <Section name={sectionNames.style}>{children.style.getPropertyView()}</Section>
       </>
     ))
