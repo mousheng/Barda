@@ -1,11 +1,16 @@
-import { Segmented as AntdSegmented } from "antd";
+import { Segmented as AntdSegmented, Badge } from "antd";
+import { Section, sectionNames } from "barda-design";
 import { BoolCodeControl } from "comps/controls/codeControl";
 import { stringExposingStateControl } from "comps/controls/codeStateControl";
 import { ChangeEventHandlerControl } from "comps/controls/eventHandlerControl";
 import { LabelControl } from "comps/controls/labelControl";
 import { SelectOptionControl } from "comps/controls/optionsControl";
+import { RefControl } from "comps/controls/refControl";
 import { styleControl } from "comps/controls/styleControl";
 import { SegmentStyle, SegmentStyleType } from "comps/controls/styleControlConstants";
+import { hasIcon } from "comps/utils";
+import { disabledPropertyView, hiddenPropertyView } from "comps/utils/propertyUtils";
+import { trans } from "i18n";
 import styled, { css } from "styled-components";
 import { UICompBuilder } from "../../generators";
 import { CommonNameConfig, NameConfig, withExposingConfigs } from "../../generators/withExposing";
@@ -17,12 +22,6 @@ import {
   SelectInputValidationSection,
   useSelectInputValidate,
 } from "./selectInputConstants";
-import { Section, sectionNames } from "barda-design";
-import { hiddenPropertyView, disabledPropertyView } from "comps/utils/propertyUtils";
-import { trans } from "i18n";
-import { hasIcon } from "comps/utils";
-import { RefControl } from "comps/controls/refControl";
-import { SegmentedValue } from "antd/es/segmented";
 
 const getStyle = (style: SegmentStyleType) => {
   return css`
@@ -92,7 +91,13 @@ const SegmentedControlBasicComp = (function () {
           options={props.options
             .filter((option) => option.value !== undefined && !option.hidden)
             .map((option) => ({
-              label: option.label,
+              label: option.badge > 0 ? (
+                <Badge count={option.badge} size="small" offset={[5, 0]}>
+                  {option.label}
+                </Badge>
+              ) : (
+                option.label
+              ),
               value: option.value,
               disabled: option.disabled,
               icon: hasIcon(option.prefixIcon) && option.prefixIcon,
@@ -105,7 +110,7 @@ const SegmentedControlBasicComp = (function () {
     .setPropertyViewFn((children) => (
       <>
         <Section name={sectionNames.basic}>
-          {children.options.propertyView({})}
+          {children.options.propertyView({ hideBadge: false })}
           {children.defaultValue.propertyView({ label: trans("prop.defaultValue") })}
         </Section>
         <FormDataPropertyView {...children} />

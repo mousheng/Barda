@@ -1032,6 +1032,8 @@ export const en = {
     optionI: "Option {i}",
     viewDocs: "View docs",
     tip: 'The "item" and "i" variables represent the value and index of each item in the data array',
+    badge: "Badge",
+    badgeDesc: "Display a numeric badge on the option label",
   },
   radio: {
     options: "Options",

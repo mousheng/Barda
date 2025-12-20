@@ -1017,6 +1017,8 @@ export const zh = {
         optionI: "选项 {i}",
         viewDocs: "查看文档",
         tip: '“item”和“i”变量代表数据数组中每个项的值和索引',
+        badge: "徽章数字",
+        badgeDesc: "在选项标签上显示的数字徽章",
     },
     radio: {
         options: "选项",

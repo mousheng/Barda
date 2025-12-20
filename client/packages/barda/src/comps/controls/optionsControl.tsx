@@ -53,10 +53,12 @@ type OptionControlParam = {
   title?: string;
   // The new option's label name
   newOptionLabel?: string;
+  hideBadge?: boolean;
 };
 
 type OptionPropertyParam = {
   autoMap?: boolean;
+  hideBadge?: boolean;
 };
 
 interface OptionCompProperty {
@@ -164,7 +166,7 @@ export function manualOptionsControl<T extends OptionsControlType>(
           itemTitle={(comp) => comp.children.label.getView()}
           popoverTitle={() => trans("edit")}
           content={(comp) => {
-            return hasPropertyView(comp) ? comp.propertyView({}) : comp.getPropertyView();
+            return hasPropertyView(comp) ? comp.propertyView({ hideBadge: param.hideBadge }) : comp.getPropertyView();
           }}
           items={manualComp.getView()}
           onAdd={() => {
@@ -432,12 +434,13 @@ let SelectOption = new MultiCompBuilder(
     prefixIcon: IconControl,
     disabled: BoolCodeControl,
     hidden: BoolCodeControl,
+    badge: withDefault(NumberControl, 0),
   },
   (props) => props
 ).build();
 
 SelectOption = class extends SelectOption implements OptionCompProperty {
-  propertyView(param: { autoMap?: boolean }) {
+  propertyView(param: OptionPropertyParam) {
     return (
       <>
         {this.children.label.propertyView({
@@ -446,6 +449,7 @@ SelectOption = class extends SelectOption implements OptionCompProperty {
         })}
         {this.children.value.propertyView({ label: trans("value") })}
         {this.children.prefixIcon.propertyView({ label: trans("button.prefixIcon") })}
+        {!param.hideBadge!== false && this.children.badge.propertyView({ label: trans("optionsControl.badge"), tooltip: trans("optionsControl.badgeDesc") })}
         {disabledPropertyView(this.children)}
         {hiddenPropertyView(this.children)}
       </>
