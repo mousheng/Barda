@@ -38,53 +38,37 @@ const childrenMap = {
   style: styleControl(DividerStyle),
 };
 
-function fixOldStyleData(oldData: any) {
-  if (oldData && oldData.hasOwnProperty("color")) {
-    return {
-      ...oldData,
-      style: {
-        color: oldData.color,
-        text: "",
-      },
-    };
-  }
-  return oldData;
-}
-
 // Compatible with historical style data 2022-8-26
-export const DividerComp = migrateOldData(
-  new UICompBuilder(childrenMap, (props) => {
+export const DividerComp = new UICompBuilder(childrenMap, (props) => {
+  return (
+    <StyledDivider orientation={props.align} $dashed={props.dashed} $style={props.style}>
+      {props.title}
+    </StyledDivider>
+  );
+})
+  .setPropertyViewFn((children) => {
     return (
-      <StyledDivider orientation={props.align} $dashed={props.dashed} $style={props.style}>
-        {props.title}
-      </StyledDivider>
+      <>
+        <Section name={sectionNames.basic}>
+          {children.title.propertyView({ label: trans("divider.title") })}
+          {!_.isEmpty(children.title.getView()) &&
+            children.align.propertyView({
+              label: trans("divider.align"),
+              radioButton: true,
+            })}
+        </Section>
+        <Section name={sectionNames.layout}>{hiddenPropertyView(children)}</Section>
+        <Section name={sectionNames.style}>
+          {children.dashed.propertyView({ label: trans("divider.dashed") })}
+          {children.style.getPropertyView()}
+        </Section>
+      </>
     );
   })
-    .setPropertyViewFn((children) => {
-      return (
-        <>
-          <Section name={sectionNames.basic}>
-            {children.title.propertyView({ label: trans("divider.title") })}
-            {!_.isEmpty(children.title.getView()) &&
-              children.align.propertyView({
-                label: trans("divider.align"),
-                radioButton: true,
-              })}
-          </Section>
-          <Section name={sectionNames.layout}>{hiddenPropertyView(children)}</Section>
-          <Section name={sectionNames.style}>
-            {children.dashed.propertyView({ label: trans("divider.dashed") })}
-            {children.style.getPropertyView()}
-          </Section>
-        </>
-      );
-    })
-    .setExposeStateConfigs([
-      new NameConfig("dashed", trans("divider.dashedDesc")),
-      new NameConfig("title", trans("divider.titleDesc")),
-      new NameConfig("align", trans("divider.alignDesc")),
-      NameConfigHidden,
-    ])
-    .build(),
-  fixOldStyleData
-);
+  .setExposeStateConfigs([
+    new NameConfig("dashed", trans("divider.dashedDesc")),
+    new NameConfig("title", trans("divider.titleDesc")),
+    new NameConfig("align", trans("divider.alignDesc")),
+    NameConfigHidden,
+  ])
+  .build();

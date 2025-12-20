@@ -3,14 +3,7 @@ import { CloseEyeIcon, DragWhiteIcon, EllipsisTextCss, fadeColor, WidthDragIcon 
 import { UICompType } from "comps/uiCompRegistry";
 import { Layers } from "constants/Layers";
 import { ModulePrimaryColor, PrimaryColor } from "constants/style";
-import React, {
-  MouseEvent,
-  MouseEventHandler,
-  useCallback,
-  useEffect,
-  useRef,
-  useState
-} from "react";
+import React, { MouseEvent, MouseEventHandler, useCallback, useEffect, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import styled, { css } from "styled-components";
 import { getElementScrollPosition } from "./calculateUtils";
@@ -64,7 +57,7 @@ function getLineStyle(
   compType: UICompType,
   isHidden: boolean,
   margin: StandardBoxMargin,
-  delaying: boolean,
+  delaying: boolean
 ) {
   const isModule = compType === "module";
   const primaryColor = isModule ? ModulePrimaryColor : PrimaryColor;
@@ -79,17 +72,19 @@ function getLineStyle(
   let marginArray = margin;
   if (compType === "module") {
     marginArray = [0, 0, 0, 0];
+  } else if (compType === "divider" && margin[0] === 2.5 && margin[1] === 6.5) {
+    marginArray = [1, 1, 1, 1];
   }
-  const noMargin = !!marginArray?.every(v => v === 0);
+  const noMargin = !!marginArray?.every((v) => v === 0);
   return `
-      border: ${GRID_ITEM_BORDER_WIDTH}px ${borderStyle} ${delaying ? '#FF6666' : borderColor};
-      padding: ${isHidden && !isSelected ? 0 : marginArray?.map(v => `${v}px`).join(" ")};
+      border: ${GRID_ITEM_BORDER_WIDTH}px ${borderStyle} ${delaying ? "#FF6666" : borderColor};
+      padding: ${isHidden && !isSelected ? 0 : marginArray?.map((v) => `${v}px`).join(" ")};
       box-sizing: ${noMargin ? "content-box" : "border-box"};
   `;
 }
 
 const InnerWrapper = styled.div<{ $autoHeight: boolean }>`
-  height: ${(props) => props.$autoHeight ? "auto" : "100%"};
+  height: ${(props) => (props.$autoHeight ? "auto" : "100%")};
 `;
 
 // padding: ${props => props.hover || props.showDashline ? 3 : 4}px;
@@ -118,7 +113,7 @@ const SelectableDiv = styled.div<{
       props.$compType,
       props.$isHidden,
       props.$margin,
-      props.$delaying,
+      props.$delaying
     )}`}
   & .module-wrapper {
     margin: ${-GRID_ITEM_BORDER_WIDTH}px;
@@ -161,15 +156,15 @@ const dragIconCss = (props: DragHandleProps, handle: ResizeHandleAxis) => css`
   display: ${dragDisplay(handle, props)};
 `;
 
-const DragLeftIcon = styled(WidthDragIcon) <DragHandleProps>`
+const DragLeftIcon = styled(WidthDragIcon)<DragHandleProps>`
   ${(props) => dragIconCss(props, "w")};
   left: -3.5px;
   transform: translate(0px, -50%);
 `;
 
-const DragRightIcon = styled(WidthDragIcon) <DragHandleProps >`
+const DragRightIcon = styled(WidthDragIcon)<DragHandleProps>`
   ${(props) => dragIconCss(props, "e")};
-  right: ${(props) => props.$noMargin ? "-6.5px" : "-3.5px"};
+  right: ${(props) => (props.$noMargin ? "-6.5px" : "-3.5px")};
   transform: translate(0px, -50%);
 `;
 
@@ -217,18 +212,18 @@ const DragNW = styled.div<DragHandleProps>`
 `;
 const DragNE = styled.div<DragHandleProps>`
   ${(props) => dragCss(props, "ne")};
-  right: ${(props) => props.$noMargin ? "-5px" : "-2.5px"};
-  top: ${(props) => props.$noMargin ? "-5px" : "-2.5px"};
+  right: ${(props) => (props.$noMargin ? "-5px" : "-2.5px")};
+  top: ${(props) => (props.$noMargin ? "-5px" : "-2.5px")};
 `;
-const DragSW = styled.div<DragHandleProps >`
+const DragSW = styled.div<DragHandleProps>`
   ${(props) => dragCss(props, "sw")};
-  left: ${(props) => props.$noMargin ? "-5px" : "-2.5px"};
-  bottom: ${(props) => props.$noMargin ? "-5px" : "-2.5px"};
+  left: ${(props) => (props.$noMargin ? "-5px" : "-2.5px")};
+  bottom: ${(props) => (props.$noMargin ? "-5px" : "-2.5px")};
 `;
 const DragSE = styled.div<DragHandleProps>`
   ${(props) => dragCss(props, "se")};
-  right: ${(props) => props.$noMargin ? "-5px" : "-2.5px"};
-  bottom: ${(props) => props.$noMargin ? "-5px" : "-2.5px"};
+  right: ${(props) => (props.$noMargin ? "-5px" : "-2.5px")};
+  bottom: ${(props) => (props.$noMargin ? "-5px" : "-2.5px")};
 `;
 
 const HiddenIcon = styled(CloseEyeIcon)`
@@ -236,7 +231,6 @@ const HiddenIcon = styled(CloseEyeIcon)`
     fill: #f5f5f6;
   }
 `;
-
 
 export const CompSelectionWrapper = (props: {
   id?: string;
@@ -268,7 +262,7 @@ export const CompSelectionWrapper = (props: {
 }) => {
   const nameDivRef = useRef<HTMLDivElement>(null);
   let [hover, setHover] = useState(false);
-  const noMargin = !!props.margin?.every(v => v === 0);
+  const noMargin = !!props.margin?.every((v) => v === 0);
   const onMouseOver = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
       e.stopPropagation();
@@ -301,60 +295,60 @@ export const CompSelectionWrapper = (props: {
 
   const selectableDivProps = props.isSelectable
     ? {
-      onMouseOver,
-      onMouseOut,
-      onClick: props.onClick,
-      $hover: hover,
-      $showDashLine: props.showGridLines || props.hidden,
-      $isSelected: props.isSelected,
-      $isHidden: props.hidden,
-    }
+        onMouseOver,
+        onMouseOut,
+        onClick: props.onClick,
+        $hover: hover,
+        $showDashLine: props.showGridLines || props.hidden,
+        $isSelected: props.isSelected,
+        $isHidden: props.hidden,
+      }
     : {
-      $hover: false,
-      $showDashLine: false,
-      $isSelected: false,
-      $isHidden: false,
-    };
+        $hover: false,
+        $showDashLine: false,
+        $isSelected: false,
+        $isHidden: false,
+      };
 
   const zIndex = props.isSelected
     ? Layers.compSelected
     : hover
-      ? Layers.compHover
-      : props.hidden
-        ? Layers.compHidden
-        : undefined;
+    ? Layers.compHover
+    : props.hidden
+    ? Layers.compHidden
+    : undefined;
 
   const { height: wrapperHeight, ref: wrapperRef } = useResizeDetector({
     handleHeight: props.autoHeight,
     handleWidth: false,
     refreshMode: "throttle",
-    refreshRate: 50
+    refreshRate: 50,
   });
   const { height: innerHeight, ref: InnerWrapperRef } = useResizeDetector({
     handleHeight: props.autoHeight,
     handleWidth: false,
     refreshMode: "throttle",
-    refreshRate: 50
+    refreshRate: 50,
   });
   useEffect(() => {
-    if (wrapperHeight !== undefined) props.onWrapperResize(0, wrapperHeight)
-  }, [wrapperHeight])
+    if (wrapperHeight !== undefined) props.onWrapperResize(0, wrapperHeight);
+  }, [wrapperHeight]);
 
   useEffect(() => {
-    if (innerHeight !== undefined) props.onInnerResize(0, innerHeight)
-  }, [innerHeight])
+    if (innerHeight !== undefined) props.onInnerResize(0, innerHeight);
+  }, [innerHeight]);
 
   useEffect(() => {
     if (props.isSelected) {
-      const scrollPostion = getElementScrollPosition(wrapperRef.current?.getBoundingClientRect())
+      const scrollPostion = getElementScrollPosition(wrapperRef.current?.getBoundingClientRect());
       if (scrollPostion === "none") return;
       if (scrollPostion === "end") {
-        wrapperRef.current?.scrollIntoView({ behavior: "smooth", block: scrollPostion })
+        wrapperRef.current?.scrollIntoView({ behavior: "smooth", block: scrollPostion });
       } else {
-        nameDivRef.current?.scrollIntoView({ behavior: "smooth", block: scrollPostion })
+        nameDivRef.current?.scrollIntoView({ behavior: "smooth", block: scrollPostion });
       }
     }
-  }, [props.isSelected])
+  }, [props.isSelected]);
 
   // log.debug("CompSelectionWrapper. name: ", props.name, " zIndex: ", zIndex);
   const { nameConfig, resizeIconSize } = props;
@@ -370,7 +364,7 @@ export const CompSelectionWrapper = (props: {
         $isDragging={props.isDragging}
         $delaying={props.delaying ?? false}
         // 如为按钮则overflow设置可溢出
-        $overflow={!props.hidden && props.compType === 'button' && !props.isSelected}
+        $overflow={!props.hidden && props.compType === "button" && !props.isSelected}
       >
         {props.isSelectable && nameConfig.show && (hover || props.isSelected || props.hidden) && (
           <NameDiv
@@ -392,7 +386,11 @@ export const CompSelectionWrapper = (props: {
           (resizeIconSize === "normal" ? (
             <>
               <DragLeftIcon $compType={props.compType} $resizeHandles={props.resizeHandles} />
-              <DragRightIcon $compType={props.compType} $resizeHandles={props.resizeHandles} $noMargin={noMargin} />
+              <DragRightIcon
+                $compType={props.compType}
+                $resizeHandles={props.resizeHandles}
+                $noMargin={noMargin}
+              />
             </>
           ) : (
             <>
@@ -408,7 +406,9 @@ export const CompSelectionWrapper = (props: {
             <DragSE $compType={props.compType} $resizeHandles={props.resizeHandles} $noMargin={noMargin} />
           </>
         )}
-        <InnerWrapper ref={InnerWrapperRef} $autoHeight={props.autoHeight}>{props.children}</InnerWrapper>
+        <InnerWrapper ref={InnerWrapperRef} $autoHeight={props.autoHeight}>
+          {props.children}
+        </InnerWrapper>
       </SelectableDiv>
     </div>
   );
