@@ -108,6 +108,7 @@ export class ColumnComp extends ColumnInitComp {
     return {
       ...superView,
       editable: ColumnTypeCompMap[columnType].canBeEditable() && superView.editable,
+      columnType: columnType,
     };
   }
 

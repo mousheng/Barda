@@ -291,7 +291,7 @@ const TableTh = styled.th<{ $width?: number }>`
   ${(props) => props.$width && `width: ${props.$width}px`};
 `;
 
-const TableTd = styled.td<{ $background: string; $isEditing: boolean }>`
+const TableTd = styled.td<{ $background: string; $isEditing: boolean; $isImageColumn?: boolean }>`
   .ant-table-row-expand-icon,
   .ant-table-row-indent {
     display: ${(props) => (props.$isEditing ? "none" : "initial")};
@@ -301,6 +301,12 @@ const TableTd = styled.td<{ $background: string; $isEditing: boolean }>`
     props.$background &&
     `
       background: ${props.$background} !important;
+   `};
+
+  ${(props) =>
+    props.$isImageColumn &&
+    `
+      padding: 1px 2px !important;
    `};
 `;
 
@@ -363,8 +369,9 @@ function TableCellView(props: {
   rowColor: RowColorViewType;
   rowIndex: number;
   children: any;
+  columnType?: string;
 }) {
-  const { record, title, rowIndex, rowColor, children, ...restProps } = props;
+  const { record, title, rowIndex, rowColor, children, columnType, ...restProps } = props;
   const [editing, setEditing] = useState(false);
   const rowContext = useContext(TableRowContext);
   let tdView;
@@ -388,7 +395,12 @@ function TableCellView(props: {
       background = genLinerGradient(handleToHoverRow(color)) + "," + background;
     }
     tdView = (
-      <TableTd {...restProps} $background={background} $isEditing={editing}>
+      <TableTd
+        {...restProps}
+        $background={background}
+        $isEditing={editing}
+        $isImageColumn={columnType === "image"}
+      >
         {children}
       </TableTd>
     );
@@ -456,6 +468,7 @@ const ResizeableTable = memo(<RecordType extends object>(props: CustomTableProps
         title: col.titleText,
         rowColor: props.rowColor,
         rowIndex: rowIndex,
+        columnType: col.columnType,
       }),
       onHeaderCell: () => ({
         width: resizeWidth,

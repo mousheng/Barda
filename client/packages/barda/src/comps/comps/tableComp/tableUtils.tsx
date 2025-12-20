@@ -350,6 +350,7 @@ function renderTitle(props: { title: string; editable: boolean }) {
 export type CustomColumnType<RecordType> = ColumnType<RecordType> & {
   onWidthResize?: (width: number) => void;
   titleText: string;
+  columnType?: string;
 };
 
 /**
@@ -412,6 +413,7 @@ export function columnsToAntdFormat(
       width: column.autoWidth === "auto" ? 0 : column.width,
       fixed: column.fixed === "close" ? false : column.fixed,
       onWidthResize: column.onWidthResize,
+      columnType: (column as any).columnType,
       render: (value: any, record: RecordType, index: number) => {
         return column
           .render(
@@ -424,7 +426,13 @@ export function columnsToAntdFormat(
             String(record[OB_ROW_ORI_INDEX])
           )
           .getView()
-          .view({ editable: column.editable, size, candidateTags: tags, candidateStatus: status });
+          .view({
+            editable: column.editable,
+            size,
+            candidateTags: tags,
+            candidateStatus: status,
+            columnType: (column as any).columnType,
+          });
       },
       ...(column.sortable
         ? {

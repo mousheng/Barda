@@ -13,6 +13,7 @@ export const ColumnValueTooltip = trans("table.columnValueTooltip");
 const childrenMap = {
   src: withDefault(StringControl, "{{currentCell}}"),
   size: withDefault(NumberControl, "50"),
+  radius: withDefault(StringControl, "0px"),
 };
 
 const getBaseValue: ColumnTypeViewFn<typeof childrenMap, string, string> = (props) => props.src;
@@ -22,7 +23,13 @@ export const ImageComp = (function () {
     childrenMap,
     (props, dispatch) => {
       const value = props.changeValue ?? getBaseValue(props, dispatch);
-      return <TacoImage style={{ pointerEvents: "auto" }} src={value} width={props.size} />;
+      return (
+        <TacoImage
+          style={{ pointerEvents: "auto", borderRadius: props.radius }}
+          src={value}
+          width={props.size}
+        />
+      );
     },
     (nodeValue) => nodeValue.src.value,
     getBaseValue
@@ -49,6 +56,9 @@ export const ImageComp = (function () {
           })}
           {children.size.propertyView({
             label: trans("table.imageSize"),
+          })}
+          {children.radius.propertyView({
+            label: trans("table.imageRadius"),
           })}
         </>
       );

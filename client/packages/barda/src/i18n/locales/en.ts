@@ -1197,6 +1197,7 @@ export const en = {
       "Example: '{{currentCell * 5}}' show 5 times the original value data.",
     imageSrc: "Image source",
     imageSize: "Image size",
+    imageRadius: "Border radius",
     columnTitle: "Title",
     sortable: "Sortable",
     align: "Alignment",

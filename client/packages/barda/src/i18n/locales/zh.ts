@@ -1180,6 +1180,7 @@ export const zh = {
             "示例: '{{currentCell * 5}}' 显示原始值数据的5倍.",
         imageSrc: "图片链接",
         imageSize: "图片尺寸",
+        imageRadius: "圆角",
         columnTitle: "标题",
         sortable: "可排序",
         align: "对齐方式",
