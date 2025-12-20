@@ -69,6 +69,7 @@ const BodyWrapper = styled.div`
   scrollbar-gutter: stable;
   padding-left: 16px;
   background-color: #ffffff;
+  user-select: text;
 
   &::-webkit-scrollbar {
     width: 16px;
