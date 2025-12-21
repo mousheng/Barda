@@ -33,6 +33,7 @@ import {
   echartsConfigOmitChildren,
   getEchartsConfig,
   getSelectedPoints,
+  getOrderedSelectedPoints,
 } from "comps/chartComp/chartUtils";
 import log from "loglevel";
 import { Wrapper } from "./chartConstants";
@@ -82,8 +83,10 @@ ChartTmpComp = withViewFn(ChartTmpComp, (comp) => {
       //log.log("chart select change", param);
       comp.dispatch(changeChildAction("clickPayload", {seriesIndex:param?.fromActionPayload?.seriesIndex, dataIndex:param?.fromActionPayload?.dataIndexInside}));
       comp.dispatch(changeChildAction("selectedPayload", param?.selected));
+      const currentSelectedPoints = comp.children.selectedPoints.getView();
       if (param.fromAction === "select") {
-        comp.dispatch(changeChildAction("selectedPoints", getSelectedPoints(param, option)));
+        const orderedPoints = getOrderedSelectedPoints(param, option, currentSelectedPoints);
+        comp.dispatch(changeChildAction("selectedPoints", orderedPoints));
         onEvent("select");
       } else if (param.fromAction === "unselect") {
         comp.dispatch(changeChildAction("selectedPoints", getSelectedPoints(param, option)));

@@ -238,3 +238,57 @@ export function getSelectedPoints(param: any, option: any) {
   }
   return [];
 }
+
+/**
+ * 获取排序后的选中点列表，新点击的点始终在 index 0
+ */
+export function getOrderedSelectedPoints(
+  param: any,
+  option: any,
+  currentSelectedPoints: Array<any>
+): Array<any> {
+  const allSelectedPoints = getSelectedPoints(param, option);
+  
+  // 如果没有点击信息，直接返回所有选中的点
+  if (!param?.fromActionPayload) {
+    return allSelectedPoints;
+  }
+  
+  // 获取当前点击的点信息
+  const { seriesIndex, dataIndexInside } = param.fromActionPayload;
+  const series = option.series;
+  const seriesInfo = series?.[seriesIndex];
+  const dataSource = _.isArray(option.dataset) && option.dataset[0]?.source;
+  
+  if (!seriesInfo || !dataSource) {
+    return allSelectedPoints;
+  }
+  
+  // 构建当前点击的点的标识
+  let clickedPointKey: string;
+  if (seriesInfo.encode?.itemName && seriesInfo.encode?.value) {
+    const itemName = dataSource[dataIndexInside]?.[seriesInfo.encode.itemName];
+    const value = dataSource[dataIndexInside]?.[seriesInfo.encode.value];
+    clickedPointKey = `${seriesInfo.name}|${itemName}|${value}`;
+  } else {
+    const x = dataSource[dataIndexInside]?.[seriesInfo.encode.x];
+    const y = dataSource[dataIndexInside]?.[seriesInfo.encode.y];
+    clickedPointKey = `${seriesInfo.name}|${x}|${y}`;
+  }
+  
+  // 从所有选中的点中找到当前点击的点
+  const clickedPointIndex = allSelectedPoints.findIndex((point: any) => {
+    const pointKey = seriesInfo.encode?.itemName && seriesInfo.encode?.value
+      ? `${point.seriesName}|${point.itemName}|${point.value}`
+      : `${point.seriesName}|${point.x}|${point.y}`;
+    return pointKey === clickedPointKey;
+  });
+  
+  // 如果找到点击的点，将其移到开头
+  if (clickedPointIndex >= 0) {
+    const clickedPoint = allSelectedPoints[clickedPointIndex];
+    return [clickedPoint, ...allSelectedPoints.filter((_: any, i: number) => i !== clickedPointIndex)];
+  }
+  
+  return allSelectedPoints;
+}
