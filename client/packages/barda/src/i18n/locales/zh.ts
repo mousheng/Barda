@@ -333,6 +333,7 @@ export const zh = {
         multiIcon: "多选图标",
         tabText: "选项卡文本",
         tabAccent: "选项卡强调色",
+        activeTabBackground: "激活标签背景",
         checkedBackground: "已选中背景",
         uncheckedBackground: "未选中背景",
         uncheckedBorder: "未选中边框",
@@ -1543,6 +1544,7 @@ export const zh = {
         TabPosition: "标签位置",
         showTabs: "显示标签",
         labelCentered: "标签居中",
+        cardStyle: "卡片样式",
         showScroll: "显示滚动条",
     },
     formComp: {

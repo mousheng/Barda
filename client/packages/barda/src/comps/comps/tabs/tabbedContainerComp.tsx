@@ -59,6 +59,7 @@ const childrenMap = {
   showHeader: BoolControl.DEFAULT_TRUE,
   labelCentered: BoolControl,
   showScroll: BoolControl.DEFAULT_TRUE,
+  cardStyle: BoolControl,
 };
 
 type ViewProps = RecordConstructorToView<typeof childrenMap>;
@@ -103,6 +104,7 @@ const getStyle = (style: TabContainerStyleType, $showTabs: boolean, $showScroll:
         }
         .ant-tabs-tab-active {
           border-radius: 4px;
+          background-color: ${style.activeTabBackground};
         }
 
         ::before {
@@ -150,7 +152,7 @@ const StyledTabs = styled(Tabs) <{
   }
 
   .ant-tabs-nav {
-    padding: 0 ${(props) => (props.$isMobile ? 16 : props.tabPosition === "top" || props.tabPosition === "bottom" ? 24 : 0)}px;
+    padding: 0 ${(props) => ((props.tabPosition === "top" || props.tabPosition === "bottom") ? props.$isMobile ? 16 : 24 : 0)}px;
     background: white;
     margin: 0px;
     &::before {
@@ -262,6 +264,7 @@ const TabbedContainer = (props: TabbedContainerProps) => {
       animated
       $isMobile={isMobile}
       $autoHeight={props.autoHeight}
+      type={props.cardStyle ? "card" : "line"}
       // tabBarGutter={32}
       items={tabItems}
       tabPosition={props.position ?? "top"}
@@ -290,6 +293,7 @@ export const TabbedContainerBaseComp = (function () {
             {children.showHeader.getView() && children.position.propertyView({ label: trans("tabbedContainer.TabPosition"), radioButton: true })}
             {children.showHeader.getView() && (children.position.getView() === 'top' || children.position.getView() === 'bottom') &&
               children.labelCentered.propertyView({ label: trans("tabbedContainer.labelCentered") })}
+            {children.showHeader.getView() && children.cardStyle.propertyView({ label: trans("tabbedContainer.cardStyle") })}
             {children.selectedTabKey.propertyView({ label: trans("prop.defaultValue") })}
             {children.autoHeight.getPropertyView()}
           </Section>

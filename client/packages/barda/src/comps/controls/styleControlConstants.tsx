@@ -507,6 +507,13 @@ export const TabContainerStyle = [
     depType: DEP_TYPE.SELF,
     transformer: toSelf,
   },
+  {
+    name: "activeTabBackground",
+    label: trans("style.activeTabBackground"),
+    depTheme: "primarySurface",
+    depType: DEP_TYPE.SELF,
+    transformer: toSelf,
+  },
   getPadding("11 19"),
   getMargin(),
 ] as const;

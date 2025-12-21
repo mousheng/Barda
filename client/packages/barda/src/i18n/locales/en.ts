@@ -337,6 +337,7 @@ export const en = {
     multiIcon: "Multiselect icon",
     tabText: "Tab text",
     tabAccent: "Tab accent",
+    activeTabBackground: "Active tab background",
     checkedBackground: "Checked background",
     uncheckedBackground: "Unchecked background",
     uncheckedBorder: "Unchecked border",
@@ -1563,6 +1564,7 @@ export const en = {
     TabPosition: "Label Position",
     showTabs: "Show tabs",
     labelCentered: "Label centered",
+    cardStyle: "Card style",
     showScroll: "Show scroll",
   },
   formComp: {
