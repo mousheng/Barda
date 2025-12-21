@@ -507,6 +507,7 @@ export const TabContainerStyle = [
     depType: DEP_TYPE.SELF,
     transformer: toSelf,
   },
+  getPadding("11 19"),
   getMargin(),
 ] as const;
 

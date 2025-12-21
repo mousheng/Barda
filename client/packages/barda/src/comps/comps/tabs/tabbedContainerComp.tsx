@@ -6,7 +6,7 @@ import { stringExposingStateControl } from "comps/controls/codeStateControl";
 import { eventHandlerControl } from "comps/controls/eventHandlerControl";
 import { TabsOptionControl } from "comps/controls/optionsControl";
 import { styleControl } from "comps/controls/styleControl";
-import { TabContainerStyle, TabContainerStyleType } from "comps/controls/styleControlConstants";
+import { TabContainerStyle, TabContainerStyleType, parseBoxValues } from "comps/controls/styleControlConstants";
 import { sameTypeMap, UICompBuilder, withDefault } from "comps/generators";
 import { addMapChildAction } from "comps/generators/sameTypeMap";
 import { NameConfig, NameConfigHidden, withExposingConfigs } from "comps/generators/withExposing";
@@ -14,7 +14,7 @@ import { NameGenerator } from "comps/utils";
 import { Section, sectionNames } from "barda-design";
 import { HintPlaceHolder } from "barda-design";
 import _ from "lodash";
-import React, { useCallback, useContext } from "react";
+import React, { useContext } from "react";
 import styled, { css } from "styled-components";
 import { IContainer } from "../containerBase/iContainer";
 import { SimpleContainerComp } from "../containerBase/simpleContainerComp";
@@ -200,7 +200,8 @@ const TabbedContainer = (props: TabbedContainerProps) => {
   const editorState = useContext(EditorContext);
   const maxWidth = editorState.getAppSettings().maxWidth;
   const isMobile = checkIsMobile(maxWidth);
-  const paddingWidth = isMobile ? 8 : 20;
+  const bodyPadding = parseBoxValues(props.style.padding_UNIT, [11, 19, 11, 19], false) as number[];
+  const containerPadding: [number, number] = [bodyPadding[1], bodyPadding[0]];
 
   // log.debug("TabbedContainer. props: ", props);
 
@@ -239,7 +240,7 @@ const TabbedContainer = (props: TabbedContainerProps) => {
             positionParams={containerProps.positionParams.getView()}
             dispatch={childDispatch}
             autoHeight={props.autoHeight}
-            containerPadding={[paddingWidth, 20]}
+            containerPadding={containerPadding}
           />
         </BackgroundColorContext.Provider>
       )
