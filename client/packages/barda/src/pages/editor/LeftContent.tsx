@@ -31,6 +31,34 @@ const CollapseTitleWrapper = styled.div`
   display: flex;
   width: fit-content;
   max-width: calc(100% - 8px);
+  align-items: center;
+  gap: 4px;
+  
+  &:hover .copy-button {
+    opacity: 1;
+  }
+`;
+
+const ValueWrapper = styled.div`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  
+  &:hover .copy-button {
+    opacity: 1;
+  }
+`;
+
+const CopyButtonWrapper = styled.div`
+  opacity: 0;
+  transition: opacity 0.2s;
+  display: inline-flex;
+  align-items: center;
+  
+  &.copy-button {
+    cursor: pointer;
+  }
 `;
 
 function getLen(config: string | boolean | number) {
@@ -54,11 +82,12 @@ const ToDataView = memo((props: { value: any, name: string, desc?: ReactNode }) 
       dataChild[index] = valueChild;
     });
     return (
-      <CollapseView name={name} desc={descRecord} data={dataChild} isArray={true} key={name} />
+      <CollapseView name={name} desc={descRecord} data={dataChild} originalValue={value} isArray={true} key={name} />
     );
   } else if (_.isPlainObject(value)) {
-    return <CollapseView name={name} desc={descRecord} data={value} key={name} />;
+    return <CollapseView name={name} desc={descRecord} data={value} originalValue={value} key={name} />;
   }
+  const copyText = typeof value === "function" ? "Function" : safeJSONStringify(value);
   return (
     <PadDiv key={name}>
       <Tooltip title={desc} placement={"right"}>
@@ -71,14 +100,19 @@ const ToDataView = memo((props: { value: any, name: string, desc?: ReactNode }) 
           getLen(str) > 50 ? (
             <div style={{ display: "flex", wordBreak: "break-all" }}>
               {getLen(str) > 300 ? str.slice(0, 300) + "..." : str}
-              <CopyTextButton text={value} style={{ color: "#fff", margin: "4px 0 0 6px" }} />
+              <CopyTextButton text={copyText} style={{ color: "#fff", margin: "4px 0 0 6px" }} />
             </div>
           ) : null
         }
         placement={"right"}
       >
         &#8203;
-        <Label color="#FF9816" label={getLen(str) > 50 ? str.slice(0, 50) + "..." : str} />
+        <ValueWrapper>
+          <Label color="#FF9816" label={getLen(str) > 50 ? str.slice(0, 50) + "..." : str} />
+          <CopyButtonWrapper className="copy-button" onClick={(e) => e.stopPropagation()}>
+            <CopyTextButton text={copyText} />
+          </CopyButtonWrapper>
+        </ValueWrapper>
       </Tooltip>
     </PadDiv>
   );
@@ -120,6 +154,7 @@ export const CollapseView = React.memo(
     name: string;
     desc?: Record<string, ReactNode>;
     data: Record<string, any>;
+    originalValue?: any;
     isArray?: boolean;
     onClick?: (compName: string, resType?: BottomResTypeEnum) => void;
     isSelected?: boolean;
@@ -129,46 +164,55 @@ export const CollapseView = React.memo(
     const { data = {} } = props;
     const onlyOne = Object.keys(data).length === 1;
     const handleClick = useCallback(() => props.onClick && props.onClick(props.name, props?.resType), [props.onClick, props.name, props?.resType]);
-    const items = useMemo(() => [
-      {
-        key: props.name,
-        title: (
-          <Tooltip
-            title={props.desc?.[props.name]}
-            placement={"right"}
-          >
-            <CollapseTitleWrapper onClick={handleClick}>
-              <Title
-                style={{
-                  whiteSpace: "nowrap",
-                  textOverflow: "ellipsis",
-                  overflow: "hidden",
-                }}
-                label={props.name}
-                hasChild={Object.keys(data).length > 0}
-              />
-              <Title
-                style={{ flexShrink: 0 }}
-                color="#8B8FA3"
-                label={`${props.isArray ? "[]" : "{}"} ${trans(
-                  props.isArray
-                    ? onlyOne
-                      ? "leftPanel.propTipArr"
-                      : "leftPanel.propTipsArr"
-                    : onlyOne
-                      ? "leftPanel.propTip"
-                      : "leftPanel.propTips",
-                  {
-                    num: Object.keys(data).length,
-                  }
-                )}`}
-              />
-            </CollapseTitleWrapper>
-          </Tooltip>
-        ),
-        data: toData({ data, desc: props.desc }),
-      },
-    ], [data, handleClick, onlyOne, props.desc, props.isArray, props.name])
+    const items = useMemo(() => {
+      // 优先使用原始值进行复制，如果没有则使用转换后的data
+      const copyText = props.originalValue !== undefined 
+        ? safeJSONStringify(props.originalValue)
+        : safeJSONStringify(data);
+      return [
+        {
+          key: props.name,
+          title: (
+            <Tooltip
+              title={props.desc?.[props.name]}
+              placement={"right"}
+            >
+              <CollapseTitleWrapper onClick={handleClick}>
+                <Title
+                  style={{
+                    whiteSpace: "nowrap",
+                    textOverflow: "ellipsis",
+                    overflow: "hidden",
+                  }}
+                  label={props.name}
+                  hasChild={Object.keys(data).length > 0}
+                />
+                <Title
+                  style={{ flexShrink: 0 }}
+                  color="#8B8FA3"
+                  label={`${props.isArray ? "[]" : "{}"} ${trans(
+                    props.isArray
+                      ? onlyOne
+                        ? "leftPanel.propTipArr"
+                        : "leftPanel.propTipsArr"
+                      : onlyOne
+                        ? "leftPanel.propTip"
+                        : "leftPanel.propTips",
+                    {
+                      num: Object.keys(data).length,
+                    }
+                  )}`}
+                />
+                <CopyButtonWrapper className="copy-button" onClick={(e) => e.stopPropagation()}>
+                  <CopyTextButton text={copyText} />
+                </CopyButtonWrapper>
+              </CollapseTitleWrapper>
+            </Tooltip>
+          ),
+          data: toData({ data, desc: props.desc }),
+        },
+      ];
+    }, [data, handleClick, onlyOne, props.desc, props.isArray, props.name, props.originalValue])
     return (
       <Collapse
         isSelected={props.isSelected}
