@@ -492,7 +492,13 @@ export const MultiSelectStyle = [
 
 export const TabContainerStyle = [
   ...BG_STATIC_BORDER_RADIUS,
-  HEADER_BACKGROUND,
+  {
+    name: "headerBackground",
+    label: trans("tabbedContainer.labelBackground"),
+    depName: "background",
+    depType: DEP_TYPE.SELF,
+    transformer: toSelf,
+  },
   {
     name: "tabText",
     label: trans("style.tabText"),
@@ -1043,4 +1049,76 @@ export const calculateRemainingWidth = (margin: string, defaultValue: StandardBo
   const leftMargin = marginValues[3];
   const rightMargin = marginValues[1];
   return `calc(100% - ${leftMargin} - ${rightMargin})`;
+};
+
+export type positionType = "top" | "right" | "bottom" | "left";
+type BoxSurfaceType = "line" | "surface";
+
+/**
+ * 计算接壤线或面的标准盒子模型四值
+ * @param direction - 方位：top/right/bottom/left
+ * @param width - 宽度，需带单位，如 "1px"
+ * @param surfaceType - 类型：线(line) 或 面(surface)
+ * @returns 返回标准四值字符串，顺序为上右下左
+ *
+ * 线(line)时，指定方位与相邻两侧使用相同宽度，对侧为 0。
+ * 例如 direction="top" 且 width="1px" 时返回 "1px 1px 0px 1px"。
+ * 面(surface)时，四个方向统一使用相同宽度。
+ */
+export const getStandardBoxValuesByDirection = (
+  direction: positionType,
+  width: string,
+  surfaceType: BoxSurfaceType = "line",
+  isReverse: boolean = true,
+): string => {
+  const value = parseFloat(width.replace(/[^\d.-]/g, "")) || 0;
+  const unitMatch = width.match(/[a-z%]+$/i);
+  const unit = unitMatch ? unitMatch[0] : "px";
+  const full = `${value}${unit}`;
+  const zero = `0${unit}`;
+
+  const normalizeDirection = (dir: positionType): positionType => {
+    switch (dir) {
+      case "top":
+        return isReverse ? "top" : "bottom";
+      case "right":
+        return isReverse ? "right" : "left";
+      case "bottom":
+        return isReverse ? "bottom" : "top";
+      case "left":
+        return isReverse ? "left" : "right";
+      default:
+        return dir;
+    }
+  };
+
+  const dir = normalizeDirection(direction);
+
+  if (surfaceType === "surface") {
+    switch (dir) {
+      case "top":
+        return `${full} ${full} ${zero} ${zero}`; // 上、右
+      case "right":
+        return `${zero} ${full} ${full} ${zero}`; // 右、下
+      case "bottom":
+        return `${zero} ${zero} ${full} ${full}`; // 下、左
+      case "left":
+        return `${full} ${zero} ${zero} ${full}`; // 左、上
+      default:
+        return `${full} ${full} ${full} ${full}`;
+    }
+  } else {
+    switch (dir) {
+      case "top":
+        return `${full} ${full} ${zero} ${full}`;
+      case "right":
+        return `${full} ${full} ${full} ${zero}`;
+      case "bottom":
+        return `${zero} ${full} ${full} ${full}`;
+      case "left":
+        return `${full} ${zero} ${full} ${full}`;
+      default:
+        return `${full} ${full} ${full} ${full}`;
+    }
+  }
 };

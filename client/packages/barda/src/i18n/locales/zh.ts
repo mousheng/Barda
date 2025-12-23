@@ -1546,6 +1546,7 @@ export const zh = {
         labelCentered: "标签居中",
         cardStyle: "卡片样式",
         showScroll: "显示滚动条",
+        labelBackground: "标签背景",
     },
     formComp: {
         containerPlaceholder: "从右侧窗格拖动组件或",

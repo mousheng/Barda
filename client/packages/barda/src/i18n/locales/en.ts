@@ -1566,6 +1566,7 @@ export const en = {
     labelCentered: "Label centered",
     cardStyle: "Card style",
     showScroll: "Show scroll",
+    labelBackground: "Label Background",
   },
   formComp: {
     containerPlaceholder: "Drag components from the right pane or",

@@ -1,12 +1,26 @@
 import { Badge, Tabs } from "antd";
 import { JSONObject, JSONValue } from "util/jsonTypes";
-import { CompAction, CompActionTypes, deleteCompAction, wrapChildAction, DispatchType, RecordConstructorToView, wrapDispatch } from "barda-core";
+import {
+  CompAction,
+  CompActionTypes,
+  deleteCompAction,
+  wrapChildAction,
+  DispatchType,
+  RecordConstructorToView,
+  wrapDispatch,
+} from "barda-core";
 import { AutoHeightControl } from "comps/controls/autoHeightControl";
 import { stringExposingStateControl } from "comps/controls/codeStateControl";
 import { eventHandlerControl } from "comps/controls/eventHandlerControl";
 import { TabsOptionControl } from "comps/controls/optionsControl";
 import { styleControl } from "comps/controls/styleControl";
-import { TabContainerStyle, TabContainerStyleType, parseBoxValues } from "comps/controls/styleControlConstants";
+import {
+  TabContainerStyle,
+  TabContainerStyleType,
+  getStandardBoxValuesByDirection,
+  parseBoxValues,
+  positionType,
+} from "comps/controls/styleControlConstants";
 import { sameTypeMap, UICompBuilder, withDefault } from "comps/generators";
 import { addMapChildAction } from "comps/generators/sameTypeMap";
 import { NameConfig, NameConfigHidden, withExposingConfigs } from "comps/generators/withExposing";
@@ -19,11 +33,7 @@ import styled, { css } from "styled-components";
 import { IContainer } from "../containerBase/iContainer";
 import { SimpleContainerComp } from "../containerBase/simpleContainerComp";
 import { CompTree, mergeCompTrees } from "../containerBase/utils";
-import {
-  ContainerBaseProps,
-  gridItemCompToGridItems,
-  InnerGrid,
-} from "../containerComp/containerView";
+import { ContainerBaseProps, gridItemCompToGridItems, InnerGrid } from "../containerComp/containerView";
 import { BackgroundColorContext } from "comps/utils/backgroundColorContext";
 import { disabledPropertyView, hiddenPropertyView } from "comps/utils/propertyUtils";
 import { trans } from "i18n";
@@ -65,10 +75,19 @@ const childrenMap = {
 type ViewProps = RecordConstructorToView<typeof childrenMap>;
 type TabbedContainerProps = ViewProps & { dispatch: DispatchType };
 
-const getStyle = (style: TabContainerStyleType, $showTabs: boolean, $showScroll: boolean) => {
+const getStyle = (
+  style: TabContainerStyleType,
+  position: positionType,
+  cardStyle: boolean,
+  $showTabs: boolean,
+  $showScroll: boolean
+) => {
+  let borderWidth = getStandardBoxValuesByDirection(position, cardStyle ? "0px" : "1px", "line");
+  let Radius = getStandardBoxValuesByDirection(position, cardStyle ? "0px" : style.radius, "surface");
+  let reverseBorderWidth = getStandardBoxValuesByDirection(position, "1px", "line", false);
+  let reverseRadius = getStandardBoxValuesByDirection(position, style.radius, "surface", false);
   return css`
     &.ant-tabs {
-      border: 1px solid ${style.border};
       border-radius: ${style.radius};
       overflow: hidden;
       > .ant-tabs-content-holder > .ant-tabs-content > div > .react-grid-layout {
@@ -78,26 +97,38 @@ const getStyle = (style: TabContainerStyleType, $showTabs: boolean, $showScroll:
       background-color: ${style.background};
       > .ant-tabs-content-holder > .ant-tabs-content > .ant-tabs-tabpane {
         height: 100%;
+        border-style: solid;
+        border-color: ${style.border};
+        border-width: ${reverseBorderWidth};
+        border-radius: ${reverseRadius};
+        padding-left: ${position === "left" ? "2px!important" : "0px!important"};
+        padding-right: ${position === "right" ? "2px!important" : "0px!important"};
         .react-grid-layout {
           height: 100%;
-          border-radius: 0;
+          border-radius: ${reverseRadius};
           overflow: ${(props) => ($showScroll ? "" : "hidden")};
         }
       }
-    
+
       > .ant-tabs-nav {
+        border-style: solid;
+        border-color: ${style.border};
+        border-width: ${borderWidth};
+        border-radius: ${Radius};
         background-color: ${style.headerBackground};
         display: ${(props) => ($showTabs ? "flex" : "none")};
 
         .ant-tabs-tab {
+          background-color: ${style.headerBackground};
+          ${position === 'top' ? "margin-bottom: 1px;" : ""};
+          ${position === 'bottom' ? "margin-top: 1px;" : ""};
           div {
             color: ${style.tabText};
           }
-        > .ant-tabs-nav-wrap > .ant-tabs-nav-list > .ant-tabs-ink-bar {
-          background-color: ${style.accent};
+          > .ant-tabs-nav-wrap > .ant-tabs-nav-list > .ant-tabs-ink-bar {
+            background-color: ${style.accent};
           }
         }
-
 
         .ant-tabs-ink-bar {
           background-color: ${style.accent};
@@ -115,35 +146,30 @@ const getStyle = (style: TabContainerStyleType, $showTabs: boolean, $showScroll:
   `;
 };
 
-const StyledTabs = styled(Tabs) <{
+const StyledTabs = styled(Tabs)<{
   $style: TabContainerStyleType;
-  $isMobile?: boolean,
-  $autoHeight: boolean,
-  $showTabs: boolean,
-  $showScroll: boolean,
+  $position: positionType;
+  $cardStyle: boolean;
+  $isMobile?: boolean;
+  $autoHeight: boolean;
+  $showTabs: boolean;
+  $showScroll: boolean;
 }>`
   &.ant-tabs {
     height: 100%;
   }
   .ant-tabs-nav-operations {
-    display: ${props => (props.tabPosition === "left" || props.tabPosition === "right") && props.$autoHeight ? "none!important" : ""} ;
+    display: ${(props) =>
+      (props.tabPosition === "left" || props.tabPosition === "right") && props.$autoHeight
+        ? "none!important"
+        : ""};
   }
   .ant-tabs-nav-wrap {
-    border-right:  ${props => props.tabPosition === "left" ? "1px solid " + props.$style.border : ""};
-    border-left:  ${props => props.tabPosition === "right" ? "1px solid" + props.$style.border : ""};
-    }
+    border-right: ${(props) => (props.tabPosition === "left" ? "1px solid " + props.$style.border : "")};
+    border-left: ${(props) => (props.tabPosition === "right" ? "1px solid" + props.$style.border : "")};
+  }
   .ant-tabs-content-animated {
     transition-duration: 0ms;
-  }
-  
-  .ant-tabs-tabpane {
-    height: 100%;
-    padding-left: ${(props) => (props.tabPosition === "left" ? "2px!important" : "0px!important")};
-    padding-right: ${(props) => (props.tabPosition === "right" ? "2px!important" : "0px!important")};
-  }
-  
-  .ant-tabs-tabpane {
-    height: 100%;
   }
 
   .ant-tabs-content {
@@ -152,29 +178,31 @@ const StyledTabs = styled(Tabs) <{
   }
 
   .ant-tabs-nav {
-    padding: 0 ${(props) => ((props.tabPosition === "top" || props.tabPosition === "bottom") ? props.$isMobile ? 16 : 24 : 0)}px;
+    padding: 0
+      ${(props) =>
+        props.tabPosition === "top" || props.tabPosition === "bottom" ? (props.$isMobile ? 16 : 24) : 0}px;
     background: white;
     margin: 0px;
     &::before {
-    border-color:${props => props.$style.border};
-  }
+      border-color: ${(props) => props.$style.border};
+    }
   }
 
   .ant-tabs-tab + .ant-tabs-tab {
     margin: 0 0 0 20px;
   }
 
-  ${(props) => props.$style && getStyle(props.$style, props.$showTabs, props.$showScroll)}
+  ${(props) =>
+    props.$style &&
+    getStyle(props.$style, props.$position, props.$cardStyle, props.$showTabs, props.$showScroll)}
 `;
 
-const TabItemBadge = styled(Badge) <{ $color: string }>`
-  color: ${props => props.$color};
-`
+const TabItemBadge = styled(Badge)<{ $color: string }>`
+  color: ${(props) => props.$color};
+`;
 
 const ContainerInTab = (props: ContainerBaseProps) => {
-  return (
-    <InnerGrid {...props} emptyRows={15} bgColor={"white"} hintPlaceholder={HintPlaceHolder} />
-  );
+  return <InnerGrid {...props} emptyRows={15} bgColor={"white"} hintPlaceholder={HintPlaceHolder} />;
 };
 
 const TabbedContainer = (props: TabbedContainerProps) => {
@@ -182,11 +210,7 @@ const TabbedContainer = (props: TabbedContainerProps) => {
 
   const visibleTabs = tabs.filter((tab) => !tab.hidden);
   const selectedTab = visibleTabs.find((tab) => tab.key === props.selectedTabKey.value);
-  const activeKey = selectedTab
-    ? selectedTab.key
-    : visibleTabs.length > 0
-      ? visibleTabs[0].key
-      : undefined;
+  const activeKey = selectedTab ? selectedTab.key : visibleTabs.length > 0 ? visibleTabs[0].key : undefined;
 
   // const onTabClick = useCallback(
   //   (key: string, event: React.KeyboardEvent<Element> | React.MouseEvent<Element, MouseEvent>) => {
@@ -220,13 +244,9 @@ const TabbedContainer = (props: TabbedContainerProps) => {
         offset={[4, -6]}
         $color={tab.disabled ? "#cdcdcd" : props.style.tabText}
       >
-        {tab.iconPosition === "left" && hasIcon && (
-          <span style={{ marginRight: "4px" }}>{tab.icon}</span>
-        )}
+        {tab.iconPosition === "left" && hasIcon && <span style={{ marginRight: "4px" }}>{tab.icon}</span>}
         {tab.label}
-        {tab.iconPosition === "right" && hasIcon && (
-          <span style={{ marginLeft: "4px" }}>{tab.icon}</span>
-        )}
+        {tab.iconPosition === "right" && hasIcon && <span style={{ marginLeft: "4px" }}>{tab.icon}</span>}
       </TabItemBadge>
     );
     return {
@@ -245,13 +265,15 @@ const TabbedContainer = (props: TabbedContainerProps) => {
             containerPadding={containerPadding}
           />
         </BackgroundColorContext.Provider>
-      )
-    }
-  })
+      ),
+    };
+  });
   return (
     <StyledTabs
       activeKey={activeKey}
       $style={style}
+      $position={props.position ?? "top"}
+      $cardStyle={props.cardStyle ?? false}
       onChange={(key: string) => {
         if (key !== props.selectedTabKey.value) {
           props.selectedTabKey.onChange(key);
@@ -268,8 +290,7 @@ const TabbedContainer = (props: TabbedContainerProps) => {
       // tabBarGutter={32}
       items={tabItems}
       tabPosition={props.position ?? "top"}
-    >
-    </StyledTabs>
+    ></StyledTabs>
   );
 };
 
@@ -290,10 +311,16 @@ export const TabbedContainerBaseComp = (function () {
               newOptionLabel: "Tab",
             })}
             {children.showHeader.propertyView({ label: trans("tabbedContainer.showTabs") })}
-            {children.showHeader.getView() && children.position.propertyView({ label: trans("tabbedContainer.TabPosition"), radioButton: true })}
-            {children.showHeader.getView() && (children.position.getView() === 'top' || children.position.getView() === 'bottom') &&
+            {children.showHeader.getView() &&
+              children.position.propertyView({
+                label: trans("tabbedContainer.TabPosition"),
+                radioButton: true,
+              })}
+            {children.showHeader.getView() &&
+              (children.position.getView() === "top" || children.position.getView() === "bottom") &&
               children.labelCentered.propertyView({ label: trans("tabbedContainer.labelCentered") })}
-            {children.showHeader.getView() && children.cardStyle.propertyView({ label: trans("tabbedContainer.cardStyle") })}
+            {children.showHeader.getView() &&
+              children.cardStyle.propertyView({ label: trans("tabbedContainer.cardStyle") })}
             {children.selectedTabKey.propertyView({ label: trans("prop.defaultValue") })}
             {children.autoHeight.getPropertyView()}
           </Section>
@@ -329,9 +356,7 @@ class TabbedContainerImplComp extends TabbedContainerBaseComp implements IContai
     ids.forEach((id) => {
       if (!containers.hasOwnProperty(id)) {
         // log.debug("syncContainers new containers: ", containers, " id: ", id);
-        actions.push(
-          wrapChildAction("containers", addMapChildAction(id, { layout: {}, items: {} }))
-        );
+        actions.push(wrapChildAction("containers", addMapChildAction(id, { layout: {}, items: {} })));
       }
     });
 
@@ -391,7 +416,13 @@ class TabbedContainerImplComp extends TabbedContainerBaseComp implements IContai
   }
 
   getAllLayouts(): Layout {
-    return _.reduce(this.children.containers.getView(), (acc, container) => { return _.merge(acc, container.getAllLayouts()); }, {});
+    return _.reduce(
+      this.children.containers.getView(),
+      (acc, container) => {
+        return _.merge(acc, container.getAllLayouts());
+      },
+      {}
+    );
   }
 
   findContainer(key: string): IContainer | undefined {

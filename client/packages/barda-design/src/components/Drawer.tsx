@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Resizable, ResizeHandle } from "react-resizable";
 import { useResizeDetector } from "react-resize-detector";
 import styled from "styled-components";
+import { positionType } from "barda/src/comps/controls/styleControlConstants";
 
 const StyledDrawer = styled(AntdDrawer)`
   & .ant-drawer-content-wrapper {
@@ -11,8 +12,7 @@ const StyledDrawer = styled(AntdDrawer)`
   }
 `;
 
-type Placement = "top" | "bottom" | "left" | "right";
-function getResizeHandle(placement?: Placement): ResizeHandle {
+function getResizeHandle(placement?: positionType): ResizeHandle {
   switch (placement) {
     case "top":
       return "s";
