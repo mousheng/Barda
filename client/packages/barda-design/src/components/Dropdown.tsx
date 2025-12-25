@@ -57,7 +57,7 @@ const DropDownItemLabel = styled.div`
   ${EllipsisTextCss};
   width: 100%;
   font-size: 13px;
-  line-height: 15px;
+  // line-height: 15px;
   overflow: visible;
   margin-right: 8px;
 `;
