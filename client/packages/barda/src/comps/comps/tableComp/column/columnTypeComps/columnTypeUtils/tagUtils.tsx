@@ -2,7 +2,7 @@
  * Tag和Tags列组件的共享工具函数和常量
  */
 
-import { PresetStatusColorTypes } from "antd/lib/_util/colors";
+import { PresetStatusColors } from "antd/lib/_util/colors";
 import _ from "lodash";
 import React, { createContext } from "react";
 import { toJson } from "really-relaxed-json";
@@ -24,7 +24,7 @@ export const ColorMapContext = createContext<ColorMapContextValue | undefined>(u
 /* ------------------------------ 常量 ------------------------------ */
 
 export const DEFAULT_COLOR_KEY = "__default__"; // 默认颜色键
-const colors = PresetStatusColorTypes;
+const colors = PresetStatusColors;
 
 /* ------------------------------ 工具函数 ------------------------------ */
 

@@ -9,7 +9,6 @@ import _ from "lodash";
 import styled from "styled-components";
 import { styleControl } from "comps/controls/styleControl";
 import { DividerStyle, DividerStyleType } from "comps/controls/styleControlConstants";
-import { migrateOldData } from "comps/generators/simpleGenerators";
 import { hiddenPropertyView } from "comps/utils/propertyUtils";
 import { trans } from "i18n";
 
@@ -41,7 +40,7 @@ const childrenMap = {
 // Compatible with historical style data 2022-8-26
 export const DividerComp = new UICompBuilder(childrenMap, (props) => {
   return (
-    <StyledDivider orientation={props.align} $dashed={props.dashed} $style={props.style}>
+    <StyledDivider titlePlacement={props.align} $dashed={props.dashed} $style={props.style}>
       {props.title}
     </StyledDivider>
   );

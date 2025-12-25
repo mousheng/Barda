@@ -409,7 +409,7 @@ export const HelpDropdown = memo((props: HelpDropdownProps) => {
         {toolTipContent && (
           <Popover
             content={toolTipContent}
-            visible
+            open
             align={{
               points: ["br", "cc"],
               offset: [-16, 24],

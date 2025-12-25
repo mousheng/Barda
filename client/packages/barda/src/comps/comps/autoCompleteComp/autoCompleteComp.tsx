@@ -2,7 +2,7 @@ import { getDayJSLocale } from "@barda/i18n/dayjsLocale";
 import { InputRef } from "antd";
 import { default as AntAutoComplete } from "antd/es/auto-complete";
 import { default as AntInput } from "antd/es/input";
-import { BaseOptionType, DefaultOptionType } from "antd/es/select";
+import { BaseOptionType } from "antd/es/select";
 import { Input, Section, sectionNames } from "barda-design";
 import { BoolControl } from "comps/controls/boolControl";
 import { jsonControl } from "comps/controls/codeControl";
@@ -23,7 +23,6 @@ import { allowClearPropertyView, hiddenPropertyView } from "comps/utils/property
 import { trans } from "i18n";
 import _ from "lodash";
 import { pinyin } from "pinyin-pro";
-import { FilterFunc } from "rc-select/lib/Select";
 import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { UICompBuilder, withDefault } from "../../generators";
@@ -241,10 +240,10 @@ let AutoCompleteCompBase = (function () {
       props.onEvent("submit");
     };
 
-    const filterOption: FilterFunc<DefaultOptionType | BaseOptionType> = (
+    const filterOption = (
       inputValue: string,
       option?: BaseOptionType
-    ) => {
+    ): boolean => {
       var InputValueLowerCase = inputValue.toLowerCase();
       if (ignoreCase) {
         if (option!.label.toLowerCase().indexOf(InputValueLowerCase) !== -1) return true;

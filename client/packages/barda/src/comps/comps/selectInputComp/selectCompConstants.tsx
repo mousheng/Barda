@@ -19,7 +19,7 @@ import { SelectOptionControl, optionsControl } from "../../controls/optionsContr
 import { SelectEventHandlerControl } from "../../controls/eventHandlerControl";
 import { Select as AntdSelect } from "antd";
 import { ControlParams } from "../../controls/controlParams";
-import { ReactNode } from "react";
+import { ReactNode, ComponentRef } from "react";
 import styled, { css } from "styled-components";
 import { MultiCompBuilder } from "../../generators";
 import { IconControl } from "../../controls/iconControl";
@@ -46,7 +46,6 @@ import {
 import { trans } from "i18n";
 import { hasIcon } from "comps/utils";
 import { RefControl } from "comps/controls/refControl";
-import { BaseSelectRef } from "rc-select";
 import { refMethods } from "comps/generators/withMethodExposing";
 import { blurMethod, focusMethod } from "comps/utils/methodUtils";
 import { pinyin } from "pinyin-pro";
@@ -176,7 +175,7 @@ export const SelectChildrenMap = {
   allowClear: BoolControl,
   inputValue: stateComp<string>(""), // user's input value when search
   showSearch: BoolControl.DEFAULT_TRUE,
-  viewRef: RefControl<BaseSelectRef>,
+  viewRef: RefControl<ComponentRef<typeof AntdSelect>>,
   ...SelectInputValidationChildren,
   ...formDataChildren,
 };
@@ -283,7 +282,7 @@ export const SelectPropertyView = (
   </>
 );
 
-export const baseSelectRefMethods = refMethods<BaseSelectRef>([focusMethod, blurMethod]);
+export const baseSelectRefMethods = refMethods<ComponentRef<typeof AntdSelect>>([focusMethod, blurMethod]);
 
 // ColorMapOption for color mapping
 let ColorMapOption = new MultiCompBuilder(

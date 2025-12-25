@@ -20,13 +20,20 @@ import {
   StyledRoleSelect,
 } from "./commonComponents";
 import { getInitialsAndColorCode } from "util/stringUtils";
-import { CustomTagProps } from "rc-select/lib/BaseSelect";
 import { Tag } from "antd";
+import type { ReactNode, MouseEvent } from "react";
 import { User } from "constants/userConstants";
 import { getUser } from "redux/selectors/usersSelectors";
 import { EmptyContent } from "pages/common/styledComponent";
 import { trans } from "i18n";
 import { PermissionItem } from "./PermissionList";
+
+interface CustomTagProps {
+  label: ReactNode;
+  value: any;
+  closable: boolean;
+  onClose?: (event?: MouseEvent<HTMLElement>) => void;
+}
 
 const AddAppUserContent = styled.div`
   display: flex;

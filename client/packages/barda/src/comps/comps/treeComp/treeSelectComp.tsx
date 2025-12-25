@@ -3,7 +3,7 @@ import { UICompBuilder } from "comps/generators/uiCompBuilder";
 import { NameConfig, withExposingConfigs } from "comps/generators/withExposing";
 import { Section, sectionNames, ValueFromOption } from "barda-design";
 import { TreeSelect } from "antd";
-import { useEffect } from "react";
+import { useEffect, ComponentRef } from "react";
 import styled from "styled-components";
 import { styleControl } from "comps/controls/styleControl";
 import { TreeSelectStyle, TreeSelectStyleType } from "comps/controls/styleControlConstants";
@@ -32,7 +32,6 @@ import {
   placeholderPropertyView,
   showSearchPropertyView,
 } from "comps/utils/propertyUtils";
-import { BaseSelectRef } from "rc-select";
 import { RefControl } from "comps/controls/refControl";
 import { Key } from "antd/es/table/interface";
 
@@ -65,7 +64,7 @@ const childrenMap = {
   showSearch: BoolControl.DEFAULT_TRUE,
   inputValue: stateComp<string>(""), // search value
   style: styleControl(TreeSelectStyle),
-  viewRef: RefControl<BaseSelectRef>,
+  viewRef: RefControl<ComponentRef<typeof TreeSelect>>,
 };
 
 function getCheckedStrategy(v: ValueFromOption<typeof checkedStrategyOptions>) {

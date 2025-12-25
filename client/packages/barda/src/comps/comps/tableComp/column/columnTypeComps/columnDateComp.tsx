@@ -154,6 +154,11 @@ export const DateEdit = (props: DateEditProps) => {
   if (!value.isValid()) {
     value = dayjs(0, DateParser);
   }
+  const handleChange = (value: unknown, dateString: string | string[] | null) => {
+    if (typeof (dateString) === 'string') {
+      props.onChange(dateString as string);
+    }
+  };
   return (
     <Wrapper
       onKeyDown={(e: React.KeyboardEvent) => {
@@ -183,7 +188,7 @@ export const DateEdit = (props: DateEditProps) => {
           overflow: "hidden",
         }}
         onOpenChange={(open: boolean) => setPanelOpen(open)}
-        onChange={(value: any, dateString: string | string[]) => { if (typeof (dateString) === 'string') props.onChange(dateString as string) }}
+        onChange={handleChange}
         onBlur={props.onChangeEnd}
       />
     </Wrapper>

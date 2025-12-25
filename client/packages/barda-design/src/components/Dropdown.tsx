@@ -173,28 +173,29 @@ export function Dropdown<T extends OptionsType>(props: DropdownProps<T>) {
               open={props.open}
               listHeight={props.lineHeight}
               classNames={{ popup: { root: "ob-dropdown-control-select" } }}
-              showSearch={props.showSearch}
-              filterOption={(input, option) => {
-                if (props.optionFilterProp) {
-                  const value = (option as any)[props.optionFilterProp];
-                  if (value && typeof value === "string") {
-                    return value.toLowerCase().includes(input.toLowerCase());
+              showSearch={props.showSearch ? {
+                filterOption: (input, option) => {
+                  if (props.optionFilterProp && typeof props.optionFilterProp === "string") {
+                    const value = (option as any)[props.optionFilterProp];
+                    if (value && typeof value === "string") {
+                      return value.toLowerCase().includes(input.toLowerCase());
+                    }
                   }
-                }
 
-                if (!option?.value) {
+                  if (!option?.value) {
+                    return false;
+                  }
+                  const label = valueInfoMap[option.value].label;
+                  if (
+                    typeof label === "number" ||
+                    typeof label === "string" ||
+                    typeof label === "boolean"
+                  ) {
+                    return label.toString().toLowerCase().includes(input.toLowerCase());
+                  }
                   return false;
                 }
-                const label = valueInfoMap[option.value].label;
-                if (
-                  typeof label === "number" ||
-                  typeof label === "string" ||
-                  typeof label === "boolean"
-                ) {
-                  return label.toString().toLowerCase().includes(input.toLowerCase());
-                }
-                return false;
-              }}
+              } : false}
               border={props.border}
               defaultValue={props.defaultValue}
               value={props.value}

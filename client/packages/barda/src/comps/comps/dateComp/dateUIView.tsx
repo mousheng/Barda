@@ -16,7 +16,7 @@ const DatePickerStyled = styled(DatePicker) <{ $style: DateTimeStyleType }>`
 
 export interface DataUIViewProps extends DateCompViewProps {
   value: dayjs.Dayjs | null;
-  onChange: (date: unknown, dateString: string | string[]) => void;
+  onChange: (date: unknown, dateString: string | string[] | null) => void;
   onPanelChange: () => void;
 }
 

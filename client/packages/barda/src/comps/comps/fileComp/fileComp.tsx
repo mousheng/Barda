@@ -21,7 +21,6 @@ import {
   RecordConstructorToComp,
   RecordConstructorToView,
 } from "barda-core";
-import { UploadRequestOption } from "rc-upload/lib/interface";
 import { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import { JSONObject, JSONValue } from "../../../util/jsonTypes";
@@ -39,6 +38,8 @@ import { stateComp, UICompBuilder, withDefault } from "../../generators";
 import { CommonNameConfig, NameConfig, withExposingConfigs } from "../../generators/withExposing";
 import { formDataChildren, FormDataPropertyView } from "../formComp/formDataConstants";
 import { messageInstance } from "barda-design";
+
+type UploadRequestOption = Parameters<NonNullable<UploadProps['customRequest']>>[0];
 
 const FileSizeControl = codeControl((value) => {
   if (typeof value === "number") {

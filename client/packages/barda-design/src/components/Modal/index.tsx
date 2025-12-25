@@ -53,13 +53,18 @@ export function Modal(props: ModalProps) {
     refreshRate: 50
   });
   // log.info("Modal. modalWidth: ", modalWidth, " width: ", size?.w, " detectWidth: ", detectWidth);
+  
+  const bodyStyles = typeof styles === 'object' && styles !== null && 'body' in styles 
+    ? styles.body 
+    : undefined;
+  
   return (
     <AntdModal
       width={width ?? modalWidth}
       styles={{
         body: {
           height: height ?? modalHeight,
-          ...styles?.body,
+          ...bodyStyles,
         }
       }}
       {...otherProps}

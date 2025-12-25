@@ -216,6 +216,11 @@ const DEFAULT_PROPS = {
 function CustomModalRender(props: Omit<CustomModalProps & ModalFuncProps, 'width'> & { width?: string | number }) {
   const nodeRef = React.useRef(null);
   const [enableDrag, setEnableDrag] = useState(true)
+  
+  const bodyStyles = typeof props.styles === 'object' && props.styles !== null && 'body' in props.styles 
+    ? props.styles.body 
+    : undefined;
+  
   return (
     <Draggable nodeRef={nodeRef} disabled={enableDrag || !props.draggable}>
       <ModalWrapper $width={props.width} ref={nodeRef}>
@@ -234,7 +239,7 @@ function CustomModalRender(props: Omit<CustomModalProps & ModalFuncProps, 'width
             />
           </ModalHeaderWrapper>
 
-          <div style={{ padding: "0 16px", ...props.styles?.body }}>{props.children}</div>
+          <div style={{ padding: "0 16px", ...bodyStyles }}>{props.children}</div>
 
           {props.footer === null || props.footer ? (
             props.footer
@@ -331,7 +336,9 @@ CustomModal.confirm = (props: {
         okText={props.okText}
         styles={{
           body: {
-            ...defaultConfirmProps.styles?.body,
+            ...(typeof defaultConfirmProps.styles === 'object' && defaultConfirmProps.styles !== null && 'body' in defaultConfirmProps.styles
+              ? defaultConfirmProps.styles.body
+              : undefined),
             ...props.bodyStyle,
           }
         }}
