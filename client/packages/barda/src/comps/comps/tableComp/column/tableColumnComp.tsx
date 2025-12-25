@@ -131,7 +131,7 @@ export class ColumnComp extends ColumnInitComp {
     const hide = this.children.hide.getView();
     const columnTypeComp = ColumnTypeCompMap[columnType];
     // 允许搜索的列类型
-    const allowedSearchTypes = ["text", "tag", "tags", "badgeStatus", "markdown"];
+    const allowedSearchTypes = ["text", "tag", "tags", "badgeStatus", "markdown", "richText"];
     const shouldShowAllowSearch = hide && allowedSearchTypes.includes(columnType);
     return (
       <>

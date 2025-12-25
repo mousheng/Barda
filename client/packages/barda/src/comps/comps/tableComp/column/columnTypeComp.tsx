@@ -17,6 +17,7 @@ import { ColumnTagComp } from "./columnTypeComps/columnTagComp";
 import { ColumnTagsComp } from "./columnTypeComps/columnTagsComp";
 import { SimpleTextComp } from "./columnTypeComps/simpleTextComp";
 import { SwitchComp } from "./columnTypeComps/columnSwitchComp";
+import { ColumnRichTextComp } from "./columnTypeComps/columnRichTextComp";
 
 const actionOptions = [
   {
@@ -79,6 +80,10 @@ const actionOptions = [
     label: trans("table.switch"),
     value: "switch",
   },
+  {
+    label: trans("table.richText"),
+    value: "richText",
+  },
 ] as const;
 
 export const ColumnTypeCompMap = {
@@ -97,6 +102,7 @@ export const ColumnTypeCompMap = {
   progress: ProgressComp,
   date: DateComp,
   switch: SwitchComp,
+  richText: ColumnRichTextComp,
 };
 
 type ColumnTypeMapType = typeof ColumnTypeCompMap;

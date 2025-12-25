@@ -259,8 +259,10 @@ const tableFilterOperators = [
   "gte",
   "lt",
   "lte",
+  "allCompleted",
+  "hasUncompleted",
 ] as const;
-const noValueOperators: TableFilterOperator[] = ["isEmpty", "isNotEmpty"];
+const noValueOperators: TableFilterOperator[] = ["isEmpty", "isNotEmpty", "allCompleted", "hasUncompleted"];
 
 type TableFilterOperator = typeof tableFilterOperators[number];
 export const tableFilterOperatorMap: Record<
@@ -342,6 +344,48 @@ export const tableFilterOperatorMap: Record<
       return _.gte(value, data);
     },
   },
+  allCompleted: {
+    label: trans("table.allCompleted"),
+    filter: (filterValue, data) => {
+      if (isNil(data) || typeof data !== "string") {
+        return false;
+      }
+      // 统计 checklist 项
+      const checkedPattern = /<li[^>]*data-list\s*=\s*["']?checked["']?[^>]*>|<li[^>]*class\s*=\s*["']?[^"'>]*ql-list-checked[^"'>]*["']?[^>]*>/gi;
+      const uncheckedPattern = /<li[^>]*data-list\s*=\s*["']?unchecked["']?[^>]*>|<li[^>]*class\s*=\s*["']?[^"'>]*ql-list-unchecked[^"'>]*["']?[^>]*>/gi;
+      
+      const completedMatches = data.match(checkedPattern);
+      const uncompletedMatches = data.match(uncheckedPattern);
+      
+      const completed = completedMatches ? completedMatches.length : 0;
+      const uncompleted = uncompletedMatches ? uncompletedMatches.length : 0;
+      const total = completed + uncompleted;
+      
+      // 全部完成：有 checklist 项且未完成数为 0
+      return total > 0 && uncompleted === 0;
+    },
+  },
+  hasUncompleted: {
+    label: trans("table.hasUncompleted"),
+    filter: (filterValue, data) => {
+      if (isNil(data) || typeof data !== "string") {
+        return false;
+      }
+      // 统计 checklist 项
+      const checkedPattern = /<li[^>]*data-list\s*=\s*["']?checked["']?[^>]*>|<li[^>]*class\s*=\s*["']?[^"'>]*ql-list-checked[^"'>]*["']?[^>]*>/gi;
+      const uncheckedPattern = /<li[^>]*data-list\s*=\s*["']?unchecked["']?[^>]*>|<li[^>]*class\s*=\s*["']?[^"'>]*ql-list-unchecked[^"'>]*["']?[^>]*>/gi;
+      
+      const completedMatches = data.match(checkedPattern);
+      const uncompletedMatches = data.match(uncheckedPattern);
+      
+      const completed = completedMatches ? completedMatches.length : 0;
+      const uncompleted = uncompletedMatches ? uncompletedMatches.length : 0;
+      const total = completed + uncompleted;
+      
+      // 有未完成：有 checklist 项且未完成数 > 0
+      return total > 0 && uncompleted > 0;
+    },
+  },
 } as const;
 
 type TableFilterDataType = {
@@ -382,8 +426,38 @@ function emptyFilterItem(filter: FilterItemType) {
   return !filter.columnKey && !filter.operator && filter.filterValue === "";
 }
 
+// 根据列类型获取可用的操作符
+function getAvailableOperators(columnType?: string): TableFilterOperator[] {
+  if (!columnType) {
+    // 默认返回所有操作符
+    return [...tableFilterOperators];
+  }
+  
+  switch (columnType) {
+    case "richText":
+      // 富文本类型：包含、不包含、等于、不等于、为空、不为空、已完成、未完成
+      return ["contain", "notContain", "equal", "notEqual", "isEmpty", "isNotEmpty", "allCompleted", "hasUncompleted"];
+    case "date":
+    case "dateTime":
+      // 日期类型：等于、不等于、大于、大于等于、小于、小于等于、为空、不为空
+      return ["equal", "notEqual", "gt", "gte", "lt", "lte", "isEmpty", "isNotEmpty"];
+    case "number":
+      // 数字类型：等于、不等于、大于、大于等于、小于、小于等于、为空、不为空
+      return ["equal", "notEqual", "gt", "gte", "lt", "lte", "isEmpty", "isNotEmpty"];
+    case "text":
+    case "tag":
+    case "tags":
+    case "markdown":
+      // 文本类型：包含、不包含、等于、不等于、为空、不为空
+      return ["contain", "notContain", "equal", "notEqual", "isEmpty", "isNotEmpty"];
+    default:
+      // 默认返回所有操作符
+      return [...tableFilterOperators];
+  }
+}
+
 function TableFilterView(props: {
-  columnKeyNames: Array<[string, string]>;
+  columnKeyNames: Array<[string, string, string]>;
   tableFilter: TableFilter;
   onFilterChange: (filters: TableFilterDataType[], stackType: TableFilter["stackType"]) => void;
   setVisible: (v: boolean) => void;
@@ -458,7 +532,14 @@ function TableFilterView(props: {
                 placeholder={trans("table.chooseColumnName")}
                 allowClear
                 onChange={(value) => {
-                  updateFilter({ ...filter, columnKey: value });
+                  // 切换列时，如果当前操作符不适用于新列，清空操作符
+                  const selectedColumn = columnKeyNames.find((c) => c[0] === value);
+                  const availableOperators = getAvailableOperators(selectedColumn?.[2]);
+                  const newFilter = { ...filter, columnKey: value };
+                  if (filter.operator && !availableOperators.includes(filter.operator)) {
+                    newFilter.operator = undefined;
+                  }
+                  updateFilter(newFilter);
                 }}
               />
               <CustomSelect
@@ -466,10 +547,14 @@ function TableFilterView(props: {
                 placeholder={trans("table.chooseCondition")}
                 style={{ width: "160px" }}
                 allowClear
-                options={tableFilterOperators.map((operator) => ({
-                  label: tableFilterOperatorMap[operator].label,
-                  value: operator,
-                }))}
+                options={(() => {
+                  const selectedColumn = columnKeyNames.find((c) => c[0] === filter.columnKey);
+                  const availableOperators = getAvailableOperators(selectedColumn?.[2]);
+                  return availableOperators.map((operator) => ({
+                    label: tableFilterOperatorMap[operator].label,
+                    value: operator,
+                  }));
+                })()}
                 onChange={(value) => {
                   updateFilter({ ...filter, operator: value });
                 }}
@@ -718,7 +803,7 @@ export const TableToolbar = memo((props: {
   const columnKeyNameTuple = useMemo(() => {
     return visibleColumns.map((column) => {
       const c = column.getView();
-      return [c.dataIndex, c.title || c.dataIndex] as [string, string];
+      return [c.dataIndex, c.title || c.dataIndex, c.columnType || ""] as [string, string, string];
     });
   }, [columns]);
   const theme = useContext(ThemeContext)?.theme;
