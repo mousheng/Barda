@@ -1,12 +1,22 @@
 import { CloseOutlined } from "@ant-design/icons";
 import { Button } from "antd";
+import { changeChildAction } from "barda-core";
+import {
+  AlignClose,
+  AlignLeft,
+  AlignRight,
+  Drawer,
+  HintPlaceHolder,
+  Section,
+  sectionNames,
+} from "barda-design";
 import { ContainerCompBuilder } from "comps/comps/containerBase/containerCompBuilder";
 import { gridItemCompToGridItems, InnerGrid } from "comps/comps/containerComp/containerView";
 import { AutoHeightControl } from "comps/controls/autoHeightControl";
 import { BoolControl } from "comps/controls/boolControl";
-import { StringControl } from "comps/controls/codeControl";
+import { NumberControl, StringControl } from "comps/controls/codeControl";
 import { booleanExposingStateControl } from "comps/controls/codeStateControl";
-import { PositionControl } from "comps/controls/dropdownControl";
+import { dropdownControl, PositionControl } from "comps/controls/dropdownControl";
 import { closeEvent, eventHandlerControl } from "comps/controls/eventHandlerControl";
 import { styleControl } from "comps/controls/styleControl";
 import { DrawerStyle, parseBoxValues } from "comps/controls/styleControlConstants";
@@ -16,29 +26,19 @@ import { BackgroundColorContext } from "comps/utils/backgroundColorContext";
 import { CanvasContainerID } from "constants/domLocators";
 import { Layers } from "constants/Layers";
 import { trans } from "i18n";
-import { changeChildAction } from "barda-core";
-import { Drawer, HintPlaceHolder, Section, sectionNames } from "barda-design";
-import { useCallback } from "react";
-import { ResizeHandle } from "react-resizable";
+import { useCallback, useState } from "react";
 import styled from "styled-components";
 import { useUserViewMode } from "util/hooks";
-import { isNumeric } from "util/stringUtils";
 import { NameConfig, withExposingConfigs } from "../generators/withExposing";
 
 const EventOptions = [closeEvent] as const;
 
 const DEFAULT_WIDTH = 378;
-const DEFAULT_HEIGHT = 200;
-const DEFAULT_PADDING = 16;
 
-const DrawerWrapper = styled.div`
-  // Shield the mouse events of the lower layer, the mask can be closed in the edit mode to prevent the lower layer from sliding
-  pointer-events: auto;
-`;
-
-const ButtonStyle = styled(Button) <{ placement: string }>`
+const ButtonStyle = styled(Button)<{ placement: string }>`
   position: absolute;
-  ${props => props.placement === 'right' ? "left: 0" : "right: 0"};
+  border: none !important;
+  ${(props) => (props.placement === "start" ? "left: 0" : "right: 0")};
   top: 0;
   z-index: 10;
   font-weight: 700;
@@ -65,91 +65,103 @@ const ButtonStyle = styled(Button) <{ placement: string }>`
   }
 `;
 
-// If it is a number, use the px unit by default
-function transToPxSize(size: string | number) {
-  return isNumeric(size) ? size + "px" : (size as string);
-}
-
+const PositionType = [
+  {
+    label: <AlignLeft />,
+    value: "start",
+  },
+  {
+    label: <AlignRight />,
+    value: "end",
+  },
+  {
+    label: <AlignClose />,
+    value: "none",
+  },
+] as const;
 
 let TmpDrawerComp = (function () {
   return new ContainerCompBuilder(
     {
       visible: booleanExposingStateControl("visible"),
       onEvent: eventHandlerControl(EventOptions),
-      width: StringControl,
-      height: StringControl,
+      size: withDefault(NumberControl, DEFAULT_WIDTH),
+      title: withDefault(StringControl, ""),
+      closeButtonPlacement: dropdownControl(PositionType, "start"),
       autoHeight: AutoHeightControl,
       style: styleControl(DrawerStyle),
       placement: PositionControl,
       maskClosable: withDefault(BoolControl, true),
       showMask: withDefault(BoolControl, true),
+      showScroll: BoolControl,
     },
     (props, dispatch) => {
       const isTopBom = ["top", "bottom"].includes(props.placement);
       const { items, ...otherContainerProps } = props.container;
       const userViewMode = useUserViewMode();
       const resizable = !userViewMode && (!isTopBom || !props.autoHeight);
-      const containerPadding = parseBoxValues(props.style.bodyPadding_UNIT, [3, 19, 3, 19], false) as number[];
+      const closeBtnPos = props.closeButtonPlacement || "start";
+      const containerPadding = parseBoxValues(
+        props.style.bodyPadding_UNIT,
+        [3, 19, 3, 19],
+        false
+      ) as number[];
       const onResizeStop = useCallback(
-        (
-          e: React.SyntheticEvent,
-          node: HTMLElement,
-          size: { width: number; height: number },
-          handle: ResizeHandle
-        ) => {
-          isTopBom
-            ? dispatch(changeChildAction("height", size.height, true))
-            : dispatch(changeChildAction("width", size.width, true));
+        (size: number) => {
+          dispatch(changeChildAction("size", Number(size), true));
         },
-        [dispatch, isTopBom]
+        [dispatch]
       );
       return (
         <BackgroundColorContext.Provider value={props.style.background}>
-          <DrawerWrapper>
-            <Drawer
-              resizable={resizable}
-              onResizeStop={onResizeStop}
-              style={props.visible.value ? { overflow: "auto", pointerEvents: "auto" } : {}}
-              styles={{ body: { padding: 0, backgroundColor: props.style.background }, wrapper: { maxHeight: "100%", maxWidth: "100%" } }}
-              closable={false}
-              placement={props.placement}
-              open={props.visible.value}
-              getContainer={() => document.querySelector(`#${CanvasContainerID}`) || document.body}
-              footer={null}
-              width={transToPxSize(props.width || DEFAULT_WIDTH)}
-              height={!props.autoHeight ? transToPxSize(props.height || DEFAULT_HEIGHT) : ""}
-              onClose={(e) => {
-                props.visible.onChange(false);
-              }}
-              afterOpenChange={(visible) => {
-                if (!visible) {
-                  props.onEvent("close");
-                }
-              }}
-              zIndex={Layers.drawer}
-              maskClosable={props.maskClosable}
-              mask={props.showMask}
-            >
+          <Drawer
+            autoHeight={props.autoHeight}
+            title={props.title || undefined}
+            closable={props.title === "" || closeBtnPos === "none" ? false : { placement: closeBtnPos }}
+            resizable={resizable}
+            onResizeStop={onResizeStop}
+            style={props.visible.value ? { overflow: "auto", pointerEvents: "auto" } : {}}
+            styles={{
+              body: { padding: 0, backgroundColor: props.style.background },
+              wrapper: { maxHeight: "100%", maxWidth: "100%" },
+            }}
+            placement={props.placement}
+            open={props.visible.value}
+            size={props.size}
+            getContainer={() => document.querySelector(`#${CanvasContainerID}`) || document.body}
+            onClose={() => {
+              props.visible.onChange(false);
+            }}
+            afterOpenChange={(visible) => {
+              if (!visible) {
+                props.onEvent("close");
+              }
+            }}
+            zIndex={Layers.drawer}
+            maskClosable={props.maskClosable}
+            mask={props.showMask}
+          >
+            {props.title === "" && props.closeButtonPlacement !== "none" && (
               <ButtonStyle
                 onClick={() => {
                   props.visible.onChange(false);
                 }}
-                placement={props.placement}
+                placement={closeBtnPos}
               >
                 <CloseOutlined />
               </ButtonStyle>
-              <InnerGrid
-                {...otherContainerProps}
-                items={gridItemCompToGridItems(items)}
-                autoHeight={props.autoHeight}
-                minHeight={isTopBom ? DEFAULT_HEIGHT + "px" : "100%"}
-                style={{ height: "100%" }}
-                containerPadding={[containerPadding[1], containerPadding[0]]}
-                hintPlaceholder={HintPlaceHolder}
-                bgColor={props.style.background}
-              />
-            </Drawer>
-          </DrawerWrapper>
+            )}
+            <InnerGrid
+              {...otherContainerProps}
+              items={gridItemCompToGridItems(items)}
+              autoHeight={props.autoHeight}
+              minHeight={isTopBom && !props.autoHeight ? props.size + "px" : "100%"}
+              style={{ height: "100%", overflowY: !props.autoHeight && props.showScroll ? 'auto' : undefined }}
+              containerPadding={[containerPadding[1], containerPadding[0]]}
+              hintPlaceholder={HintPlaceHolder}
+              bgColor={props.style.background}
+            />
+          </Drawer>
         </BackgroundColorContext.Provider>
       );
     }
@@ -157,27 +169,33 @@ let TmpDrawerComp = (function () {
     .setPropertyViewFn((children) => (
       <>
         <Section name={sectionNames.basic}>
+          {children.title.propertyView({ label: trans("drawer.title") })}
+          {children.closeButtonPlacement.propertyView({
+            label: trans("drawer.closeButtonPlacement"),
+            radioButton: true,
+          })}
           {children.placement.propertyView({ label: trans("drawer.placement"), radioButton: true })}
-          {["top", "bottom"].includes(children.placement.getView())
-            ? children.autoHeight.getPropertyView()
-            : children.width.propertyView({
-              label: trans("drawer.width"),
-              tooltip: trans("drawer.widthTooltip"),
-              placeholder: DEFAULT_WIDTH + "",
-            })}
-          {!children.autoHeight.getView() &&
-            ["top", "bottom"].includes(children.placement.getView()) &&
-            children.height.propertyView({
+          {["top", "bottom"].includes(children.placement.getView()) && children.autoHeight.getPropertyView()}
+          {["top", "bottom"].includes(children.placement.getView()) &&
+            !children.autoHeight.getView() &&
+            children.size.propertyView({
               label: trans("drawer.height"),
               tooltip: trans("drawer.heightTooltip"),
-              placeholder: DEFAULT_HEIGHT + "",
+              placeholder: DEFAULT_WIDTH + "",
             })}
-          {children.maskClosable.propertyView({
-            label: trans("prop.maskClosable"),
-          })}
+          {
+            children.autoHeight.getView() === false && 
+            children.showScroll.propertyView({
+              label: trans('container.showScroll'),
+            })
+          }
           {children.showMask.propertyView({
             label: trans("prop.showMask"),
           })}
+          {children.showMask.getView() &&
+            children.maskClosable.propertyView({
+              label: trans("prop.maskClosable"),
+            })}
         </Section>
         <Section name={sectionNames.interaction}>{children.onEvent.getPropertyView()}</Section>
         <Section name={sectionNames.style}>{children.style.getPropertyView()}</Section>

@@ -1,96 +1,59 @@
 import { Drawer as AntdDrawer, DrawerProps as AntdDrawerProps } from "antd";
-import Handle from "./Modal/handler";
-import { useEffect, useMemo, useState } from "react";
-import { Resizable, ResizeHandle } from "react-resizable";
-import { useResizeDetector } from "react-resize-detector";
+import { useMemo, useState, useEffect, useRef } from "react";
 import styled from "styled-components";
-import { positionType } from "barda/src/comps/controls/styleControlConstants";
 
 const StyledDrawer = styled(AntdDrawer)`
-  & .ant-drawer-content-wrapper {
-    transition-duration: 0s;
+  .ant-drawer-body {
+    padding: 0px;
   }
 `;
 
-function getResizeHandle(placement?: positionType): ResizeHandle {
-  switch (placement) {
-    case "top":
-      return "s";
-    case "bottom":
-      return "n";
-    case "left":
-      return "e";
-  }
-  return "w";
-}
+export const parseSize = (size: "default" | "large" | number | undefined) => {
+  if (size === "default" || typeof size === undefined) return 378;
+  else if (size === "large") return 736;
+  else return size as number;
+};
 
 type DrawerProps = {
   resizable?: boolean;
-  onResizeStart?: (
-    e: React.SyntheticEvent,
-    node: HTMLElement,
-    size: { width: number; height: number },
-    handle: ResizeHandle
-  ) => void;
-  onResize?: (
-    e: React.SyntheticEvent,
-    node: HTMLElement,
-    size: { width: number; height: number },
-    handle: ResizeHandle
-  ) => void;
-  onResizeStop?: (
-    e: React.SyntheticEvent,
-    node: HTMLElement,
-    size: { width: number; height: number },
-    handle: ResizeHandle
-  ) => void;
+  autoHeight?: boolean;
+  onResizeStop?: (size: number) => void;
 } & AntdDrawerProps;
 
 export function Drawer(props: DrawerProps) {
-  const { resizable, width: drawerWidth, height: drawerHeight, children, ...otherProps } = props;
-  const placement = useMemo(() => props.placement ?? "right", [props.placement]);
-  const resizeHandles = useMemo(
-    () => (resizable ? [getResizeHandle(placement)] : []),
-    [placement, resizable]
-  );
-  const isTopBom = ["top", "bottom"].includes(placement);
-  const [width, setWidth] = useState<number>();
-  const [height, setHeight] = useState<number>();
-  useEffect(() => {
-    setWidth(undefined);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [drawerWidth]);
-  useEffect(() => {
-    setHeight(undefined);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [drawerHeight]);
-  const { width: detectWidth, height: detectHeight, ref } = useResizeDetector({
-    refreshRate: 50,
-    refreshMode: "throttle"
-  });
-  // log.info("Drawer. drawerWidth: ", drawerWidth, " width: ", width, "detectWidth: ", detectWidth);
+  const { resizable, children, onResizeStop, size, ...otherProps } = props;
+  const resizeing = useRef(false);
+  const [drawerSize, setDrawerSize] = useState<number>(parseSize(props.size ?? 378));
+  const isTopBom = ["top", "bottom"].includes(props.placement ?? "");
+
+  const style = {
+    section: {
+      height: resizeing.current
+      ? drawerSize + "px"
+      : (isTopBom ? (props.autoHeight? "auto" : props.size + "px") : "100%"),
+    },
+  };
   return (
-    <StyledDrawer width={width ?? drawerWidth} height={height ?? drawerHeight} {...otherProps}>
-      <Resizable
-        width={width ?? detectWidth ?? 0}
-        height={height ?? detectHeight ?? 0}
-        resizeHandles={resizeHandles}
-        handle={Handle}
-        onResizeStart={(event, { node, size, handle }) =>
-          props.onResizeStart?.(event, node, size, handle)
-        }
-        onResize={(event, { node, size, handle }) => {
-          isTopBom ? setHeight(size.height) : setWidth(size.width);
-          props.onResize?.(event, node, size, handle);
-        }}
-        onResizeStop={(event, { node, size, handle }) =>
-          props.onResizeStop?.(event, node, size, handle)
-        }
-      >
-        <div ref={ref} style={{ height: "100%" }}>
-          {children}
-        </div>
-      </Resizable>
+    <StyledDrawer
+      {...otherProps}
+      placement={props.placement}
+      resizable={
+        resizable
+          ? {
+              onResizeStart: () => {
+                resizeing.current = true;
+              },
+              onResize: (newSize) => setDrawerSize(newSize),
+              onResizeEnd: () => {
+                props.onResizeStop?.(drawerSize);
+                resizeing.current = false;
+              },
+            }
+          : false
+      }
+      styles={style}
+    >
+      {children}
     </StyledDrawer>
   );
 }
