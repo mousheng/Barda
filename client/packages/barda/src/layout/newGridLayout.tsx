@@ -20,9 +20,12 @@ import { GridLines } from "./gridLines";
 import { changeItemOp, deleteItemOp, flagItemOp, flagItemop, LayoutOpTypes } from "./layoutOp";
 import { getUILayout, LayoutOps, layoutOpUtils } from "./layoutOpUtils";
 import { bottom, calcLeftAdjacentItems, calcOffset, canResizeBottom, canResizeRight, collides, edgeScroll, ExtraItem, ExtraLayout, getItemResizeHandles, GridResizeEvent, isItemDraggable, isItemResizable, isValidLayoutItem, Layout, LayoutItem, narrow, narrowItems, shiftInside, synchronizeLayoutWithChildren } from "./utils";
+import { ScrollBar } from "components/ScrollBar";
 
 // log.setLevel(log.levels.DEBUG)
-
+const Wapper = styled.div`
+    height: 100%;
+`
 const LayoutContainer = styled.div<{
     $bgColor?: string;
     $autoHeight?: boolean;
@@ -90,6 +93,7 @@ export const NewGridLayout = (props: GridLayoutProps) => {
     // 删除占位及隐藏拖动组件标识
     const deletePlaceholderAndHideDraggingCompRef = useRef(false);
     const { height: innerHeight, ref } = useResizeDetector();
+    const { height: WapperHeight, ref:wapperRef } = useResizeDetector();
     // 临时保存冻结的布局
     const FrozenLayout = useRef({})
     // 临时保存冻结的容器名
@@ -612,7 +616,7 @@ export const NewGridLayout = (props: GridLayoutProps) => {
             nbRow = emptyRows;
         }
         const containerHeight = Math.max(
-            nbRow * rowHeight + (nbRow - 1) * margin[1] + containerPadding[1] * 2
+            nbRow * rowHeight + (nbRow - 1) * margin[1] + containerPadding[1] * 2, WapperHeight ?? 0
         );
         // log.debug("layout: containerHeigh=", containerHeight, " minHeight: ", this.props.minHeight);
         const height = extraHeight
@@ -893,29 +897,55 @@ export const NewGridLayout = (props: GridLayoutProps) => {
         e.stopPropagation();
         inCanvasCountRef.current++;
     }
-
     return (
+        (!props.autoHeight && props.showScroll ? <Wapper ref={wapperRef}>
+            <ScrollBar style={{height: WapperHeight+'px'}}>
+                <LayoutContainer
+                    ref={props.innerRef}
+                    style={props.style}
+                    $bgColor={props.bgColor}
+                    $radius={props.radius}
+                    $autoHeight={props.autoHeight}
+                    $overflow={props.overflow}
+                    tabIndex={-1}
+                    className={mergedClassName}
+                    onDrop={props.isDroppable ? onDrop : _.noop}
+                    onDragLeave={props.isDroppable ? onDragLeave : _.noop}
+                    onDragEnter={props.isDroppable ? onDragEnter : _.noop}
+                    onDragOver={props.isDroppable ? onDragOver : _.noop}
+                    onKeyDown={onKeyDown}
+                >
+                    {/* <div style={{ height: "0px" }}>children:{_.size(props.children)},props.layout:{_.size(props.layout)},layout:{_.size(layouts)},count:{inCanvasCountRef.current},stateChangedHs:{JSON.stringify(compsHeightMap)},dragOverPos: {JSON.stringify(dragOverItemPosition.current)}</div> */}
+                    <div style={contentStyle} ref={ref}>
+                        {props.showGridLines && <GridLines positionParams={positionParams} position={gridLinesPosition} lineColor={contrastBgColor} />}
+                        {mounted &&
+                            _.orderBy(layouts, ['z'], ['asc']).map((item) => processGridItem(item))}
+                    </div>
+                </LayoutContainer>
+            </ScrollBar>
+        </Wapper>:
         <LayoutContainer
-            ref={props.innerRef}
-            style={props.style}
-            $bgColor={props.bgColor}
-            $radius={props.radius}
-            $autoHeight={props.autoHeight}
-            $overflow={props.overflow}
-            tabIndex={-1}
-            className={mergedClassName}
-            onDrop={props.isDroppable ? onDrop : _.noop}
-            onDragLeave={props.isDroppable ? onDragLeave : _.noop}
-            onDragEnter={props.isDroppable ? onDragEnter : _.noop}
-            onDragOver={props.isDroppable ? onDragOver : _.noop}
-            onKeyDown={onKeyDown}
-        >
-            {/* <div style={{ height: "0px" }}>children:{_.size(props.children)},props.layout:{_.size(props.layout)},layout:{_.size(layouts)},count:{inCanvasCountRef.current},stateChangedHs:{JSON.stringify(compsHeightMap)},dragOverPos: {JSON.stringify(dragOverItemPosition.current)}</div> */}
-            <div style={contentStyle} ref={ref}>
-                {props.showGridLines && <GridLines positionParams={positionParams} position={gridLinesPosition} lineColor={contrastBgColor} />}
-                {mounted &&
-                    _.orderBy(layouts, ['z'], ['asc']).map((item) => processGridItem(item))}
-            </div>
-        </LayoutContainer>
+        ref={props.innerRef}
+        style={props.style}
+        $bgColor={props.bgColor}
+        $radius={props.radius}
+        $autoHeight={props.autoHeight}
+        $overflow={props.overflow}
+        tabIndex={-1}
+        className={mergedClassName}
+        onDrop={props.isDroppable ? onDrop : _.noop}
+        onDragLeave={props.isDroppable ? onDragLeave : _.noop}
+        onDragEnter={props.isDroppable ? onDragEnter : _.noop}
+        onDragOver={props.isDroppable ? onDragOver : _.noop}
+        onKeyDown={onKeyDown}
+    >
+        {/* <div style={{ height: "0px" }}>children:{_.size(props.children)},props.layout:{_.size(props.layout)},layout:{_.size(layouts)},count:{inCanvasCountRef.current},stateChangedHs:{JSON.stringify(compsHeightMap)},dragOverPos: {JSON.stringify(dragOverItemPosition.current)}</div> */}
+        <div style={contentStyle} ref={ref}>
+            {props.showGridLines && <GridLines positionParams={positionParams} position={gridLinesPosition} lineColor={contrastBgColor} />}
+            {mounted &&
+                _.orderBy(layouts, ['z'], ['asc']).map((item) => processGridItem(item))}
+        </div>
+    </LayoutContainer>
+        )
     )
 }

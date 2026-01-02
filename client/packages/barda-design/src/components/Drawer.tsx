@@ -5,6 +5,7 @@ import styled from "styled-components";
 const StyledDrawer = styled(AntdDrawer)`
   .ant-drawer-body {
     padding: 0px;
+    overflow: hidden;
   }
 `;
 
@@ -29,8 +30,14 @@ export function Drawer(props: DrawerProps) {
   const style = {
     section: {
       height: resizeing.current
-      ? drawerSize + "px"
-      : (isTopBom ? (props.autoHeight? "auto" : props.size + "px") : "100%"),
+        ? isTopBom
+          ? drawerSize + "px"
+          : "100%"
+        : isTopBom
+        ? props.autoHeight
+          ? "auto"
+          : props.size + "px"
+        : "100%",
     },
   };
   return (

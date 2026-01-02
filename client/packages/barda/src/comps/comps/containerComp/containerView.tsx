@@ -285,6 +285,7 @@ const getExtraLayout = (
  **/
 type ViewPropsWithSelect = ContainerBaseProps & {
   dragSelectedComps?: Set<string>;
+  showScroll?: boolean;
 };
 
 const ItemWrapper = styled.div<{ $disableInteract?: boolean }>`
@@ -461,6 +462,7 @@ export function InnerGrid(props: ViewPropsWithSelect) {
 
   return (
     <NewGridLayout
+      showScroll={props?.showScroll}
       isDragging={isDragging}
       showGridLines={editorState.showGridLines() && (isDroppable || enableGridLines)}
       innerRef={ref as any}

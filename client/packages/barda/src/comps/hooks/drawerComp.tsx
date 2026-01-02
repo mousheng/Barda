@@ -1,15 +1,7 @@
 import { CloseOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 import { changeChildAction } from "barda-core";
-import {
-  AlignClose,
-  AlignLeft,
-  AlignRight,
-  Drawer,
-  HintPlaceHolder,
-  Section,
-  sectionNames,
-} from "barda-design";
+import { AlignClose, AlignLeft, AlignRight, Drawer, HintPlaceHolder, Section, sectionNames } from "barda-design";
 import { ContainerCompBuilder } from "comps/comps/containerBase/containerCompBuilder";
 import { gridItemCompToGridItems, InnerGrid } from "comps/comps/containerComp/containerView";
 import { AutoHeightControl } from "comps/controls/autoHeightControl";
@@ -101,11 +93,7 @@ let TmpDrawerComp = (function () {
       const userViewMode = useUserViewMode();
       const resizable = !userViewMode && (!isTopBom || !props.autoHeight);
       const closeBtnPos = props.closeButtonPlacement || "start";
-      const containerPadding = parseBoxValues(
-        props.style.bodyPadding_UNIT,
-        [3, 19, 3, 19],
-        false
-      ) as number[];
+      const containerPadding = parseBoxValues(props.style.bodyPadding_UNIT, [3, 19, 3, 19], false) as number[];
       const onResizeStop = useCallback(
         (size: number) => {
           dispatch(changeChildAction("size", Number(size), true));
@@ -154,9 +142,10 @@ let TmpDrawerComp = (function () {
             <InnerGrid
               {...otherContainerProps}
               items={gridItemCompToGridItems(items)}
-              autoHeight={props.autoHeight}
-              minHeight={isTopBom && !props.autoHeight ? props.size + "px" : "100%"}
-              style={{ height: "100%", overflowY: !props.autoHeight && props.showScroll ? 'auto' : undefined }}
+              autoHeight={props.autoHeight && isTopBom}
+              minHeight={isTopBom  ? (props.autoHeight ? DEFAULT_WIDTH+'px' : props.size + "px") : "100%" }
+              showScroll={props.showScroll}
+              style={{ height: isTopBom ? (props.showScroll || props.autoHeight ? undefined: props.size + "px") : props.showScroll ? undefined : '100%'}}
               containerPadding={[containerPadding[1], containerPadding[0]]}
               hintPlaceholder={HintPlaceHolder}
               bgColor={props.style.background}
@@ -183,12 +172,10 @@ let TmpDrawerComp = (function () {
               tooltip: trans("drawer.heightTooltip"),
               placeholder: DEFAULT_WIDTH + "",
             })}
-          {
-            children.autoHeight.getView() === false && 
+          {(children.autoHeight.getView() === false || ["left", "right"].includes(children.placement.getView())) &&
             children.showScroll.propertyView({
-              label: trans('container.showScroll'),
-            })
-          }
+              label: trans("container.showScroll"),
+            })}
           {children.showMask.propertyView({
             label: trans("prop.showMask"),
           })}
@@ -233,6 +220,4 @@ TmpDrawerComp = withMethodExposing(TmpDrawerComp, [
   },
 ]);
 
-export const DrawerComp = withExposingConfigs(TmpDrawerComp, [
-  new NameConfig("visible", trans("export.visibleDesc")),
-]);
+export const DrawerComp = withExposingConfigs(TmpDrawerComp, [new NameConfig("visible", trans("export.visibleDesc"))]);

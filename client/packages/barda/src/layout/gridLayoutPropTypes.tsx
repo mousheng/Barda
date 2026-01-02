@@ -61,6 +61,7 @@ export type GridLayoutProps = {
   innerRef?: RefObject<HTMLDivElement>;
   scrollContainerRef?: RefObject<HTMLDivElement>;
 
+  showScroll?: boolean;
   showGridLines?: boolean;
   autoHeight?: boolean;
   overflow?: string;
