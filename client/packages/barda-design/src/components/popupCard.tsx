@@ -121,7 +121,7 @@ export function PopupCard(props: PopupCardProps) {
             $backcolor={props.hasError ? "#FFF3F1" : "#EFF9F6"}
             title={
               <Alert
-                message={props.title}
+                title={props.title}
                 type={props.hasError ? "error" : "success"}
                 showIcon
                 icon={props.hasError ? <ErrorIcon /> : <SuccessIcon />}

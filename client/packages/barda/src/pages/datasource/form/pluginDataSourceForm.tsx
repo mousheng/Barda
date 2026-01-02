@@ -236,13 +236,13 @@ export const PluginDataSourceForm = (props: DatasourceFormProps) => {
         })}
       </FormSection>
       {isExtraParamsRefreshing && (
-        <Alert showIcon type="info" message={trans("query.dynamicDataSourceConfigLoadingText")} />
+        <Alert showIcon type="info" title={trans("query.dynamicDataSourceConfigLoadingText")} />
       )}
       {isExtraParamsRefreshError && (
         <Alert
           showIcon
           type="error"
-          message={
+          title={
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div>{trans("query.dynamicDataSourceConfigErrText")}</div>
               <TacoButton size="small" onClick={handleRefreshExtraParams}>

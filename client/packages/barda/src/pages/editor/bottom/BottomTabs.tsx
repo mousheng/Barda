@@ -249,7 +249,7 @@ export const BottomTabs = memo(<T extends TabsConfigType>(props: {
         </div>
       </StyleScrollBar>
 
-      {status === "error" && message && <QueryAlert message={message} />}
+      {status === "error" && message && <QueryAlert title={message} />}
     </>
   );
 })
