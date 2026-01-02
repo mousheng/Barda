@@ -18,6 +18,9 @@ import { NameGenerator } from "comps/utils";
 import { JSONValue } from "util/jsonTypes";
 
 const ModalStyled = styled.div<{ $background?: string }>`
+  .ant-modal-container {
+    padding: 0;
+  }
   .ant-modal-content {
     overflow: hidden;
     background-color: ${(props) => props.$background};

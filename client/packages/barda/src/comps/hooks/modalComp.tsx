@@ -141,7 +141,6 @@ let TmpModalComp = (function () {
                 minHeight={DEFAULT_HEIGHT - DEFAULT_PADDING * 2 + "px"}
                 containerPadding={[containerPadding[1], containerPadding[0]]}
                 hintPlaceholder={HintPlaceHolder}
-                style={{height: props.showScroll ? undefined : '100%'}}
                 showScroll={props.showScroll}
               />
             </Modal>

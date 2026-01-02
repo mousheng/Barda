@@ -897,12 +897,32 @@ export const NewGridLayout = (props: GridLayoutProps) => {
         e.stopPropagation();
         inCanvasCountRef.current++;
     }
+
+    // 根据 autoHeight 和 showScroll 自动计算 style.height
+    // 如果用户已经传入了 style.height，优先使用用户的值
+    const computedStyle = useMemo(() => {
+        const userStyle = props.style || {};
+        // 如果用户已经设置了 height，使用用户的值
+        if (userStyle.height !== undefined) {
+            return userStyle;
+        }
+        // 自动计算 height：
+        // - 如果 showScroll 为 true，不设置 height（让内容自然滚动）
+        // - 如果 autoHeight 为 true，不设置 height（让内容自适应）
+        // - 如果 showScroll 为 false 且 autoHeight 为 false，设置 height 为 '100%'（填满容器）
+        const computedHeight = (props.showScroll || props.autoHeight) ? undefined : '100%';
+        return {
+            ...userStyle,
+            height: computedHeight,
+        };
+    }, [props.style, props.showScroll, props.autoHeight]);
+
     return (
         (!props.autoHeight && props.showScroll ? <Wapper ref={wapperRef}>
             <ScrollBar style={{height: WapperHeight+'px'}}>
                 <LayoutContainer
                     ref={props.innerRef}
-                    style={props.style}
+                    style={computedStyle}
                     $bgColor={props.bgColor}
                     $radius={props.radius}
                     $autoHeight={props.autoHeight}
@@ -926,7 +946,7 @@ export const NewGridLayout = (props: GridLayoutProps) => {
         </Wapper>:
         <LayoutContainer
         ref={props.innerRef}
-        style={props.style}
+        style={computedStyle}
         $bgColor={props.bgColor}
         $radius={props.radius}
         $autoHeight={props.autoHeight}

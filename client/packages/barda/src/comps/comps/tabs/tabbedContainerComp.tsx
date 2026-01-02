@@ -80,7 +80,6 @@ const getStyle = (
   position: positionType,
   cardStyle: boolean,
   $showTabs: boolean,
-  $showScroll: boolean
 ) => {
   let borderWidth = getStandardBoxValuesByDirection(position, cardStyle ? "0px" : "1px", "line");
   let Radius = getStandardBoxValuesByDirection(position, cardStyle ? "0px" : style.radius, "surface");
@@ -104,9 +103,7 @@ const getStyle = (
         padding-left: ${position === "left" ? "2px!important" : "0px!important"};
         padding-right: ${position === "right" ? "2px!important" : "0px!important"};
         .react-grid-layout {
-          height: 100%;
           border-radius: ${reverseRadius};
-          overflow: ${(props) => ($showScroll ? "" : "hidden")};
         }
       }
 
@@ -153,7 +150,6 @@ const StyledTabs = styled(Tabs)<{
   $isMobile?: boolean;
   $autoHeight: boolean;
   $showTabs: boolean;
-  $showScroll: boolean;
 }>`
   &.ant-tabs {
     height: 100%;
@@ -194,14 +190,14 @@ const StyledTabs = styled(Tabs)<{
 
   ${(props) =>
     props.$style &&
-    getStyle(props.$style, props.$position, props.$cardStyle, props.$showTabs, props.$showScroll)}
+    getStyle(props.$style, props.$position, props.$cardStyle, props.$showTabs)}
 `;
 
 const TabItemBadge = styled(Badge)<{ $color: string }>`
   color: ${(props) => props.$color};
 `;
 
-const ContainerInTab = (props: ContainerBaseProps) => {
+const ContainerInTab = (props: ContainerBaseProps & { showScroll: boolean }) => {
   return <InnerGrid {...props} emptyRows={15} bgColor={"white"} hintPlaceholder={HintPlaceHolder} />;
 };
 
@@ -257,6 +253,7 @@ const TabbedContainer = (props: TabbedContainerProps) => {
       children: (
         <BackgroundColorContext.Provider value={props.style.background}>
           <ContainerInTab
+            showScroll={props.showScroll}
             layout={containerProps.layout.getView()}
             items={gridItemCompToGridItems(containerProps.items.getView())}
             positionParams={containerProps.positionParams.getView()}
@@ -282,7 +279,6 @@ const TabbedContainer = (props: TabbedContainerProps) => {
       }}
       $showTabs={props.showHeader}
       centered={props.labelCentered}
-      $showScroll={props.showScroll}
       animated
       $isMobile={isMobile}
       $autoHeight={props.autoHeight}
@@ -323,6 +319,7 @@ export const TabbedContainerBaseComp = (function () {
               children.cardStyle.propertyView({ label: trans("tabbedContainer.cardStyle") })}
             {children.selectedTabKey.propertyView({ label: trans("prop.defaultValue") })}
             {children.autoHeight.getPropertyView()}
+            {!children.autoHeight.getView() && children.showScroll.propertyView({ label: trans("container.showScroll") })}
           </Section>
           <Section name={sectionNames.interaction}>
             {children.onEvent.getPropertyView()}

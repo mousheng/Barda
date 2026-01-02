@@ -14,23 +14,13 @@ const getStyle = (style: ContainerStyleType) => {
   `;
 };
 
-const Wrapper = styled.div<{ $style: ContainerStyleType, $showScroll: boolean }>`
+const Wrapper = styled.div<{ $style: ContainerStyleType }>`
   display: flex;
   flex-flow: column;
   height: 100%;
   border: 1px solid #d7d9e0;
   border-radius: 4px;
   ${(props) => props.$style && getStyle(props.$style)}
-  .BodyInnerGrid:hover {
-    overflow: ${props => props.$showScroll ? "auto" : "hidden"};
-    &:hover::-webkit-scrollbar-thumb {
-      background-color: rgba(139, 143, 163, 0.25);
-      border-radius: 3px;
-    }
-    &:hover::-webkit-scrollbar {
-      width: 14px;
-    }
-  }
 `;
 
 const HeaderInnerGrid = styled(InnerGrid) <{ $backgroundColor: string, $autoFullHeight: boolean }>`
@@ -40,31 +30,21 @@ const HeaderInnerGrid = styled(InnerGrid) <{ $backgroundColor: string, $autoFull
   border-radius: 0;
 `;
 
-const BodyInnerGrid = styled(InnerGrid) <{
+const BodyInnerGridWrapper = styled.div<{
   $showBorder: boolean;
-  $backgroundColor: string;
   $borderColor: string;
-  $showScroll: boolean;
 }>`
-  border-top: ${props => props.$showBorder ? 1 : 0}px solid ${props => props.$borderColor};
   flex: 1;
+  position: relative;
+  border-top: ${props => props.$showBorder ? 1 : 0}px solid ${props => props.$borderColor};
+  min-height: 0;
+`;
+
+const BodyInnerGrid = styled(InnerGrid) <{
+  $backgroundColor: string;
+}>`
   ${(props) => props.$backgroundColor && `background-color: ${props.$backgroundColor};`}
   border-radius: 0;
-  overflow: ${props => props.$showScroll ? "auto" : "hidden"};
-
-  &&&::-webkit-scrollbar {
-    width: 14px;
-  }
-
-  &&&::-webkit-scrollbar-thumb {
-    background-color: rgba(139, 143, 163, 0.1);
-    border-radius: 3px;
-    transition: background-color 0.3s;
-  }
-
-  
-
-  
 `;
 
 const FooterInnerGrid = styled(InnerGrid) <{
@@ -100,7 +80,7 @@ export function TriContainer(props: TriContainerProps) {
   const bodyPadding = parseBoxValues(style.bodyPadding_UNIT, [11, 19, 11, 19], false) as number[];
   const footerPadding = parseBoxValues(style.footerPadding_UNIT, [3, 19, 3, 19], false) as number[];
   return (
-    <Wrapper $style={style} $showScroll={!!props.showScroll}>
+    <Wrapper $style={style}>
       {showHeader && (
         <BackgroundColorContext.Provider value={container.style.headerBackground}>
           <HeaderInnerGrid
@@ -118,22 +98,25 @@ export function TriContainer(props: TriContainerProps) {
       )}
       {showBody && (
         <BackgroundColorContext.Provider value={container.style.background}>
-          <BodyInnerGrid
-            className="BodyInnerGrid"
+          <BodyInnerGridWrapper
             $showBorder={showHeader}
-            {...otherBodyProps}
-            items={gridItemCompToGridItems(bodyItems)}
-            autoHeight={container.autoHeight}
-            emptyRows={14}
-            minHeight={showHeader ? "143px" : "142px"}
-            containerPadding={
-              [bodyPadding[1], bodyPadding[0]]
-            }
-            hintPlaceholder={props.hintPlaceholder ?? HintPlaceHolder}
-            $backgroundColor={style?.background}
             $borderColor={style?.border}
-            $showScroll={!!props.showScroll}
-          />
+          >
+            <BodyInnerGrid
+              className="BodyInnerGrid"
+              {...otherBodyProps}
+              items={gridItemCompToGridItems(bodyItems)}
+              autoHeight={container.autoHeight}
+              emptyRows={14}
+              minHeight={showHeader ? "143px" : "142px"}
+              containerPadding={
+                [bodyPadding[1], bodyPadding[0]]
+              }
+              hintPlaceholder={props.hintPlaceholder ?? HintPlaceHolder}
+              $backgroundColor={style?.background}
+              showScroll={props.showScroll}
+            />
+          </BodyInnerGridWrapper>
         </BackgroundColorContext.Provider>
       )}
       {showFooter && (

@@ -145,7 +145,6 @@ let TmpDrawerComp = (function () {
               autoHeight={props.autoHeight && isTopBom}
               minHeight={isTopBom  ? (props.autoHeight ? DEFAULT_WIDTH+'px' : props.size + "px") : "100%" }
               showScroll={props.showScroll}
-              style={{ height: isTopBom ? (props.showScroll || props.autoHeight ? undefined: props.size + "px") : props.showScroll ? undefined : '100%'}}
               containerPadding={[containerPadding[1], containerPadding[0]]}
               hintPlaceholder={HintPlaceHolder}
               bgColor={props.style.background}
