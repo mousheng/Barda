@@ -59,7 +59,7 @@ const DropDownItemLabel = styled.div`
   font-size: 13px;
   // line-height: 15px;
   overflow: visible;
-  margin-right: 8px;
+  margin-right: 4px;
 `;
 
 const SegmentedWrapper = styled.div<{ $placement: ControlPlacement }>`

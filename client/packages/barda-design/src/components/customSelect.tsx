@@ -4,17 +4,28 @@ import styled from "styled-components";
 import React from "react";
 
 const SelectWrapper = styled.div<{ $border?: boolean }>`
-  .ant-select-open {
-    .ant-select-arrow {
+    .ant-select-suffix {
+      margin-right: 0px;
+      transform: rotate(180deg);
+    }
+    .ant-select-open {
+      .ant-select-suffix {
       transform: rotate(0deg);
-
       svg g path {
         fill: #4965f2;
       }
     }
+    }
+  .ant-select-content {
+    margin-right: 0px;
   }
-
-  .ant-select .ant-select-selector {
+    
+  :where(.css-dev-only-do-not-override-1uga22k).ant-select.ant-select-outlined:not(.ant-select-disabled).ant-select-focused {
+    box-shadow: none !important;
+  }
+  .ant-select {
+    background-color: transparent;
+    color: #8b8fa3;
     border: ${(props) => (props.$border ? "1px solid transparent" : "1px solid #d7d9e0")};
     border-radius: 4px;
     padding: ${(props) => (props.$border ? "0px" : "0 0 0 12px")};
