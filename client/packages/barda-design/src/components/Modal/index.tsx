@@ -65,6 +65,9 @@ export function Modal(props: ModalProps) {
         body: {
           height: height ?? modalHeight,
           ...bodyStyles,
+        },
+        container: {
+          padding: 0,
         }
       }}
       {...otherProps}

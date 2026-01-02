@@ -74,6 +74,7 @@ let TmpModalComp = (function () {
       showCloseButton: BoolControl.DEFAULT_TRUE,
       codeOnlyClose: withDefault(BoolControl, false),
       defaultStartHeight: withDefault(StringControl, '20%'),
+      showScroll: BoolControl,
     },
     (props, dispatch) => {
       const userViewMode = useUserViewMode();
@@ -140,6 +141,8 @@ let TmpModalComp = (function () {
                 minHeight={DEFAULT_HEIGHT - DEFAULT_PADDING * 2 + "px"}
                 containerPadding={[containerPadding[1], containerPadding[0]]}
                 hintPlaceholder={HintPlaceHolder}
+                style={{height: props.showScroll ? undefined : '100%'}}
+                showScroll={props.showScroll}
               />
             </Modal>
           </ModalWrapper>
@@ -156,6 +159,10 @@ let TmpModalComp = (function () {
               label: trans("modalComp.modalHeight"),
               tooltip: trans("modalComp.modalHeightTooltip"),
               placeholder: DEFAULT_HEIGHT + "",
+            })}
+          {!children.autoHeight.getView() &&
+            children.showScroll.propertyView({
+              label: trans("container.showScroll"),
             })}
           {children.width.propertyView({
             label: trans("modalComp.modalWidth"),
