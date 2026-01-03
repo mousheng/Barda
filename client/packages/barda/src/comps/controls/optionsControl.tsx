@@ -53,12 +53,12 @@ type OptionControlParam = {
   title?: string;
   // The new option's label name
   newOptionLabel?: string;
-  hideBadge?: boolean;
+  showBadge?: boolean;
 };
 
 type OptionPropertyParam = {
   autoMap?: boolean;
-  hideBadge?: boolean;
+  showBadge?: boolean;
 };
 
 interface OptionCompProperty {
@@ -166,7 +166,7 @@ export function manualOptionsControl<T extends OptionsControlType>(
           itemTitle={(comp) => comp.children.label.getView()}
           popoverTitle={() => trans("edit")}
           content={(comp) => {
-            return hasPropertyView(comp) ? comp.propertyView({ hideBadge: param.hideBadge }) : comp.getPropertyView();
+            return hasPropertyView(comp) ? comp.propertyView({ showBadge: param.showBadge }) : comp.getPropertyView();
           }}
           items={manualComp.getView()}
           onAdd={() => {
@@ -449,7 +449,7 @@ SelectOption = class extends SelectOption implements OptionCompProperty {
         })}
         {this.children.value.propertyView({ label: trans("value") })}
         {this.children.prefixIcon.propertyView({ label: trans("button.prefixIcon") })}
-        {!param.hideBadge!== false && this.children.badge.propertyView({ label: trans("optionsControl.badge"), tooltip: trans("optionsControl.badgeDesc") })}
+        {param.showBadge === true && this.children.badge.propertyView({ label: trans("optionsControl.badge"), tooltip: trans("optionsControl.badgeDesc") })}
         {disabledPropertyView(this.children)}
         {hiddenPropertyView(this.children)}
       </>

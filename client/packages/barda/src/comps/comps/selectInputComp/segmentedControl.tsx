@@ -119,7 +119,7 @@ const SegmentedControlBasicComp = (function () {
     .setPropertyViewFn((children) => (
       <>
         <Section name={sectionNames.basic}>
-          {children.options.propertyView({ hideBadge: false })}
+          {children.options.propertyView({ showBadge: true })}
           {children.defaultValue.propertyView({ label: trans("prop.defaultValue") })}
         </Section>
         <FormDataPropertyView {...children} />
