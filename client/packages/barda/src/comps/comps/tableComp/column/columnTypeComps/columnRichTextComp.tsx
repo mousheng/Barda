@@ -267,7 +267,6 @@ function RichTextEditModal(props: {
     // 从编辑器直接获取最新值
     const editor = (editorRef.current as any)?.getEditor?.();
     const finalValue = editor ? editor.root.innerHTML : currentValue;
-    console.log("finalValue", finalValue);
     props.onChange(finalValue);
     setTimeout(() => {
       props.onChangeEnd();
@@ -278,7 +277,6 @@ function RichTextEditModal(props: {
   return (
     <CustomModal
       open={isModalOpen}
-      title={trans("table.editRichText")}
       onCancel={handleCancel}
       width="800px"
       showOkButton={false}
