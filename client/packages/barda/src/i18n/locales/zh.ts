@@ -2627,6 +2627,7 @@ export const zh = {
         delete: "删除",
         commentHoverBackground: "评论悬停背景色",
         cancel: "取消",
+        clickedIndex: "点击的序号",
     },
     autoComplete: {
         value: "数据",

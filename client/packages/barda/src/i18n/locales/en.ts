@@ -2633,6 +2633,7 @@ export const en = {
     delete: "delete",
     commentHoverBackground: "Comment hover background",
     cancel: "cancel",
+    clickedIndex: "clicked index",
   },
   autoComplete: {
     value: "auto complete value",

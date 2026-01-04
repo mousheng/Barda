@@ -20,7 +20,7 @@ import { Section, sectionNames } from "barda-design";
 import { AutoHeightControl } from "comps/controls/autoHeightControl";
 import { BoolControl } from "comps/controls/boolControl";
 import { jsonControl, StringControl } from "comps/controls/codeControl";
-import { jsonValueExposingStateControl } from "comps/controls/codeStateControl";
+import { jsonValueExposingStateControl, numberExposingStateControl } from "comps/controls/codeStateControl";
 import { clickEvent, deleteEvent, eventHandlerControl, mentionEvent, submitEvent } from "comps/controls/eventHandlerControl";
 import { styleControl } from "comps/controls/styleControl";
 import { calculateRemainingHeight, calculateRemainingWidth, CommentStyle, CommentStyleType, formatBoxValuesWithUnit } from "comps/controls/styleControlConstants";
@@ -220,8 +220,9 @@ const childrenMap = {
   style: styleControl(CommentStyle),
   autoHeight: AutoHeightControl,
   commentList: jsonValueExposingStateControl("commentList", []),
-  deletedItem: jsonValueExposingStateControl("deletedItem", []),
-  submitedItem: jsonValueExposingStateControl("submitedItem", []),
+  deletedItem: jsonValueExposingStateControl("deletedItem", {}),
+  submitedItem: jsonValueExposingStateControl("submitedItem", {}),
+  clickedIndex: numberExposingStateControl("clickedIndex", 0),
   mentionName: valueComp<string>(""),
 };
 
@@ -290,7 +291,7 @@ const CommentCompBase = (
   }, []);
 
   // 生成评论头像 - 使用useCallback优化
-  const generateCommentAvatar = useCallback((item: commentDataTYPE) => {
+  const generateCommentAvatar = useCallback((item: commentDataTYPE, index: number) => {
     const displayName = item?.user?.displayName ?? item?.user?.name;
     const avatarStyle = {
       backgroundColor: item?.user?.avatar
@@ -315,7 +316,7 @@ const CommentCompBase = (
 
     return (
       <Avatar
-        onClick={() => onEvent("click")}
+        onClick={() => {props.clickedIndex.onChange(index);onEvent("click")}}
         style={avatarStyle}
         src={item?.user?.avatar}
       >
@@ -453,7 +454,7 @@ const CommentCompBase = (
               $hoverBackground={style.commentHoverBackground}
             >
               <CommentAvatar>
-                {generateCommentAvatar(item)}
+                {generateCommentAvatar(item, index)}
               </CommentAvatar>
               <CommentContentWrapper>
                 <CommentItemHeader>
@@ -467,7 +468,7 @@ const CommentCompBase = (
                       textDecoration: 'underline',
                       marginRight: '8px'
                     }}
-                    onClick={() => onEvent("click")}
+                    onClick={() => {props.clickedIndex.onChange(index);onEvent("click")}}
                     type="button"
                   >
                     {item?.user?.name}
@@ -650,5 +651,6 @@ export const CommentComp = withExposingConfigs(CommentBasicComp, [
   new NameConfig("deletedItem", trans("comment.deletedItem")),
   new NameConfig("submitedItem", trans("comment.submitedItem")),
   new NameConfig("mentionName", trans("comment.submitedItem")),
+  new NameConfig("clickedIndex", trans("comment.clickedIndex")),
   NameConfigHidden,
 ]);
