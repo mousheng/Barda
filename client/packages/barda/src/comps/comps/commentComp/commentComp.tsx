@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 // 第三方库
 import { CloseOutlined, CopyOutlined, SendOutlined } from "@ant-design/icons";
-import { Avatar, Mentions, message, Tooltip } from "antd";
+import { Avatar, Mentions, message, Popconfirm, Tooltip } from "antd";
 import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
@@ -519,22 +519,24 @@ const CommentCompBase = (
                     />
                   )}
                   {deleteAble && (
-                    <CloseOutlined
-                      style={{
-                        color: "#c32230",
-                        cursor: 'pointer',
-                        padding: '4px'
-                      }}
-                      onClick={() => handleDelete(index)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          handleDelete(index);
-                        }
-                      }}
-                    />
+                    <Popconfirm
+                      title={trans("comment.deleteConfirmTitle")}
+                      description={trans("comment.deleteConfirmDesc")}
+                      onConfirm={() => handleDelete(index)}
+                      okText={trans("comment.deleteConfirmOk")}
+                      cancelText={trans("comment.deleteConfirmCancel")}
+                      placement="topRight"
+                    >
+                      <CloseOutlined
+                        style={{
+                          color: "#c32230",
+                          cursor: 'pointer',
+                          padding: '4px'
+                        }}
+                        role="button"
+                        tabIndex={0}
+                      />
+                    </Popconfirm>
                   )}
                 </CommentActions>
               )}
