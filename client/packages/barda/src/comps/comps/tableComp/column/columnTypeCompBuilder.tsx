@@ -50,7 +50,7 @@ export class ColumnTypeCompBuilder<
   private propertyViewFn?: PropertyViewFnTypeForComp<
     RecordConstructorToComp<NewChildrenCtorMap<ChildrenCtorMap, T>>
   >;
-  private editViewFn?: EditViewFn<T>;
+  private editViewFn?: EditViewFn<T, any>;
 
   constructor(
     childrenMap: ChildrenCtorMap,
@@ -87,13 +87,14 @@ export class ColumnTypeCompBuilder<
         const baseValue = this.baseValueFn?.(props, dispatch);
         const normalView = this.viewFn(props, dispatch);
         return (
-          <EditableCell<T>
+          <EditableCell<T, any>
             {...cellProps}
             normalView={normalView}
             dispatch={dispatch}
             baseValue={baseValue}
             changeValue={props.changeValue as any}
             editViewFn={this.editViewFn}
+            columnProps={props as any}
           />
         );
       };

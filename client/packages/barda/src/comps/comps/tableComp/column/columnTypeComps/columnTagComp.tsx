@@ -66,6 +66,7 @@ const childrenMap = {
   colorMap: ColorMapOptionControl,
   allowCustomTags: BoolControl,
   onTagClick: ActionSelectorControl,
+  allowClear: BoolControl,
 };
 
 /* ------------------------------ 数据基础转换 ------------------------------ */
@@ -95,6 +96,7 @@ type TagEditPropsType = {
   onChangeEnd: () => void;
   colorMap?: JSONObject;
   allowCustomTags?: boolean;
+  allowClear?: boolean;
 };
 
 const TagEdit = (props: TagEditPropsType) => {
@@ -125,10 +127,10 @@ const TagEdit = (props: TagEditPropsType) => {
 
   const [tags, setTags] = useState(availableTags);
   const allowCustom = props.allowCustomTags !== false; // 默认允许自定义
-  
   return (
     <Wrapper>
       <CustomSelect
+        allowClear={props.allowClear}
         autoFocus
         defaultOpen
         variant="borderless"
@@ -260,7 +262,8 @@ export const ColumnTagComp = (function () {
             colorMap={value.colorMap}
             allowCustomTags={value.allowCustomTags}
             onChange={(text) => props.onChange({ text, colorMap: value.colorMap, colorMapOptions: value.colorMapOptions, allowCustomTags: value.allowCustomTags })} 
-            onChangeEnd={props.onChangeEnd} 
+            onChangeEnd={props.onChangeEnd}
+            allowClear={props.columnProps?.allowClear}
           />
         </ColorMapContext.Provider>
       );
@@ -281,6 +284,11 @@ export const ColumnTagComp = (function () {
               label: trans("table.allowCustomTags"),
               tooltip: trans("table.allowCustomTagsTooltip"),
             })}
+          {
+            children.allowClear.propertyView({
+              label: trans("prop.showClear"),
+            })
+          }
           {children.onTagClick.propertyView({
             label: trans("table.onTagClick"),
           })}

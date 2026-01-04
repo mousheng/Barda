@@ -38,10 +38,11 @@ export interface CellProps {
 }
 
 export type CellViewReturn = (props: CellProps) => ReactNode;
-export type EditViewFn<T> = (props: {
+export type EditViewFn<T, P = any> = (props: {
   value: T;
   onChange: (value: T) => void;
   onChangeEnd: () => void;
+  columnProps?: P;
 }) => ReactNode;
 
 export const SizeWrapper = styled.div<{ $size?: string; $isImageColumn?: boolean }>`
@@ -83,16 +84,17 @@ const BorderDiv = styled.div`
   left: 0;
 `;
 
-interface EditableCellProps<T> extends CellProps {
+interface EditableCellProps<T, P = any> extends CellProps {
   normalView: ReactNode;
   dispatch: DispatchType;
 
-  editViewFn?: EditViewFn<T>;
+  editViewFn?: EditViewFn<T, P>;
   baseValue?: T;
   changeValue?: T | null;
+  columnProps?: P;
 }
 
-export function EditableCell<T extends JSONValue>(props: EditableCellProps<T>) {
+export function EditableCell<T extends JSONValue, P = any>(props: EditableCellProps<T, P>) {
   const {
     dispatch,
     normalView,
@@ -101,6 +103,7 @@ export function EditableCell<T extends JSONValue>(props: EditableCellProps<T>) {
     baseValue,
     candidateTags,
     candidateStatus,
+    columnProps,
   } = props;
   const status = _.isNil(changeValue) ? "normal" : "toSave";
   const editable = editViewFn ? props.editable : false;
@@ -126,14 +129,14 @@ export function EditableCell<T extends JSONValue>(props: EditableCellProps<T>) {
         false
       )
     );
-  }, [dispatch, baseValue, tmpValue]);
+  }, [dispatch, baseValue, tmpValue, setIsEditing]);
   const editView = useMemo(
-    () => editViewFn?.({ value, onChange, onChangeEnd }) ?? <></>,
-    [editViewFn, value, onChange, onChangeEnd]
+    () => editViewFn?.({ value, onChange, onChangeEnd, columnProps }) ?? <></>,
+    [editViewFn, value, onChange, onChangeEnd, columnProps]
   );
   const enterEditFn = useCallback(() => {
     if (editable) setIsEditing(true);
-  }, [editable]);
+  }, [editable, setIsEditing]);
 
   if (isEditing) {
     return (
