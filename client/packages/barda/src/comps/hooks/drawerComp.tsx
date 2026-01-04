@@ -154,7 +154,9 @@ let TmpDrawerComp = (function () {
       );
     }
   )
-    .setPropertyViewFn((children) => (
+    .setPropertyViewFn((children) => {
+      const isTopBom = ["top", "bottom"].includes(children.placement.getView())
+      return (
       <>
         <Section name={sectionNames.basic}>
           {children.title.propertyView({ label: trans("drawer.title") })}
@@ -163,15 +165,14 @@ let TmpDrawerComp = (function () {
             radioButton: true,
           })}
           {children.placement.propertyView({ label: trans("drawer.placement"), radioButton: true })}
-          {["top", "bottom"].includes(children.placement.getView()) && children.autoHeight.getPropertyView()}
-          {["top", "bottom"].includes(children.placement.getView()) &&
-            !children.autoHeight.getView() &&
+          {isTopBom && children.autoHeight.getPropertyView()}
+          {(!children.autoHeight.getView() || !isTopBom) &&
             children.size.propertyView({
-              label: trans("drawer.height"),
+              label: isTopBom ? trans("drawer.height") : trans("drawer.width"),
               tooltip: trans("drawer.heightTooltip"),
               placeholder: DEFAULT_WIDTH + "",
             })}
-          {(children.autoHeight.getView() === false || ["left", "right"].includes(children.placement.getView())) &&
+          {(children.autoHeight.getView() === false || !isTopBom) &&
             children.showScroll.propertyView({
               label: trans("container.showScroll"),
             })}
@@ -186,7 +187,7 @@ let TmpDrawerComp = (function () {
         <Section name={sectionNames.interaction}>{children.onEvent.getPropertyView()}</Section>
         <Section name={sectionNames.style}>{children.style.getPropertyView()}</Section>
       </>
-    ))
+    )})
     .build();
 })();
 

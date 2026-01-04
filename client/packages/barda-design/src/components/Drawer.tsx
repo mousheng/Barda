@@ -43,6 +43,7 @@ export function Drawer(props: DrawerProps) {
   return (
     <StyledDrawer
       {...otherProps}
+      size={drawerSize}
       placement={props.placement}
       resizable={
         resizable
