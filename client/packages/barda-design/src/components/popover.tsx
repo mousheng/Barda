@@ -85,6 +85,11 @@ const SimplePopover = (props: {
       onOpenChange={handleOpenChange}
       placement="left"
       overlayStyle={{ width: "310px" }}
+      styles={{
+        container:{
+          padding: 0
+        }
+      }}
     >
       {props.children}
     </Popover>
