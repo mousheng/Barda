@@ -23,7 +23,7 @@ import { allowClearPropertyView, hiddenPropertyView } from "comps/utils/property
 import { trans } from "i18n";
 import _ from "lodash";
 import { pinyin } from "pinyin-pro";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { UICompBuilder, withDefault } from "../../generators";
 import { withMethodExposing } from "../../generators/withMethodExposing";
@@ -214,6 +214,11 @@ let AutoCompleteCompBase = (function () {
       setPYCache(temp);
     }, [props.items]);
 
+    const debouncedSubmit = useMemo(
+      () => _.debounce(() => props.onEvent("submit"), 100),
+      [props.onEvent]
+    );
+
     const onChange = (value: unknown) => {
       props.valueInItems.onChange(false);
       setvalidateState(textInputValidate(getTextInputValidate()));
@@ -233,11 +238,11 @@ let AutoCompleteCompBase = (function () {
       props.valueInItems.onChange(true);
       props.value.onChange(option[valueOrLabel]);
       props.selectObject.onChange(option);
-      props.onEvent("submit");
+      debouncedSubmit();
     };
 
     const onPressEnter = () => {
-      props.onEvent("submit");
+      debouncedSubmit();
     };
 
     const filterOption = (
@@ -309,7 +314,7 @@ let AutoCompleteCompBase = (function () {
               status={getValidate(validateState)}
               onSearch={(value) => {
                 if (value.length > 0) {
-                  props.onEvent("submit");
+                  debouncedSubmit();
                 }
               }}
             />
