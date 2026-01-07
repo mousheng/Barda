@@ -8,7 +8,7 @@ import {
 import { useExtensions } from "base/codeEditor/extensions";
 import { BoolControl } from "comps/controls/boolControl";
 import { jsonValueExposingStateControl } from "comps/controls/codeStateControl";
-import { ChangeEventHandlerControl } from "comps/controls/eventHandlerControl";
+import { ChangeBlurEventHandlerControl } from "comps/controls/eventHandlerControl";
 import { LabelControl } from "comps/controls/labelControl";
 import { styleControl } from "comps/controls/styleControl";
 import { JsonEditorStyle } from "comps/controls/styleControlConstants";
@@ -71,7 +71,7 @@ function fixOldDataSecond(oldData: any) {
 
 const childrenMap = {
   value: jsonValueExposingStateControl("value", defaultData),
-  onEvent: ChangeEventHandlerControl,
+  onEvent: ChangeBlurEventHandlerControl,
   label: withDefault(LabelControl, { position: "column" }),
   style: styleControl(JsonEditorStyle),
   autoFormat: BoolControl,
@@ -137,6 +137,7 @@ let JsonEditorTmpComp = (function () {
                   });
               }
           }
+          props.onEvent("blur");
         }
       },
       onChange: (state) => {

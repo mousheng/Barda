@@ -424,6 +424,8 @@ export const ButtonEventHandlerControl = eventHandlerControl([clickEvent] as con
 
 export const ChangeEventHandlerControl = eventHandlerControl([changeEvent] as const);
 
+export const ChangeBlurEventHandlerControl = eventHandlerControl([changeEvent, blurEvent] as const);
+
 export const SelectEventHandlerControl = eventHandlerControl([
   changeEvent,
   focusEvent,
