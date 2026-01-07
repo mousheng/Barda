@@ -1359,6 +1359,8 @@ export const zh = {
         valueFontSize: "数值字体大小",
         iconBackground: "图标背景色",
         hoverBackground: "悬停背景色",
+        duration: "持续时间",
+        durationTooltip: "动画持续时间，以秒为单位",
     },
     jsonExplorer: {
         indent: "缩进",

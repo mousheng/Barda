@@ -22,7 +22,7 @@ const sizeOptions = [
   { label: trans("statisticCard.sizeCompact"), value: "compact" },
 ] as const;
 
-type StatisticCardSize = (typeof sizeOptions)[number]["value"];
+type StatisticCardSize = typeof sizeOptions[number]["value"];
 
 const StatisticCardWrapper = styled.div<{
   $style: StatisticCardStyleType;
@@ -109,6 +109,7 @@ const childrenMap = {
   enableAnimation: withDefault(BoolControl, false),
   onEvent: ButtonEventHandlerControl,
   style: styleControl(StatisticCardStyle),
+  duration: withDefault(NumberControl, 1.5),
 };
 
 // 动画值组件
@@ -117,6 +118,7 @@ const AnimatedValue = (props: {
   enableAnimation: boolean;
   precision: number;
   valueStyle: React.CSSProperties;
+  duration: number;
 }) => {
   const formattedValue = props.precision > 0 ? props.value.toFixed(props.precision) : props.value;
 
@@ -129,7 +131,7 @@ const AnimatedValue = (props: {
       <CountUp
         start={0}
         end={props.value}
-        duration={2}
+        duration={props.duration}
         decimals={props.precision}
         separator=","
         style={props.valueStyle}
@@ -138,16 +140,10 @@ const AnimatedValue = (props: {
   );
 };
 
-const StatisticCardView = (
-  props: RecordConstructorToView<typeof childrenMap> & { $hasClickHandler?: boolean }
-) => {
+const StatisticCardView = (props: RecordConstructorToView<typeof childrenMap> & { $hasClickHandler?: boolean }) => {
   const customPadding = props.style.padding_UNIT?.trim();
   console.log(customPadding);
-  const padding = customPadding && customPadding.length > 0
-    ? customPadding
-    : props.size === "compact"
-    ? "9px"
-    : "16px";
+  const padding = customPadding && customPadding.length > 0 ? customPadding : props.size === "compact" ? "9px" : "16px";
 
   return (
     <StatisticCardWrapper
@@ -176,6 +172,7 @@ const StatisticCardView = (
                     enableAnimation={props.enableAnimation}
                     precision={props.precision}
                     valueStyle={{ color: props.style.valueColor }}
+                    duration={props.duration}
                   />
                 );
               }
@@ -236,6 +233,11 @@ let StatisticCardBasicComp = (function () {
             label: trans("statisticCard.enableAnimation"),
             tooltip: trans("statisticCard.enableAnimationTooltip"),
           })}
+          {children.enableAnimation.getView() &&
+            children.duration.propertyView({
+              label: trans("statisticCard.duration"),
+              tooltip: trans("statisticCard.durationTooltip"),
+            })}
         </Section>
         <Section name={sectionNames.interaction}>{children.onEvent.propertyView()}</Section>
         <Section name={sectionNames.layout}>{hiddenPropertyView(children)}</Section>
@@ -245,6 +247,4 @@ let StatisticCardBasicComp = (function () {
     .build();
 })();
 
-export const StatisticCardComp = withExposingConfigs(StatisticCardBasicComp, [
-  NameConfigHidden,
-]);
+export const StatisticCardComp = withExposingConfigs(StatisticCardBasicComp, [NameConfigHidden]);

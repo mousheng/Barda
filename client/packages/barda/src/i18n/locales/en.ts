@@ -1378,6 +1378,8 @@ export const en = {
     valueFontSize: "Value Font Size",
     iconBackground: "Icon Background",
     hoverBackground: "Hover Background",
+    duration: "Duration",
+    durationTooltip: "The duration of the animation, in seconds",
   },
   jsonExplorer: {
     indent: "Indent",
