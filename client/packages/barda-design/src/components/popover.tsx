@@ -3,6 +3,7 @@ import { EditorContext } from "barda/src/comps/editorState";
 import { ActiveTextColor, GreyTextColor } from "constants/style";
 import { trans } from "i18n/design";
 import { PointIcon } from "icons";
+import _ from "lodash";
 import { Children, cloneElement, MouseEvent, ReactNode, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { SuspensionBox } from "./SuspensionBox";
@@ -127,7 +128,7 @@ const CustomPopover = (props: {
       open={visible}
       onOpenChange={setVisible}
       placement={props.type === "query" ? "top" : "left"}
-      overlayStyle={{ width: "310px" }}
+      styles={{root:{width: 310},container: {padding: 0}}}
       align={{
         offset: [-12, 0, 0, 0],
       }}
@@ -163,6 +164,7 @@ const EditPopover = (props: EditPopoverProps) => {
     rename,
     copy,
     del,
+    styles,
     ...popoverProps
   } = props;
   const [visible, setVisible] = useState(false);
@@ -185,6 +187,11 @@ const EditPopover = (props: EditPopoverProps) => {
       e.stopPropagation();
     },
   });
+
+  const mergedStyles = _.merge(
+    { container: { padding: 0 } },
+    styles
+  ) as any;
 
   return (
     <Popover
@@ -258,6 +265,7 @@ const EditPopover = (props: EditPopoverProps) => {
       align={{
         offset: [8, -8, 0, 0],
       }}
+      styles={mergedStyles}
       {...popoverProps}
     >
       {newChildren}

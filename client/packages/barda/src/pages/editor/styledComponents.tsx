@@ -137,4 +137,7 @@ export const CollapseWrapper = styled.div<{ $clientX?: number }>`
   .simplebar-content > div {
     padding: 0;
   }
+  .ant-collapse-body {
+    padding: 0px!important;
+  }
 `;

@@ -67,6 +67,9 @@ const ShowChildren = styled.div<{ $show?: string; $noMargin?: boolean }>`
   margin-left: ${(props) => (props.$noMargin ? 0 : 16)}px;
   padding-bottom: 16px;
   padding-right: ${(props) => (props.$noMargin ? 0 : "16px")};
+  .ant-collapse-body {
+    padding: 0px!important;
+  }
 `;
 
 interface ISectionConfig<T> {

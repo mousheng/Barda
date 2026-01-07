@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconDefinition } from "@fortawesome/free-regular-svg-icons";
 import { Popover } from "antd";
-import { ActionType } from '@rc-component/trigger/lib/interface';
+import { ActionType } from "@rc-component/trigger/lib/interface";
 import { TacoInput } from "components/tacoInput";
 import { Tooltip } from "components/toolTip";
 import { trans } from "i18n/design";
@@ -168,11 +168,7 @@ export function useIcon(value?: string) {
   return icon;
 }
 
-function search(
-  allIcons: Record<string, Icon>,
-  searchText: string,
-  searchKeywords?: Record<string, string>
-) {
+function search(allIcons: Record<string, Icon>, searchText: string, searchKeywords?: Record<string, string>) {
   const tokens = searchText
     .toLowerCase()
     .split(/\s+/g)
@@ -201,10 +197,7 @@ const IconPopup = (props: {
 }) => {
   const [searchText, setSearchText] = useState("");
   const [allIcons, setAllIcons] = useState<Record<string, Icon>>({});
-  const searchResults = useMemo(
-    () => search(allIcons, searchText, props.searchKeywords),
-    [searchText, allIcons]
-  );
+  const searchResults = useMemo(() => search(allIcons, searchText, props.searchKeywords), [searchText, allIcons]);
   const dragRef = useRef(null);
   const onChangeRef = useRef(props.onChange);
   onChangeRef.current = props.onChange;
@@ -219,13 +212,7 @@ const IconPopup = (props: {
     (p: ListRowProps) => (
       <IconRow key={p.key} style={p.style}>
         {searchResults.slice(p.index * columnNum, (p.index + 1) * columnNum).map(([key, icon]) => (
-          <Tooltip
-            key={key}
-            title={icon.title}
-            placement="bottom"
-            align={{ offset: [0, -7, 0, 0] }}
-            destroyOnHidden
-          >
+          <Tooltip key={key} title={icon.title} placement="bottom" align={{ offset: [0, -7, 0, 0] }} destroyOnHidden>
             <IconItemContainer
               tabIndex={0}
               onClick={() => {
@@ -282,7 +269,10 @@ export const IconSelectBase = (props: {
   searchKeywords?: Record<string, string>;
 }) => {
   const { setVisible, parent } = props;
-  const styles = useRef({ body: { border: "none", boxShadow: "none", background: "transparent" } });
+  const styles = useRef({
+    body: { border: "none", boxShadow: "none", background: "transparent" },
+    container: { padding: 0 },
+  });
   const align = useMemo(() => ({ offset: [props.leftOffset ?? 0, 0, 0, 0] }), [props.leftOffset]);
   const onClose = useCallback(() => setVisible?.(false), [setVisible]);
   const getPopupContainer = useCallback(() => parent || document.body, [parent]);

@@ -24,7 +24,6 @@ import { getGlobalSettings } from "comps/utils/globalSettings";
 import { fetchJSLibrary } from "util/jsLibraryUtils";
 import { evalFunc } from "barda-core";
 import { messageInstance } from "components/GlobalInstances";
-import { DefaultOptionType } from "antd/es/select";
 
 const AdvancedSettingContent = styled.div`
   max-width: 840px;
@@ -154,8 +153,7 @@ export function AdvancedSetting() {
             placeholder={trans("advanced.defaultHomePlaceholder")}
             allowClear={true}
             showSearch={true}
-            style={{ width: "264px", height: "32px", marginBottom: 12 }}
-            styles={{ popup: { root: { width: "264px" } } }}
+            styles={{ root: { width: 264, height: 32, marginBottom: 12} }}
             value={settings.defaultHomePage}
             onChange={(value: string) => {
               setSettings((v) => ({ ...v, defaultHomePage: value }));

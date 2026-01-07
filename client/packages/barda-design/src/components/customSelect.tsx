@@ -2,6 +2,7 @@ import { Select as AntdSelect, SelectProps as AntdSelectProps } from "antd";
 import { ReactComponent as PackUpIcon } from "icons/icon-Pack-up.svg";
 import styled from "styled-components";
 import React from "react";
+import _ from "lodash";
 
 const SelectWrapper = styled.div<{ $border?: boolean }>`
     .ant-select-suffix {
@@ -11,6 +12,8 @@ const SelectWrapper = styled.div<{ $border?: boolean }>`
     .ant-select-open {
       .ant-select-suffix {
       transform: rotate(0deg);
+      display: flex;
+      align-items: center;
       svg g path {
         fill: #4965f2;
       }
@@ -94,30 +97,21 @@ function CustomSelect(props: CustomSelectProps & AntdSelectProps) {
     className,
     border,
     classNames,
+    styles,
     ...restProps
   } = props;
   
-  const mergedClassNames =
-    classNames && typeof classNames === "object"
-      ? {
-          ...classNames,
-          popup: {
-            root: classNames.popup?.root || "custom-ant-select-dropdown",
-            ...(typeof classNames.popup === "object" ? classNames.popup : {}),
-          },
-        }
-      : {
-          popup: {
-            root: "custom-ant-select-dropdown",
-          },
-        };
+  const mergedStyles = _.merge(
+    { root: { height: 32 } },
+    styles
+  ) as any;
 
   return (
     <SelectWrapper className={className} ref={innerRef} $border={border}>
       <AntdSelect
-        classNames={mergedClassNames}
         popupMatchSelectWidth={false}
         suffixIcon={<PackUpIcon />}
+        styles={mergedStyles}
         {...restProps}
       >
         {children}

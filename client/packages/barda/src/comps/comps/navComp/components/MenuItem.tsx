@@ -25,6 +25,10 @@ const MenuItemWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  & > div:last-child > :first-child {
+    border: none!important;
+  }
 `;
 
 const MenuItemContent = styled.div`

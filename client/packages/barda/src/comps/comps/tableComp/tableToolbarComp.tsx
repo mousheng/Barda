@@ -742,7 +742,7 @@ function ToolbarPopover(props: {
   return (
     <Popover
       open={visible}
-      overlayStyle={{ pointerEvents: "auto" }}
+      styles={{root:{pointerEvents: "auto"}, container:{padding: 0}}}
       content={
         <div
           ref={popOverRef}
