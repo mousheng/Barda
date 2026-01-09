@@ -8,23 +8,23 @@ import { buildQueryCommand, FunctionProperty, toQueryView } from "./queryCompUti
 import { trans } from "@barda/i18n";
 
 const CommandOptions = [
-  { label: "Find Document(s)", value: "FIND" },
-  { label: "Insert Document(s)", value: "INSERT" },
-  { label: "Update Document(s)", value: "UPDATE" },
-  { label: "Delete Document(s)", value: "DELETE" },
-  { label: "Count", value: "COUNT" },
-  { label: "Distinct", value: "DISTINCT" },
-  { label: "Aggregate", value: "AGGREGATE" },
-  { label: "Raw", value: "RAW" },
+  { label: trans("query.findDocs"), value: "FIND" },
+  { label: trans("query.insertDocs"), value: "INSERT" },
+  { label: trans("query.updateDocs"), value: "UPDATE" },
+  { label: trans("query.deleteDocs"), value: "DELETE" },
+  { label: trans("query.count"), value: "COUNT" },
+  { label: trans("query.distinct"), value: "DISTINCT" },
+  { label: trans("query.aggregate"), value: "AGGREGATE" },
+  { label: trans("query.raw"), value: "RAW" },
 ] as const;
 
 const LimitOptions = [
   {
-    label: "Single Document",
+    label: trans("query.sigleDoc"),
     value: "SINGLE",
   },
   {
-    label: "All Matching Documents",
+    label: trans("query.allDocs"),
     value: "ALL",
   },
 ] as const;
@@ -61,7 +61,7 @@ const LimitInputField = withPropertyViewFn(ParamsPositiveNumberControl, (comp) =
 );
 
 const LimitDropdownField = withPropertyViewFn(dropdownControl(LimitOptions, "SINGLE"), (comp) => (
-  <>{comp.propertyView({ label: "Limit", placement: "bottom" })}</>
+  <>{comp.propertyView({ label: trans("query.limit"), placement: "bottom" })}</>
 ));
 
 const CommandMap: Record<
@@ -100,7 +100,7 @@ const CommandMap: Record<
   INSERT: buildQueryCommand({
     documents: withPropertyViewFn(ParamsJsonControl, (comp) =>
       comp.propertyView({
-        label: "Documents",
+        label: trans("query.documents"),
         placement: "bottom",
         placeholder: `[{ 
     _id: 1, 
@@ -115,7 +115,7 @@ const CommandMap: Record<
     query: QueryField,
     update: withPropertyViewFn(ParamsJsonControl, (comp) =>
       comp.propertyView({
-        label: "Update",
+        label: trans("query.update"),
         placement: "bottom",
         placeholder: `{
   $inc : {score: 1}
@@ -165,7 +165,7 @@ const CommandMap: Record<
   RAW: buildQueryCommand({
     command: withPropertyViewFn(ParamsJsonControl, (comp) =>
       comp.propertyView({
-        label: "Command",
+        label: trans("query.command"),
         placement: "bottom",
         placeholder: `[
   { $project: { tags: 1 } }, { $unwind: "$tags" }, 
