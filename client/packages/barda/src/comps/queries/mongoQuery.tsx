@@ -3,12 +3,7 @@ import { includes } from "lodash";
 import { CompAction, CompConstructor } from "barda-core";
 import { Dropdown, ValueFromOption } from "barda-design";
 import { dropdownControl } from "../controls/dropdownControl";
-import {
-  ParamsJsonControl,
-  ParamsPositiveNumberControl,
-  ParamsStringControl,
-  ValueFunction,
-} from "../controls/paramsControl";
+import { ParamsJsonControl, ParamsPositiveNumberControl, ParamsStringControl, ValueFunction } from "../controls/paramsControl";
 import { buildQueryCommand, FunctionProperty, toQueryView } from "./queryCompUtils";
 import { trans } from "@barda/i18n";
 
@@ -31,6 +26,17 @@ const LimitOptions = [
   {
     label: "All Matching Documents",
     value: "ALL",
+  },
+] as const;
+
+const UpsertOptions = [
+  {
+    label: "false",
+    value: "false",
+  },
+  {
+    label: "true",
+    value: "true",
   },
 ] as const;
 
@@ -119,6 +125,9 @@ const CommandMap: Record<
       })
     ),
     limit: LimitDropdownField,
+    upsert: withPropertyViewFn(dropdownControl(UpsertOptions, "false"), (comp) => (
+      <>{comp.propertyView({label: trans("query.upsert"), tooltip: trans("query.upsertDes"), placement: "bottom" })}</>
+    )),
   }),
   DELETE: buildQueryCommand({
     query: QueryField,

@@ -151,4 +151,9 @@ public class MongoFieldName {
      */
     public static final String UPDATE_LIMIT = FIELD_PREFIX + "." + LIMIT;
 
+    /**
+     * 用于 update 操作的 upsert 选项。
+     */
+    public static final String UPDATE_UPSERT = FIELD_PREFIX + "." + "upsert";
+
 }

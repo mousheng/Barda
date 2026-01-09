@@ -594,6 +594,8 @@ export const en = {
     skip: "Skip",
     sort: "Sort",
     sortDes: "1: ascending order; 0: descending order",
+    upsert: "Upsert",
+    upsertDes: "Insert a new document if no documents match the query criteria; update documents if they match",
     arrayPipelines: "Array pipelines",
     httpMethod: "Http Method",
     body: "Body",

@@ -19,6 +19,7 @@ package com.barda.plugin.mongo.commands;
 import static com.barda.plugin.mongo.constants.MongoFieldName.UPDATE_LIMIT;
 import static com.barda.plugin.mongo.constants.MongoFieldName.UPDATE_OPERATION;
 import static com.barda.plugin.mongo.constants.MongoFieldName.UPDATE_QUERY;
+import static com.barda.plugin.mongo.constants.MongoFieldName.UPDATE_UPSERT;
 import static com.barda.sdk.plugin.common.QueryExecutionUtils.getValueSafelyFromFormData;
 import static com.barda.sdk.plugin.common.QueryExecutionUtils.validConfigurationPresentInFormData;
 
@@ -61,6 +62,12 @@ public class UpdateMany extends MongoCommand {
     private Boolean multi = Boolean.FALSE;
 
     /**
+     * 是否启用 upsert 模式。
+     * 默认为 false，表示如果查询条件不匹配则不插入新文档。
+     */
+    private Boolean upsert = Boolean.FALSE;
+
+    /**
      * 构造函数，用于从表单数据中提取并初始化 UpdateMany 对象的属性。
      *
      * @param formData 表单数据
@@ -81,6 +88,16 @@ public class UpdateMany extends MongoCommand {
             String limitOption = (String) getValueSafelyFromFormData(formData, UPDATE_LIMIT);
             if ("ALL".equals(limitOption)) {
                 this.multi = Boolean.TRUE;
+            }
+        }
+
+        // 读取 upsert 选项
+        if (validConfigurationPresentInFormData(formData, UPDATE_UPSERT)) {
+            Object upsertValue = getValueSafelyFromFormData(formData, UPDATE_UPSERT);
+            if (upsertValue instanceof Boolean) {
+                this.upsert = (Boolean) upsertValue;
+            } else if (upsertValue instanceof String) {
+                this.upsert = Boolean.parseBoolean((String) upsertValue);
             }
         }
     }
@@ -130,6 +147,7 @@ public class UpdateMany extends MongoCommand {
         update.put("q", queryDocument);
         update.put("u", updateDocument);
         update.put("multi", multi);
+        update.put("upsert", upsert);
 
         List<Document> updates = new ArrayList<>();
         updates.add(update);

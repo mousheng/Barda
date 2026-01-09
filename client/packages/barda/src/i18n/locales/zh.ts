@@ -581,6 +581,8 @@ export const zh = {
         skip: "跳过",
         sort: "排序",
         sortDes: "1: 升序; 0: 降序",
+        upsert: "Upsert",
+        upsertDes: "如果查询条件不匹配，则插入新文档；如果匹配，则更新文档",
         arrayPipelines: "管道",
         httpMethod: "请求方式",
         body: "请求体",
