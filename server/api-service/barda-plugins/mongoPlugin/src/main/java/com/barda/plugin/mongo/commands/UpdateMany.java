@@ -140,8 +140,31 @@ public class UpdateMany extends MongoCommand {
         document.put("update", getCollection());
 
         Document queryDocument = MongoQueryUtils.parseSafely("Query", this.query);
-
         Document updateDocument = MongoQueryUtils.parseSafely("Update", this.update);
+
+        // upsert 时，将 query 中的简单等值条件合并到 update 中
+        if (Boolean.TRUE.equals(upsert)) {
+            Document eqFilters = new Document();
+            queryDocument.forEach((key, value) -> {
+                // 只提取简单等值条件：字段名不以 $ 开头，且值不是 Document（避免包含操作符）
+                if (!key.startsWith("$") && !(value instanceof Document)) {
+                    eqFilters.put(key, value);
+                }
+            });
+
+            if (!eqFilters.isEmpty()) {
+                boolean hasUpdateOperator = updateDocument.keySet().stream().anyMatch(k -> k.startsWith("$"));
+                if (hasUpdateOperator) {
+                    // 使用 $setOnInsert 确保只在插入时包含查询条件
+                    Document setOnInsert = (Document) updateDocument.getOrDefault("$setOnInsert", new Document());
+                    eqFilters.forEach(setOnInsert::putIfAbsent);
+                    updateDocument.put("$setOnInsert", setOnInsert);
+                } else {
+                    // 替换文档模式，直接合并查询条件
+                    eqFilters.forEach(updateDocument::putIfAbsent);
+                }
+            }
+        }
 
         Document update = new Document();
         update.put("q", queryDocument);
