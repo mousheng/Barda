@@ -11,16 +11,8 @@ import { getUser } from "redux/selectors/usersSelectors";
 import { getBottomResIcon } from "@barda/util/bottomResUtils";
 import { trans } from "i18n";
 import { DatasourceType, ResourceType } from "@barda/constants/queryConstants";
-import {
-  BARDA_API_ID,
-  BARDA_API_INFO,
-  QUICK_GRAPHQL_ID,
-  QUICK_REST_API_ID,
-} from "constants/datasourceConstants";
-import {
-  apiPluginsForQueryLibrary,
-  databasePlugins,
-} from "@barda/constants/datasourceConstants";
+import { BARDA_API_ID, BARDA_API_INFO, QUICK_GRAPHQL_ID, QUICK_REST_API_ID } from "constants/datasourceConstants";
+import { apiPluginsForQueryLibrary, databasePlugins } from "@barda/constants/datasourceConstants";
 import { QueryContext } from "util/context/QueryContext";
 import { messageInstance } from "barda-design";
 
@@ -140,8 +132,9 @@ export const ResourceDropdown = (props: ResourceDropdownProps) => {
           minWidth: "120px",
           maxWidth: "100%",
         }}
-        showSearch={true}
-        optionFilterProp={"label"}
+        showSearch={{
+          optionFilterProp: "label",
+        }}
         maxTagCount={"responsive" as const}
         popupMatchSelectWidth={false}
         value={JSON.stringify(props.selectedResource)}
@@ -156,7 +149,7 @@ export const ResourceDropdown = (props: ResourceDropdownProps) => {
           }
           props.changeResource(datasourceId, datasourceType);
         }}
-        onDropdownVisibleChange={onDropdownVisibleChange}
+        onOpenChange={onDropdownVisibleChange}
         popupRender={
           Object.keys(dataSourceTypesMap).length > 0
             ? (menu) => (
@@ -212,12 +205,7 @@ export const ResourceDropdown = (props: ResourceDropdownProps) => {
                 label={info.datasource.name + dataSourceTypesMap[info.datasource.type]?.name}
               >
                 <SelectOptionContains>
-                  {datasourceType &&
-                    getBottomResIcon(
-                      datasourceType,
-                      "middle",
-                      info.datasource.pluginDefinition?.icon
-                    )}
+                  {datasourceType && getBottomResIcon(datasourceType, "middle", info.datasource.pluginDefinition?.icon)}
                   <div
                     style={{
                       display: "flex",
@@ -227,9 +215,7 @@ export const ResourceDropdown = (props: ResourceDropdownProps) => {
                       marginRight: "8px",
                     }}
                   >
-                    <SelectOptionLabel style={{ flexGrow: 0 }}>
-                      {info.datasource.name}
-                    </SelectOptionLabel>
+                    <SelectOptionLabel style={{ flexGrow: 0 }}>{info.datasource.name}</SelectOptionLabel>
                     {`(${dataSourceTypesMap[info.datasource.type]?.name})`}
                   </div>
                   <DatasourceModal
