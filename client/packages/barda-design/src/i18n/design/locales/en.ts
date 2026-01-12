@@ -57,4 +57,9 @@ export const en = {
   container: {
     hintPlaceHolder: "Drag components from the right panel",
   },
+  keyValueList: {
+    batchAdd: "Batch Add",
+    batchAddTitle: "Batch Add",
+    batchAddPlaceholder: "Paste HTTP headers here, one per line. Example:\nAccept: application/json, text/plain, */*\nAccept-Encoding: gzip, deflate, br, zstd",
+  },
 };

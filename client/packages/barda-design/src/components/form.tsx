@@ -418,6 +418,11 @@ const FormKeyValueList = (props: any) => {
         items.splice(index, 1);
         onChange([...items]);
       }}
+      getKeyValuePairs={() => items}
+      onBatchAdd={(newItems) => {
+        // 替换整个列表而不是追加
+        onChange(newItems);
+      }}
     />
   );
 };

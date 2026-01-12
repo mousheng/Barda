@@ -117,10 +117,11 @@ const ContentTypeKey = "Content-Type";
 const showBodyConfig = (children: ChildrenType) => {
   switch (children.bodyType.getView() as BodyTypeValue) {
     case "application/x-www-form-urlencoded":
-      return children.bodyFormData.propertyView({});
+      return children.bodyFormData.propertyView({ type: "headers" });
     case "multipart/form-data":
       return children.bodyFormData.propertyView({
         showType: true,
+        type: "headers",
         typeTooltip: trans("httpQuery.bodyFormDataTooltip", {
           type: `"${trans("httpQuery.file")}"`,
           object: "{ data: base64 string, name: string }",

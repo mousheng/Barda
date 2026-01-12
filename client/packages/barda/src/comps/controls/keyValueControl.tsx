@@ -8,6 +8,7 @@ import { StringControl } from "./codeControl";
 import { ControlParams } from "./controlParams";
 import { dropdownControl } from "./dropdownControl";
 import { ParamsControlType, ParamsStringControl } from "./paramsControl";
+import { CodeEditor } from "base/codeEditor";
 
 const KeyValueWrapper = styled.div`
   display: flex;
@@ -42,11 +43,29 @@ const ValueWrapper = styled.div<{ $flexBasics?: number }>`
   flex-basis: ${(props) => (props.$flexBasics ? props.$flexBasics + "px" : "0%")};
 `;
 
+function SimpleJsonEditor(props: { value: string; onChange: (value: string) => void; placeholder?: string }) {
+  return (
+    <CodeEditor
+      value={props.value}
+      language="json"
+      codeType="PureJSON"
+      onChange={(state) => props.onChange(state.doc.toString())}
+      placeholder={props.placeholder}
+      bordered
+      disableCard
+      expandable={false}
+      showLineNum
+      styleName="medium"
+    />
+  );
+}
+
 export type KeyValueControlParams = ControlParams & {
   showType?: boolean;
   typeTooltip?: ReactNode;
   keyFlexBasics?: number;
   valueFlexBasics?: number;
+  type?: "headers" | "json" | "url";
 };
 
 /**
@@ -136,6 +155,37 @@ export function keyValueListControl<T extends OptionsType>(
             list={this.getView().map((child) => child.propertyView(params))}
             onAdd={() => this.dispatch(this.pushAction({}))}
             onDelete={(item, index) => this.dispatch(this.deleteAction(index))}
+            type={params.type}
+            jsonEditorComponent={params.type === "json" ? SimpleJsonEditor : undefined}
+            getKeyValuePairs={() => {
+              return this.getView().map((child) => {
+                let key: string;
+                let value: string;
+                if (controlType === "params") {
+                  key = String((child.children.key as InstanceType<ParamsControlType>).toJsonValue() ?? "");
+                  value = String((child.children.value as InstanceType<ParamsControlType>).toJsonValue() ?? "");
+                } else {
+                  key = String(child.children.key.getView());
+                  value = String(child.children.value.getView());
+                }
+                
+                return { key, value };
+              });
+            }}
+            onBatchAdd={(items) => {
+              // 先清空现有列表
+              const currentLength = this.getView().length;
+              for (let i = currentLength - 1; i >= 0; i--) {
+                this.dispatch(this.deleteAction(i));
+              }
+              // 添加新的项
+              items.forEach((item) => {
+                this.dispatch(this.pushAction({
+                  key: item.key,
+                  value: item.value,
+                }));
+              });
+            }}
           />
         </ControlPropertyViewWrapper>
       );

@@ -55,12 +55,14 @@ class OpenAppAction extends OpenAppInitAction {
           {this.children.queryParam.propertyView({
             label: trans("aggregation.queryParam"),
             layout: "vertical",
+            type: "url",
           })}
         </BranchDiv>
         <BranchDiv>
           {this.children.hashParam.propertyView({
             label: trans("aggregation.hashParam"),
             layout: "vertical",
+            type: "url",
           })}
         </BranchDiv>
       </>

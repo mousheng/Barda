@@ -33,12 +33,14 @@ export const OpenAppPageAction = new MultiCompBuilder(childrenMap, (props) => {
           {children.query.propertyView({
             label: trans("eventHandler.queryParams"),
             layout: "vertical",
+            type: "url"
           })}
         </BranchDiv>
         <BranchDiv>
           {children.hash.propertyView({
             label: trans("eventHandler.hashParams"),
             layout: "vertical",
+            type: "url"
           })}
         </BranchDiv>
         <BranchDiv $type="switch">

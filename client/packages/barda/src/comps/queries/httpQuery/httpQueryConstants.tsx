@@ -68,7 +68,7 @@ export const HttpHeaderPropertyView = (props: {
     <QueryConfigWrapper>
       <QueryConfigLabel>{trans("query.headers")}</QueryConfigLabel>
       <QueryConfigItemWrapper>
-        {props.comp.children.headers.propertyView({ keyFlexBasics: 184, valueFlexBasics: 232 })}
+        {props.comp.children.headers.propertyView({ keyFlexBasics: 184, valueFlexBasics: 232, type: "headers" })}
       </QueryConfigItemWrapper>
     </QueryConfigWrapper>
   );
@@ -81,7 +81,7 @@ export const HttpParametersPropertyView = (props: {
     <QueryConfigWrapper>
       <QueryConfigLabel>{trans("query.Parameters")}</QueryConfigLabel>
       <QueryConfigItemWrapper>
-        {props.comp.children.params.propertyView({ keyFlexBasics: 184, valueFlexBasics: 232 })}
+        {props.comp.children.params.propertyView({ keyFlexBasics: 184, valueFlexBasics: 232, type: "json" })}
       </QueryConfigItemWrapper>
     </QueryConfigWrapper>
   );

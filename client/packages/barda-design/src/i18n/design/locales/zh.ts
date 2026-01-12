@@ -57,5 +57,10 @@ export const zh = {
     container: {
         hintPlaceHolder: "从右侧面板拖动组件",
     },
+    keyValueList: {
+        batchAdd: "批量添加",
+        batchAddTitle: "批量添加",
+        batchAddPlaceholder: "请粘贴HTTP头部，每行一个。示例：\nAccept: application/json, text/plain, */*\nAccept-Encoding: gzip, deflate, br, zstd",
+    },
 };
 
