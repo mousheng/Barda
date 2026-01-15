@@ -1,18 +1,17 @@
 /**
  * Copyright 2021 Appsmith Inc.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * <p>
  */
 package com.barda.plugin.mongo.commands;
 
@@ -38,40 +37,28 @@ import lombok.Setter;
 
 /**
  * UpdateMany 类表示 MongoDB 的 updateMany 命令。
- * 它继承自 MongoCommand 类，并使用 Lombok 注解来生成 getter、setter 和无参数的构造函数。
+ *
+ * 行为已对齐 MongoDB Server（Update + upsert）：
+ * - upsert 时仅从 query 中提取「等值匹配字段路径」
+ * - 忽略任何包含操作符（$gte / $in / $or / $elemMatch / array 等）的条件
  */
 @Getter
 @Setter
 @NoArgsConstructor
 public class UpdateMany extends MongoCommand {
 
-    /**
-     * 查询条件。
-     */
+    /** 查询条件 */
     private String query;
 
-    /**
-     * 更新操作。
-     */
+    /** 更新操作 */
     private String update;
 
-    /**
-     * 是否更新多个文档。
-     * 默认为 false，表示只更新一个文档。
-     */
+    /** 是否更新多个文档 */
     private Boolean multi = Boolean.FALSE;
 
-    /**
-     * 是否启用 upsert 模式。
-     * 默认为 false，表示如果查询条件不匹配则不插入新文档。
-     */
+    /** 是否启用 upsert */
     private Boolean upsert = Boolean.FALSE;
 
-    /**
-     * 构造函数，用于从表单数据中提取并初始化 UpdateMany 对象的属性。
-     *
-     * @param formData 表单数据
-     */
     public UpdateMany(Map<String, Object> formData) {
         super(formData);
 
@@ -129,38 +116,84 @@ public class UpdateMany extends MongoCommand {
     }
 
     /**
-     * 将 UpdateMany 对象解析为 MongoDB 命令的 Document 表示形式。
+     * MongoDB Server 等价逻辑：
+     * 从 query 中提取 upsert 插入文档所需的等值字段（FieldPath → Scalar）
      *
-     * @return Document 表示形式的 MongoDB 命令
+     * 对齐源码：
+     * - MatchExpression::getEqualityMatches
+     * - UpdateDriver::populateDocumentWithQueryFields
      */
+    private void extractMongoUpsertEqualities(
+            Document source,
+            Document out,
+            String prefix
+    ) {
+        for (Map.Entry<String, Object> entry : source.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            // $ 开头的一律是操作符，不可能是等值
+            if (key.startsWith("$")) {
+                continue;
+            }
+
+            String fullPath = (prefix == null) ? key : prefix + "." + key;
+
+            if (value instanceof Document) {
+                Document subDoc = (Document) value;
+
+                // operator-style document（如 {$gte: 1}）
+                boolean isOperatorDoc = subDoc.keySet()
+                        .stream()
+                        .anyMatch(k -> k.startsWith("$"));
+
+                if (isOperatorDoc) {
+                    // MongoDB Server：该路径无等值匹配
+                    continue;
+                }
+
+                // 嵌套文档，继续向下构造 FieldPath
+                extractMongoUpsertEqualities(subDoc, out, fullPath);
+                continue;
+            }
+
+            // MongoDB Server：数组等值不参与 upsert 插入构造
+            if (value instanceof List) {
+                continue;
+            }
+
+            // 标量等值匹配
+            out.put(fullPath, value);
+        }
+    }
+
     @Override
     public Document parseCommand() {
         Document document = new Document();
-
         document.put("update", getCollection());
 
         Document queryDocument = MongoQueryUtils.parseSafely("Query", this.query);
         Document updateDocument = MongoQueryUtils.parseSafely("Update", this.update);
 
-        // upsert 时，将 query 中的简单等值条件合并到 update 中
+        // ===== MongoDB Server 行为：upsert 等值字段合并 =====
         if (Boolean.TRUE.equals(upsert)) {
             Document eqFilters = new Document();
-            queryDocument.forEach((key, value) -> {
-                // 只提取简单等值条件：字段名不以 $ 开头，且值不是 Document（避免包含操作符）
-                if (!key.startsWith("$") && !(value instanceof Document)) {
-                    eqFilters.put(key, value);
-                }
-            });
+            extractMongoUpsertEqualities(queryDocument, eqFilters, null);
 
             if (!eqFilters.isEmpty()) {
-                boolean hasUpdateOperator = updateDocument.keySet().stream().anyMatch(k -> k.startsWith("$"));
+                boolean hasUpdateOperator = updateDocument.keySet()
+                        .stream()
+                        .anyMatch(k -> k.startsWith("$"));
+
                 if (hasUpdateOperator) {
-                    // 使用 $setOnInsert 确保只在插入时包含查询条件
-                    Document setOnInsert = (Document) updateDocument.getOrDefault("$setOnInsert", new Document());
+                    // 使用 $setOnInsert，仅在插入时生效
+                    Document setOnInsert =
+                            (Document) updateDocument.getOrDefault("$setOnInsert", new Document());
+
                     eqFilters.forEach(setOnInsert::putIfAbsent);
                     updateDocument.put("$setOnInsert", setOnInsert);
                 } else {
-                    // 替换文档模式，直接合并查询条件
+                    // replacement-style update
                     eqFilters.forEach(updateDocument::putIfAbsent);
                 }
             }
@@ -174,7 +207,6 @@ public class UpdateMany extends MongoCommand {
 
         List<Document> updates = new ArrayList<>();
         updates.add(update);
-
         document.put("updates", updates);
 
         return document;
