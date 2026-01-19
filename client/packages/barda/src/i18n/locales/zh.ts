@@ -2625,6 +2625,7 @@ export const zh = {
         valueDesc: "时间线的数据",
         clickedObjectDesc: "点击的项目数据",
         clickedIndexDesc: "点击的项目序号",
+        helpLoading: "设置时间线加载状态",
     },
     comment: {
         value: "评论列表数据",

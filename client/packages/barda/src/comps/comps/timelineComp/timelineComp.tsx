@@ -50,7 +50,6 @@ const childrenMap = {
   value: jsonControl(convertTimeLineData, timelineDate),
   mode: dropdownControl(modeOptions, "alternate"),
   reverse: BoolControl,
-  pending: withDefault(StringControl, trans("timeLine.defaultPending")),
   autoHeight: withDefault(AutoHeightControl, "fixed"),
   onEvent: eventHandlerControl(EventOptions),
   style: styleControl(TimeLineStyle),
@@ -93,6 +92,7 @@ const TimelineComp = (
   const timelineItems = value.map((item: timelineNode, index: number) => ({
     key: index,
     color: item?.color,
+    loading: item?.loading,
     dot: item?.dot ? (
       <DynamicAntdIcon
         iconName={item.dot}
@@ -124,9 +124,9 @@ const TimelineComp = (
         >
           <b>{item?.title}</b>
         </button>
-        <p style={{ color: item?.subTitleColor || style?.subTitleColor }}>
+        {item?.subTitle && <p style={{ color: item?.subTitleColor || style?.subTitleColor }}>
           {item?.subTitle}
-        </p>
+        </p>}
       </>
     ),
   }));
@@ -136,13 +136,6 @@ const TimelineComp = (
       <Timeline
         mode={props?.mode || "left"}
         reverse={props?.reverse}
-        pending={
-          props?.pending && (
-            <span style={{ color: style?.titleColor }}>
-              {props?.pending || ""}
-            </span>
-          )
-        }
         items={timelineItems}
       />
     </Wrapper>
@@ -167,9 +160,6 @@ let TimeLineBasicComp = (function () {
           })}
           {children.reverse.propertyView({
             label: trans("timeLine.reverse"),
-          })}
-          {children.pending.propertyView({
-            label: trans("timeLine.pending"),
           })}
           {children.autoHeight.propertyView({
             label: trans("timeLine.autoHeight"),

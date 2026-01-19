@@ -2631,6 +2631,7 @@ export const en = {
     valueDesc: "data of timeline",
     clickedObjectDesc: "clicked item data",
     clickedIndexDesc: "clicked item index",
+    helpLoading: "Set the loading state of the timeline",
   },
   comment: {
     value: "comment list data",

@@ -1,4 +1,5 @@
 import { trans } from "i18n";
+import { title } from "process";
 export type timelineNode = {
   title: string;
   subTitle?: string;
@@ -8,6 +9,7 @@ export type timelineNode = {
   subTitleColor?: string;
   titleColor?: string;
   lableColor?: string;
+  loading?: boolean;
 };
 
 export const TimelineDataTooltip = (
@@ -29,10 +31,12 @@ export const TimelineDataTooltip = (
     7. subTitleColor - {trans("timeLine.helpSubTitleColor")}
     <br />
     8. lableColor - {trans("timeLine.helpLableColor")}
+    <br />
+    9. loading - {trans("timeLine.helpLoading")}
   </li>
 );
 
-export const timelineDate=[
+export const timelineDate = [
   {
     title: "码匠发布",
     subTitle: "Majiang Published in China",
@@ -63,8 +67,8 @@ export const timelineDate=[
   {
     title: "Barda整装前行",
     subTitle: "Barda, ready to move forward",
-    dot: "LogoutOutlined",
     color: "green",
     label: "2024-5-8",
-  },
+    loading: true,
+  }
 ]
