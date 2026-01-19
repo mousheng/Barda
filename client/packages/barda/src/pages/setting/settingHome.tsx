@@ -55,18 +55,18 @@ export function SettingHome() {
     //   ),
     //   disabled: !currentOrgAdmin(user) || (!isSelfDomain(config) && !isEnterpriseMode(config)),
     // },
-    // {
-    //   key: SettingPageEnum.Audit,
-    //   label: (
-    //     <span>
-    //       <span className="text">{trans("settings.audit")}</span>
-    //       {(!showAuditLog(config) || !currentOrgAdmin(user)) && (
-    //         <FreeLimitTag text={trans("settings.premium")} />
-    //       )}
-    //     </span>
-    //   ),
-    //   disabled: !showAuditLog(config) || !currentOrgAdmin(user),
-    // },
+    {
+      key: SettingPageEnum.Audit,
+      label: (
+        <span>
+          <span className="text">{trans("settings.audit")}</span>
+          {!currentOrgAdmin(user) && (
+            <FreeLimitTag text={trans("settings.premium")} />
+          )}
+        </span>
+      ),
+      disabled: !currentOrgAdmin(user),
+    },
     {
       key: SettingPageEnum.Theme,
       label: trans("settings.theme"),

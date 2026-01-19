@@ -6,7 +6,9 @@ import static com.barda.sdk.exception.BizError.INVALID_PARAMETER;
 import static com.barda.sdk.util.ExceptionUtils.deferredError;
 import static com.barda.sdk.util.ExceptionUtils.ofError;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -22,6 +24,7 @@ import org.springframework.web.server.ServerWebExchange;
 
 import com.barda.api.home.SessionUserService;
 import com.barda.api.query.view.QueryExecutionRequest;
+import com.barda.api.util.BusinessEventPublisher;
 import com.barda.domain.application.model.Application;
 import com.barda.domain.application.service.ApplicationService;
 import com.barda.domain.datasource.model.Datasource;
@@ -39,6 +42,7 @@ import com.barda.sdk.config.CommonConfig;
 import com.barda.sdk.exception.BizError;
 import com.barda.sdk.models.Property;
 import com.barda.sdk.models.QueryExecutionResult;
+import com.barda.infra.event.QueryExecutionEvent;
 import com.barda.sdk.query.QueryVisitorContext;
 import com.barda.sdk.util.ExceptionUtils;
 
@@ -99,6 +103,12 @@ public class ApplicationQueryApiService {
      */
     @Autowired
     private CommonConfig commonConfig;
+
+    /**
+     * 业务事件发布器。
+     */
+    @Autowired
+    private BusinessEventPublisher businessEventPublisher;
 
     /**
      * 服务器端口。
@@ -282,6 +292,27 @@ public class ApplicationQueryApiService {
     protected void onNextOrError(QueryExecutionRequest queryExecutionRequest, QueryVisitorContext queryVisitorContext,
             ApplicationQuery applicationQuery, BaseQuery baseQuery, Application application, Datasource datasource,
             long executeTime, boolean success) {
-        // do nothing
+        // 构建审计日志详情
+        Map<String, Object> detail = new LinkedHashMap<>();
+        detail.put("applicationId", application.getId());
+        detail.put("applicationName", application.getName());
+        detail.put("queryId", applicationQuery.getId());
+        detail.put("queryName", applicationQuery.getName());
+        detail.put("datasourceId", datasource.getId());
+        detail.put("datasourceName", datasource.getName());
+        detail.put("datasourceType", datasource.getType());
+        detail.put("queryConfig", baseQuery.getQueryConfig());
+        detail.put("executeTime", executeTime);
+        detail.put("success", success);
+        detail.put("viewMode", queryExecutionRequest.isViewMode());
+
+        // 构建并发布查询执行事件
+        QueryExecutionEvent event = QueryExecutionEvent.builder()
+                .userId(queryVisitorContext.getVisitorId())
+                .orgId(queryVisitorContext.getApplicationOrgId())
+                .detail(detail)
+                .build();
+
+        businessEventPublisher.publishQueryExecutionEvent(event);
     }
 }

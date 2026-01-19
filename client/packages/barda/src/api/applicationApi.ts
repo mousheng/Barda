@@ -97,7 +97,7 @@ class ApplicationApi extends Api {
     return Api.get(ApplicationApi.fetchHomeDataURL, request);
   }
 
-  static fetchAllApplications(request: HomeDataPayload): AxiosPromise<ApplicationMeta[]> {
+  static fetchAllApplications(request: HomeDataPayload): AxiosPromise<GenericApiResponse<ApplicationMeta[]>> {
     return Api.get(ApplicationApi.newURLPrefix + "/list", { ...request, withContainerSize: false });
   }
 

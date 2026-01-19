@@ -433,6 +433,32 @@ public class LibraryQueryApiService {
      */
     protected void onNextOrError(QueryExecutionRequest queryExecutionRequest, QueryVisitorContext queryVisitorContext, BaseQuery baseQuery,
             Datasource datasource, long executeTime, boolean success) {
-        // do nothing
+        // 构建审计日志详情
+        java.util.Map<String, Object> detail = new java.util.LinkedHashMap<>();
+        
+        // 获取库查询信息
+        LibraryQueryCombineId combineId = queryExecutionRequest.getLibraryQueryCombineId();
+        if (combineId != null) {
+            detail.put("libraryQueryId", combineId.libraryQueryId());
+            if (StringUtils.isNotBlank(combineId.libraryQueryRecordId())) {
+                detail.put("libraryQueryRecordId", combineId.libraryQueryRecordId());
+            }
+        }
+        
+        detail.put("datasourceId", datasource.getId());
+        detail.put("datasourceName", datasource.getName());
+        detail.put("datasourceType", datasource.getType());
+        detail.put("queryConfig", baseQuery.getQueryConfig());
+        detail.put("executeTime", executeTime);
+        detail.put("success", success);
+
+        // 构建并发布查询执行事件
+        com.barda.infra.event.QueryExecutionEvent event = com.barda.infra.event.QueryExecutionEvent.builder()
+                .userId(queryVisitorContext.getVisitorId())
+                .orgId(queryVisitorContext.getApplicationOrgId())
+                .detail(detail)
+                .build();
+
+        businessEventPublisher.publishQueryExecutionEvent(event);
     }
 }

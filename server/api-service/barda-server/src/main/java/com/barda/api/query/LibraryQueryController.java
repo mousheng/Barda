@@ -85,7 +85,14 @@ public class LibraryQueryController {
     @PutMapping("/{libraryQueryId}")
     public Mono<ResponseView<Boolean>> update(@PathVariable String libraryQueryId,
             @RequestBody UpsertLibraryQueryRequest upsertLibraryQueryRequest) {
-        return libraryQueryApiService.update(libraryQueryId, upsertLibraryQueryRequest)
+        return libraryQueryService.getById(libraryQueryId)
+                .flatMap(libraryQuery ->
+                        libraryQueryApiService.update(libraryQueryId, upsertLibraryQueryRequest)
+                                .delayUntil(result -> businessEventPublisher.publishLibraryQueryEvent(
+                                        libraryQuery.getId(),
+                                        libraryQuery.getName(),
+                                        EventType.LIBRARY_QUERY_UPDATE))
+                )
                 .map(ResponseView::success);
     }
 
