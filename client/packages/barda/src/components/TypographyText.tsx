@@ -46,7 +46,6 @@ export const TypographyText = (props: {
 }) => (
   <AntdTypographyText
     title={props.value}
-    ellipsis={true}
     editable={{
       enterIcon: null,
       tooltip: false,
