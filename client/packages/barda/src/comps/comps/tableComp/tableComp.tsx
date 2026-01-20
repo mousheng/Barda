@@ -554,6 +554,51 @@ TableTmpComp = withMethodExposing(TableTmpComp, [
   },
   {
     method: {
+      name: "nextPage",
+      description: "",
+      params: [],
+    },
+    execute: (comp) => {
+      const pagination = comp.children.pagination.getView();
+      const currentPage = pagination.current;
+      const total = pagination.total || comp.filterData.length;
+      const totalPages = Math.ceil(total / pagination.pageSize);
+      if (currentPage < totalPages) {
+        comp.children.pagination.children.pageNo.dispatchChangeValueAction(currentPage + 1);
+      }
+    },
+  },
+  {
+    method: {
+      name: "previousPage",
+      description: "",
+      params: [],
+    },
+    execute: (comp) => {
+      const pagination = comp.children.pagination.getView();
+      const currentPage = pagination.current;
+      if (currentPage > 1) {
+        comp.children.pagination.children.pageNo.dispatchChangeValueAction(currentPage - 1);
+      }
+    },
+  },
+  {
+    method: {
+      name: "goToLastPage",
+      description: "",
+      params: [],
+    },
+    execute: (comp) => {
+      const pagination = comp.children.pagination.getView();
+      const total = pagination.total || comp.filterData.length;
+      const totalPages = Math.ceil(total / pagination.pageSize);
+      if (totalPages > 0) {
+        comp.children.pagination.children.pageNo.dispatchChangeValueAction(totalPages);
+      }
+    },
+  },
+  {
+    method: {
       name: "setSort",
       description: "",
       params: [
