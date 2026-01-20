@@ -207,7 +207,12 @@ publish_image() {
     # 输入镜像标签，默认值：latest
     read -p "请输入镜像的标签 (默认: latest): " tag
     tag=${tag:-latest}
-    DOCKER_BUILDKIT=1 docker build -f ../deploy/docker/Dockerfile -t "${name}:$tag" ..
+    # 获取当前 git commit id
+    commit_id=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+    DOCKER_BUILDKIT=1 docker build \
+        --build-arg REACT_APP_COMMIT_ID="$commit_id" \
+        -f ../deploy/docker/Dockerfile \
+        -t "${name}:$tag" ..
 
 }
 
