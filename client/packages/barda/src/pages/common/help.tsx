@@ -216,8 +216,8 @@ export const HelpDropdown = memo((props: HelpDropdownProps) => {
       return;
     }
     PlatformApi.version().then((res) => {
-      if (typeof res.data === "string") {
-        setVersion(res.data.trim());
+      if (typeof res.data === "string" || typeof res.data === "number") {
+        setVersion(res.data.toString().trim());
       }
     });
   }, []);
