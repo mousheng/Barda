@@ -32,13 +32,19 @@ UtilsComp = withMethodExposing(UtilsComp, [
       description: trans("utilsComp.openUrl"),
       params: [
         { name: "url", type: "string" },
-        { name: "options", type: "JSON" },
+        { name: "newTab", type: "boolean" },
       ],
     },
     execute: (comp, params) => {
       const url = params?.[0];
-      const options = params?.[1] as unknown as OpenUrlOptions;
-      const newTab = options?.newTab ?? true;
+      const optionsOrNewTab = params?.[1];
+      // 支持布尔值或对象两种方式，向后兼容
+      let newTab = true;
+      if (typeof optionsOrNewTab === "boolean") {
+        newTab = optionsOrNewTab;
+      } else if (typeof optionsOrNewTab === "object" && optionsOrNewTab !== null) {
+        newTab = (optionsOrNewTab as OpenUrlOptions)?.newTab ?? true;
+      }
       if (typeof url === "string" && !isEmpty(url)) {
         window.open(url, newTab ? "_blank" : "_self");
       }

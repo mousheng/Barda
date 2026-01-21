@@ -5,7 +5,7 @@
 ### utils.openUrl（打开 URL）
 
 ```
-utils.openUrl( url: string, options?: { newTab:  boolean = true } )
+utils.openUrl( url: string, newTab?: boolean = true )
 ```
 
 | **参数** | **说明** | **是否必填** |
@@ -15,7 +15,10 @@ utils.openUrl( url: string, options?: { newTab:  boolean = true } )
 
 ```
 //例：在新选项卡打开百度页面
-utils.openUrl("https://www.baidu.com", { newTab: true })
+utils.openUrl("https://www.baidu.com")
+
+//例：在当前页面打开百度页面
+utils.openUrl("https://www.baidu.com", false)
 ```
 
 ### utils.openApp（打开Barda应用）
