@@ -37,6 +37,7 @@ public class AuditLogEventListener {
     public void onUserLoginEvent(UserLoginEvent event) {
         LinkedHashMap<String, Object> detail = new LinkedHashMap<>();
         detail.put("loginWay", event.getSource());
+        detail.put("clientIp", event.getClientIp());
         this.record(event, detail);
     }
 

@@ -51,10 +51,12 @@ import com.barda.infra.event.groupmember.GroupMemberRemoveEvent;
 import com.barda.infra.event.groupmember.GroupMemberRoleUpdateEvent;
 import com.barda.infra.event.user.UserLoginEvent;
 import com.barda.infra.event.user.UserLogoutEvent;
+import com.barda.infra.util.NetworkUtils;
 import com.barda.sdk.util.LocaleUtils;
 
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
+import org.springframework.web.server.ServerWebExchange;
 
 @Slf4j
 @Component
@@ -150,13 +152,15 @@ public class BusinessEventPublisher {
                 });
     }
 
-    public Mono<Void> publishUserLoginEvent(String source) {
+    public Mono<Void> publishUserLoginEvent(String source, ServerWebExchange exchange) {
+        String clientIp = NetworkUtils.getRemoteIp(exchange);
         return sessionUserService.getVisitorOrgMember()
                 .doOnNext(orgMember -> {
                     UserLoginEvent event = UserLoginEvent.builder()
                             .orgId(orgMember.getOrgId())
                             .userId(orgMember.getUserId())
                             .source(source)
+                            .clientIp(clientIp)
                             .build();
                     applicationEventPublisher.publishEvent(event);
                 })

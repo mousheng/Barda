@@ -136,7 +136,7 @@ public class OrganizationController {
                 // 切换到指定的组织
                 .then(orgApiService.switchCurrentOrganizationTo(orgId))
                 // 延迟直到发布用户登录事件
-                .delayUntil(result -> businessEventPublisher.publishUserLoginEvent(null))
+                .delayUntil(result -> businessEventPublisher.publishUserLoginEvent(null, serverWebExchange))
                 // 检查组织域并构建响应视图
                 .flatMap(result -> orgApiService.checkOrganizationDomain()
                         .flatMap(OrganizationDomainCheckResult::buildOrganizationDomainCheckView)

@@ -12,6 +12,11 @@ public class UserLoginEvent extends AbstractEvent {
 
     private final String source;
 
+    /**
+     * 登录者的客户端IP地址
+     */
+    private final String clientIp;
+
     @Override
     public EventType getEventType() {
         return EventType.USER_LOGIN;

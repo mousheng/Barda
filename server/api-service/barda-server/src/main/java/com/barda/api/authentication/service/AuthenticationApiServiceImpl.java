@@ -238,7 +238,7 @@ public class AuthenticationApiServiceImpl implements AuthenticationApiService {
                     return invitationApiService.inviteUser(invitationId);
                 })
                 // 发布事件
-                .then(businessEventPublisher.publishUserLoginEvent(authUser.getSource()));
+                .then(businessEventPublisher.publishUserLoginEvent(authUser.getSource(), exchange));
     }
 
     /**
