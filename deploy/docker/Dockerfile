@@ -139,7 +139,7 @@ RUN yarn --immutable
 RUN sed -i 's|http://deb.debian.org/debian|http://mirrors.aliyun.com/debian|g; s|http://security.debian.org/debian-security|http://mirrors.aliyun.com/debian-security|g' /etc/apt/sources.list.d/debian.sources \
   && apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
 
-ARG REACT_APP_COMMIT_ID=test
+ARG REACT_APP_COMMIT_ID=beta
 ARG REACT_APP_ENV=production
 ARG REACT_APP_EDITION=community
 ARG REACT_APP_DISABLE_JS_SANDBOX=true
