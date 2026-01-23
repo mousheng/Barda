@@ -8,7 +8,7 @@ import { numberExposingStateControl } from "@barda/comps/controls/codeStateContr
 import { withDefault } from "comps/generators";
 import { RecordConstructorToComp } from "barda-core";
 import { trans } from "i18n";
-import { dropdownControl } from "@barda/index.sdk";
+import { dropdownControl } from "comps/controls/dropdownControl";
 
 const budgeSizeOptions = [
   {

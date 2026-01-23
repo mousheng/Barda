@@ -27,7 +27,7 @@ import { clearGlobalSettings, setGlobalSettings } from "comps/utils/globalSettin
 import { fetchFolderElements } from "redux/reduxActions/folderActions";
 import { registryDataSourcePlugin } from "constants/queryConstants";
 import { DatasourceApi } from "api/datasourceApi";
-import { handlinghooks } from "@barda/index.sdk";
+import { handlinghooks } from "../../../src/util/appUtils";
 
 export default function AppEditor() {
   const showAppSnapshot = useSelector(showAppSnapshotSelector);

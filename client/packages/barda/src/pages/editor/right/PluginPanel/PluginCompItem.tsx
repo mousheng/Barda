@@ -8,7 +8,7 @@ import { draggingUtils } from "layout";
 import styled from "styled-components";
 import { getRemoteCompType } from "comps/utils/remote";
 import { BardaCompMeta } from "types/remoteComp";
-import { TransparentImg } from "util/commonUtils";
+import { createTransparentImg } from "util/commonUtils";
 import { ModuleIcon } from "barda-design";
 import { NPM_PLUGIN_ASSETS_BASE_URL } from "constants/npmPlugins";
 
@@ -85,7 +85,7 @@ export function PluginCompItem(props: PluginCompItemProps) {
       draggable
       onDragStart={(e: any) => {
         e.dataTransfer.setData("compType", compType);
-        e.dataTransfer.setDragImage(TransparentImg, 0, 0);
+        e.dataTransfer.setDragImage(createTransparentImg(), 0, 0);
         draggingUtils.setData("compType", compType);
         draggingUtils.setData("compLayout", compMeta.layoutInfo);
         onDrag(compType);

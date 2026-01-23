@@ -10,7 +10,8 @@ import { dropdownControl } from "comps/controls/dropdownControl";
 import { ArrayOrJSONObjectControl } from "comps/controls/codeControl";
 import { hiddenPropertyView } from "comps/utils/propertyUtils";
 import { trans } from "i18n";
-import { JsonExplorerStyle, styleControl } from "@barda/index.sdk";
+import { styleControl } from "comps/controls/styleControl";
+import { JsonExplorerStyle } from "comps/controls/styleControlConstants";
 
 type ThemeKeys = "default" | "a11y" | "github" | "vscode" | "atom" | "winter-is-coming"
 

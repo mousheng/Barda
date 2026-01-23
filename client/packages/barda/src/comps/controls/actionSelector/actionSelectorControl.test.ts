@@ -41,11 +41,11 @@ test("action handler always get latest data", async () => {
   expect(typeof handler).toBe("function");
 
   handler?.();
-  expect(fn).toBeCalledTimes(0);
+  expect(fn).toHaveBeenCalledTimes(0);
 
   comp.children.b.dispatchChangeValueAction(true);
   // using the same ref of a handler cross dispatch is common
   // should ensure this case work properly
   handler?.();
-  expect(fn).toBeCalledTimes(1);
+  expect(fn).toHaveBeenCalledTimes(1);
 });

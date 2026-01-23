@@ -16,7 +16,7 @@ import { AutoHeightControl } from "comps/controls/autoHeightControl";
 import { BoolControl } from "comps/controls/boolControl";
 import { Image as AntImage } from "antd";
 import { DEFAULT_IMG_URL } from "util/stringUtils";
-import { dropdownControl } from "@barda/index.sdk";
+import { dropdownControl } from "comps/controls/dropdownControl";
 
 const Container = styled.div<{ $style: ImageStyleType | undefined, $objectFit: string }>`
   height: 100%;

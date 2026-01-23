@@ -9,8 +9,6 @@ export default {
   },
   getCacheKey() {
     // The output is always the same.
-    return {
-      code: "cssTransform",
-    };
+    return "cssTransform";
   },
 };

@@ -32,10 +32,14 @@ export const isBase64String = (data: any) => {
   return typeof data === "string" && BASE64_STRING_REGEX.test(data);
 };
 
-// minimum transparant base64 image
-export const TransparentImg = new Image(0, 0);
-TransparentImg.src =
-  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+export const createTransparentImg = () => {
+  const img = document.createElement("img");
+  img.width = 0;
+  img.height = 0;
+  img.src =
+    "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+  return img;
+};
 
 export function runScriptInHost(code: string) {
   const script = document.createElement("script");

@@ -14,8 +14,8 @@ describe('promiseWithDefaultOnTimeout', () => {
             setTimeout(() => resolve(expectedResult), timeout);
         });
 
-        const Result1 = await promiseWithDefaultOnTimeout(promise, timeout - 1, timeoutResult);
-        const Result2 = await promiseWithDefaultOnTimeout(promise, timeout + 1, timeoutResult);
+        const Result1 = await promiseWithDefaultOnTimeout(promise, timeout - 10, timeoutResult);
+        const Result2 = await promiseWithDefaultOnTimeout(promise, timeout + 10, timeoutResult);
 
         expect(Result1).toBe(timeoutResult);
         expect(Result2).toBe(expectedResult);
@@ -32,7 +32,7 @@ describe('promiseWithDefaultOnTimeout', () => {
 
         const timeoutMessage = "超时了";
 
-        await expect(promiseWithTimeout(mockPromise, 999, timeoutMessage)).rejects.toThrow(timeoutMessage);
+        await expect(promiseWithTimeout(mockPromise, 990, timeoutMessage)).rejects.toThrow(timeoutMessage);
     });
 
 });

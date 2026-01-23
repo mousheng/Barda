@@ -9,7 +9,7 @@ import { DarkActiveTextColor, GreyTextColor } from "../../constants/style";
 import { Table as AntdTable } from "antd";
 import { Switch } from "components/Switch";
 import { CloseIcon, ErrorIcon, SuccessIcon } from "icons";
-import { safeJSONStringify } from "@barda/index.sdk";
+import { safeJSONStringify } from "util/objectUtils";
 
 export const HeaderWrapper = styled.div`
   display: flex;

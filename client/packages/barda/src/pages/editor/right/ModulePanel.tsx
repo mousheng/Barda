@@ -15,7 +15,6 @@ import { useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllModules } from "redux/reduxActions/applicationActions";
 import styled from "styled-components";
-import { TransparentImg } from "util/commonUtils";
 import { ExternalEditorContext } from "util/context/ExternalEditorContext";
 import { formatTimestamp } from "util/dateTimeUtils";
 import { RightContext } from "./rightContext";

@@ -17,7 +17,7 @@ import { tableDragClassName } from "pages/tutorials/tutorialsConstant";
 import React, { useContext, useMemo } from "react";
 import styled from "styled-components";
 import { labelCss } from "barda-design";
-import { TransparentImg } from "../../../util/commonUtils";
+import { createTransparentImg } from "../../../util/commonUtils";
 import { RightContext } from "./rightContext";
 import { matchesPinyinSearch } from "../bottom/BottomSidebar";
 
@@ -142,7 +142,7 @@ export const UICompPanel = () => {
                       onDragStart={(e: any) => {
                         e.dataTransfer.setData("compType", info[0]);
                         draggingUtils.setData("compType", info[0]);
-                        e.dataTransfer.setDragImage(TransparentImg, 0, 0);
+                        e.dataTransfer.setDragImage(createTransparentImg(), 0, 0);
                         onDrag(info[0]);
                       }}
                     >

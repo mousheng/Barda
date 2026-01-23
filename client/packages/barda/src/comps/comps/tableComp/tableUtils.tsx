@@ -1,4 +1,4 @@
-import { safeJSONStringify } from "@barda/index.sdk";
+import { safeJSONStringify } from "util/objectUtils";
 import {
   ColumnType,
   FilterValue,

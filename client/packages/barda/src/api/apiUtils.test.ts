@@ -115,22 +115,22 @@ test("apiFailureResponseInterceptor", () => {
 });
 
 test("validateResponse", () => {
-  expect(() => validateResponse(undefined as unknown as AxiosResponse<ApiResponse>)).toThrowError(
+  expect(() => validateResponse(undefined as unknown as AxiosResponse<ApiResponse>)).toThrow(
     Error(createMessage(ERROR_0))
   );
-  expect(() => validateResponse({} as AxiosResponse<ApiResponse>)).toThrowError(
+  expect(() => validateResponse({} as AxiosResponse<ApiResponse>)).toThrow(
     Error(createMessage(ERROR_0))
   );
-  expect(() => validateResponse({ status: 9999 } as AxiosResponse<ApiResponse>)).toThrowError(
+  expect(() => validateResponse({ status: 9999 } as AxiosResponse<ApiResponse>)).toThrow(
     Error("")
   );
-  expect(() => validateResponse({ status: 0 } as AxiosResponse<ApiResponse>)).toThrowError(
+  expect(() => validateResponse({ status: 0 } as AxiosResponse<ApiResponse>)).toThrow(
     Error(createMessage(ERROR_0))
   );
-  expect(() => validateResponse({ status: 401 } as AxiosResponse<ApiResponse>)).toThrowError(
+  expect(() => validateResponse({ status: 401 } as AxiosResponse<ApiResponse>)).toThrow(
     Error(createMessage(ERROR_401))
   );
-  expect(() => validateResponse({ status: 500 } as AxiosResponse<ApiResponse>)).toThrowError(
+  expect(() => validateResponse({ status: 500 } as AxiosResponse<ApiResponse>)).toThrow(
     Error(createMessage(ERROR_500))
   );
   expect(() =>
@@ -141,7 +141,7 @@ test("validateResponse", () => {
       headers,
       config: { headers },
     })
-  ).toThrowError(Error("fail"));
+  ).toThrow(Error("fail"));
   expect(
     validateResponse({
       status: 500,
@@ -154,22 +154,22 @@ test("validateResponse", () => {
 });
 
 test("doValidResponse", () => {
-  expect(() => doValidResponse(undefined as unknown as AxiosResponse<ApiResponse>)).toThrowError(
+  expect(() => doValidResponse(undefined as unknown as AxiosResponse<ApiResponse>)).toThrow(
     Error(createMessage(ERROR_0))
   );
-  expect(() => validateResponse({} as AxiosResponse<ApiResponse>)).toThrowError(
+  expect(() => validateResponse({} as AxiosResponse<ApiResponse>)).toThrow(
     Error(createMessage(ERROR_0))
   );
-  expect(() => doValidResponse({ status: 9999 } as AxiosResponse<ApiResponse>)).toThrowError(
+  expect(() => doValidResponse({ status: 9999 } as AxiosResponse<ApiResponse>)).toThrow(
     Error("")
   );
-  expect(() => doValidResponse({ status: 0 } as AxiosResponse<ApiResponse>)).toThrowError(
+  expect(() => doValidResponse({ status: 0 } as AxiosResponse<ApiResponse>)).toThrow(
     Error(createMessage(ERROR_0))
   );
-  expect(() => doValidResponse({ status: 401 } as AxiosResponse<ApiResponse>)).toThrowError(
+  expect(() => doValidResponse({ status: 401 } as AxiosResponse<ApiResponse>)).toThrow(
     Error(createMessage(ERROR_401))
   );
-  expect(() => doValidResponse({ status: 500 } as AxiosResponse<ApiResponse>)).toThrowError(
+  expect(() => doValidResponse({ status: 500 } as AxiosResponse<ApiResponse>)).toThrow(
     Error(createMessage(ERROR_500))
   );
   expect(

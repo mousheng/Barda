@@ -14,7 +14,7 @@ import React, {
 } from "react";
 import { Resizable, ResizeCallbackData } from "react-resizable";
 import styled from "styled-components";
-import { TransparentImg } from "../util/commonUtils";
+import { createTransparentImg } from "../util/commonUtils";
 import { calcGridColWidth, calcGridItemPosition, calcWH, calcXY, clamp } from "./calculateUtils";
 import { CompSelectionWrapper } from "./compSelectionWrapper";
 import { draggingUtils } from "./draggingUtils";
@@ -118,7 +118,7 @@ export function GridItemTemmp(props: GridItemProps) {
     const { i } = props as Required<GridItemProps>;
     draggingUtils.clearData();
     draggingUtils.setData("i", i);
-    e.dataTransfer.setDragImage(TransparentImg, 0, 0);
+    e.dataTransfer.setDragImage(createTransparentImg(), 0, 0);
     props.onDragStart?.(i, e, elementRef.current as HTMLDivElement);
   };
 

@@ -1,5 +1,5 @@
 import { ActionSelectorControl } from "@barda/comps/controls/actionSelector/actionSelectorControl";
-import { updateActionContextAction } from "@barda/index.sdk";
+import { updateActionContextAction } from "barda-core";
 import { Tag } from "antd";
 import { CustomSelect, PackUpIcon, ScrollBar } from "barda-design";
 import { TagsContext } from "components/table/EditableCell";

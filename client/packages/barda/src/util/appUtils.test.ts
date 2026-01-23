@@ -1,4 +1,3 @@
-import { clearGlobalSettings } from "@barda/index.sdk";
 import { handlinghooks, keyValueListToSearchStr, recordToSearchStr } from "./appUtils";
 import { AppSummaryInfo } from "@barda/redux/reduxActions/applicationActions";
 import { KeyValue } from "@barda/types/common";
