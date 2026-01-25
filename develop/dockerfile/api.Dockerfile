@@ -7,20 +7,20 @@ LABEL author="moushengkoo"
 COPY ./run.sh /run.sh
 
 RUN echo "\
-    deb http://mirrors.163.com/ubuntu/ jammy main restricted universe multiverse\n\
-    deb http://mirrors.163.com/ubuntu/ jammy-security main restricted universe multiverse\n\
-    deb http://mirrors.163.com/ubuntu/ jammy-updates main restricted universe multiverse\n\
-    deb http://mirrors.163.com/ubuntu/ jammy-proposed main restricted universe multiverse\n\
-    deb http://mirrors.163.com/ubuntu/ jammy-backports main restricted universe multiverse\n\
-    deb-src http://mirrors.163.com/ubuntu/ jammy main restricted universe multiverse\n\
-    deb-src http://mirrors.163.com/ubuntu/ jammy-security main restricted universe multiverse\n\
-    deb-src http://mirrors.163.com/ubuntu/ jammy-updates main restricted universe multiverse\n\
-    deb-src http://mirrors.163.com/ubuntu/ jammy-proposed main restricted universe multiverse\n\
-    deb-src http://mirrors.163.com/ubuntu/ jammy-backports main restricted universe multiverse\
+    deb http://mirrors.163.com/ubuntu/ focal main restricted universe multiverse\n\
+    deb http://mirrors.163.com/ubuntu/ focal-security main restricted universe multiverse\n\
+    deb http://mirrors.163.com/ubuntu/ focal-updates main restricted universe multiverse\n\
+    deb http://mirrors.163.com/ubuntu/ focal-proposed main restricted universe multiverse\n\
+    deb http://mirrors.163.com/ubuntu/ focal-backports main restricted universe multiverse\n\
+    deb-src http://mirrors.163.com/ubuntu/ focal main restricted universe multiverse\n\
+    deb-src http://mirrors.163.com/ubuntu/ focal-security main restricted universe multiverse\n\
+    deb-src http://mirrors.163.com/ubuntu/ focal-updates main restricted universe multiverse\n\
+    deb-src http://mirrors.163.com/ubuntu/ focal-proposed main restricted universe multiverse\n\
+    deb-src http://mirrors.163.com/ubuntu/ focal-backports main restricted universe multiverse\
     " >/etc/apt/sources.list && \
     apt-get update && \
     #安装ssh服务、jdk17、maven
-    apt-get install -y openssh-server git && \
+    apt-get install -y openssh-server git libssl1.1 && \
     apt-get clean && \
     mkdir -p /var/run/sshd && \
     mkdir -p /root/.ssh && \
