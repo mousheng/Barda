@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.Cipher;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
@@ -34,6 +35,18 @@ public class RSACryptoServiceImpl implements RSACryptoService {
     public PublicKey publicKey;
 
     public RSACryptoServiceImpl() {
+        this(null, null);
+    }
+
+    public RSACryptoServiceImpl(String customPublicKeyPath, String customPrivateKeyPath) {
+        // 如果提供了自定义路径，使用自定义路径
+        if (customPublicKeyPath != null) {
+            this.publicKeyPath = customPublicKeyPath;
+        }
+        if (customPrivateKeyPath != null) {
+            this.privateKeyPath = customPrivateKeyPath;
+        }
+
         // 检查RSA加密是否启用
         String rsaEnabled = System.getenv("RSA_ENABLED");
         if ("false".equals(rsaEnabled)) {
@@ -99,7 +112,7 @@ public class RSACryptoServiceImpl implements RSACryptoService {
 
     @Override
     public String encrypt(String data) throws Exception {
-        return Base64.encodeBase64String(encrypt(data.getBytes()));
+        return Base64.encodeBase64String(encrypt(data.getBytes(StandardCharsets.UTF_8)));
     }
 
     @Override
@@ -115,7 +128,7 @@ public class RSACryptoServiceImpl implements RSACryptoService {
 
     @Override
     public String decrypt(String encryptedData) throws Exception {
-        return new String(decrypt(Base64.decodeBase64(encryptedData)));
+        return new String(decrypt(Base64.decodeBase64(encryptedData)), StandardCharsets.UTF_8);
     }
 
     /**
@@ -135,7 +148,7 @@ public class RSACryptoServiceImpl implements RSACryptoService {
 
     @Override
     public String decryptBase64(String encryptedData) throws Exception {
-        return new String(decrypt(Base64.decodeBase64(encryptedData)));
+        return new String(decrypt(Base64.decodeBase64(encryptedData)), StandardCharsets.UTF_8);
     }
 
     @Override
