@@ -88,7 +88,7 @@ function ListItem(props: ListItemProps) {
     cursor: "pointer",
   }), [hover, itemIdx, props.selectedIndex]);
   const onClick = useCallback(() => {
-    props.selectIndexDispatch(changeChildAction("selectedIndex", itemIdx, false))
+    props.selectIndexDispatch(changeChildAction("selectedIndex", itemIdx, false));
   }, [itemIdx, props])
   const onMouseEnter = useCallback(() => setHover(true), [])
   const onMouseLeave = useCallback(() => setHover(false), [])
@@ -144,6 +144,19 @@ export function ListView(props: Props) {
   const [renders, setRenders] = useState<any>();
   const [data, setData] = useState<JSONObject[]>([])
   const [totalCount, setTotalCount] = useState(0)
+
+  // 获取事件处理器
+  const onEventHandler = useMemo(() => children.onEvent.getView(), [children.onEvent]);
+
+  // 监听 selectIndex 变化，触发事件
+  const prevSelectIndex = useRef(comp.children.selectIndex.value);
+  useEffect(() => {
+    const currentIndex = comp.children.selectIndex.value;
+    if (prevSelectIndex.current !== currentIndex) {
+      prevSelectIndex.current = currentIndex;
+      onEventHandler("change");
+    }
+  }, [comp.children.selectIndex.value, onEventHandler]);
   useEffect(() => {
     if ((children.noOfRows as any).loading === false) {
       const { data, itemCount: totalCount } = getData(children.noOfRows.getView())

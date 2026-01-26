@@ -1,3 +1,14 @@
+import { withMethodExposing } from "@barda/comps/generators/withMethodExposing";
+import { Layout } from "@barda/layout";
+import {
+  CompAction,
+  CompActionTypes,
+  Node,
+  WrapContextNodeV2,
+  fromRecord,
+  fromValue,
+  withFunction,
+} from "barda-core";
 import { AutoHeightControl } from "comps/controls/autoHeightControl";
 import { BoolControl } from "comps/controls/boolControl";
 import {
@@ -5,13 +16,14 @@ import {
   NumberOrJSONObjectArrayControl,
   StringControl,
 } from "comps/controls/codeControl";
+import { ChangeEventHandlerControl } from "comps/controls/eventHandlerControl";
 import { styleControl } from "comps/controls/styleControl";
 import { ListViewStyle } from "comps/controls/styleControlConstants";
-import { stateComp, UICompBuilder, withDefault, withPropertyViewFn, withViewFn } from "comps/generators";
+import { UICompBuilder, stateComp, withDefault, withPropertyViewFn, withViewFn } from "comps/generators";
 import {
   CompDepsConfig,
-  depsConfig,
   NameConfigHidden,
+  depsConfig,
   withExposingConfigs,
 } from "comps/generators/withExposing";
 import { withIsLoadingMethod } from "comps/generators/withIsLoading";
@@ -19,26 +31,15 @@ import { NameGenerator } from "comps/utils";
 import { reduceInContext } from "comps/utils/reduceContext";
 import { trans } from "i18n";
 import _ from "lodash";
-import {
-  CompAction,
-  CompActionTypes,
-  fromRecord,
-  fromValue,
-  Node,
-  withFunction,
-  WrapContextNodeV2,
-} from "barda-core";
 import { JSONValue } from "util/jsonTypes";
 import { depthEqual, lastValueIfEqual, shallowEqual } from "util/objectUtils";
-import { CompTree, getAllCompItems, IContainer } from "../containerBase";
+import { CompTree, IContainer, getAllCompItems } from "../containerBase";
 import { SimpleContainerComp, toSimpleContainerData } from "../containerBase/simpleContainerComp";
 import { PaginationControl } from "../tableComp/paginationControl";
 import { ContextContainerComp } from "./contextContainerComp";
 import { ListView } from "./listView";
 import { listPropertyView } from "./listViewPropertyView";
 import { getData } from "./listViewUtils";
-import { withMethodExposing } from "@barda/comps/generators/withMethodExposing";
-import { Layout } from "@barda/layout";
 
 const childrenMap = {
   noOfRows: withIsLoadingMethod(NumberOrJSONObjectArrayControl), // FIXME: migrate "noOfRows" to "data"
@@ -53,6 +54,7 @@ const childrenMap = {
   pagination: withDefault(PaginationControl, { pageSize: "6" }),
   style: styleControl(ListViewStyle),
   selectIndex: stateComp<number>(0),
+  onEvent: ChangeEventHandlerControl,
 };
 
 const ListViewTmpComp = new UICompBuilder(childrenMap, () => <></>)
@@ -186,6 +188,15 @@ const ListViewExposingConfComp = withExposingConfigs(ListViewPropertyComp, [
     depKeys: ["selectIndex"],
     func: (input) => {
       return input.selectIndex;
+    },
+  }),
+  depsConfig({
+    name: "clickedItem",
+    desc: trans("listView.clickedItemDesc"),
+    depKeys: ["selectIndex", "noOfRows"],
+    func: (input) => {
+      const { data } = getData(input.noOfRows);
+      return data[input.selectIndex] || {};
     },
   }),
   new CompDepsConfig(

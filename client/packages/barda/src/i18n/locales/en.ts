@@ -293,6 +293,8 @@ export const en = {
     mentionDesc: "Triggers on mention",
     clear: "Clear",
     clearDesc: "Triggers when component value is cleared",
+    indexChange: "Index Change",
+    indexChangeDesc: "Triggers when the selected index changes",
   },
   themeDetail: {
     primary: "Brand color",
@@ -1676,6 +1678,7 @@ export const en = {
       "If evaluated as Number, this field will be regarded as row count, and the data will be regarded as empty.",
     setPageNo: "Set the page number of the listView",
     selectedIndex: "Selected index of the listView",
+    clickedItemDesc: "The data of the current clicked item",
   },
   navigation: {
     addText: "Add submenu item",

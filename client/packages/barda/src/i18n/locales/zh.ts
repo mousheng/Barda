@@ -288,6 +288,8 @@ export const zh = {
         mentionDesc: "在提及时触发",
         clear: "清除",
         clearDesc: "当组件值被清除时触发",
+        indexChange: "索引变化",
+        indexChangeDesc: "当选中的索引发生变化时触发",
 
     },
     themeDetail: {
@@ -1655,6 +1657,7 @@ export const zh = {
             "如果将其计算为数字,此字段将被视为行数,并且数据将被视为空.",
         setPageNo: "设置listView的页码",
         selectedIndex: "当前选择的索引",
+        clickedItemDesc: "当前点击的列表项数据",
     },
     navigation: {
         addText: "添加子菜单项",
