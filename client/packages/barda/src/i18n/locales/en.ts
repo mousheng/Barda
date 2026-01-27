@@ -697,6 +697,9 @@ export const en = {
   },
   bardaQuery: {
     queryOrgUsers: "Query workspace users",
+    queryFolderApps: "Query Apps",
+    folderNamePlaceHolder: "Folder name or ID, leave blank to return all",
+    folderNameLabel: "Folder name",
   },
   redisQuery: {
     rawCommand: "Raw command",

@@ -1,15 +1,19 @@
 package com.barda.plugin;
 
+import static com.barda.plugin.BardaApiQueryExecutionContext.*;
 import static com.barda.sdk.constants.Authentication.isAnonymousUser;
 import static com.barda.sdk.models.QueryExecutionResult.error;
 import static com.barda.sdk.models.QueryExecutionResult.success;
 import static com.barda.sdk.util.StreamUtils.collectList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.Optional.ofNullable;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.MapUtils;
 import org.pf4j.Extension;
@@ -36,6 +40,7 @@ import reactor.core.publisher.Mono;
 @Extension
 public class BardaApiExecutor implements QueryExecutor<BardaApiDatasourceConfig, Object, BardaApiQueryExecutionContext> {
     private static final String QUERY_ORG_USERS = "queryOrgUsers";
+    private static final String QUERY_FOLDER_APPS = "queryFolderApps";
 
     private final String cookieName;
 
@@ -59,14 +64,18 @@ public class BardaApiExecutor implements QueryExecutor<BardaApiDatasourceConfig,
      */
     @Override
     public Mono<BardaApiQueryExecutionContext> doBuildQueryExecutionContextMono(BardaApiDatasourceConfig connectionConfig, Map<String, Object> queryConfig, Map<String, Object> requestParams, QueryVisitorContext queryVisitorContext) {
+        String folderName = "";
         String actionType = MapUtils.getString(queryConfig, "compType", "");
+        Map compObj = MapUtils.getMap(queryConfig, "comp", emptyMap());
+        folderName = MapUtils.getString(compObj, "folderName", "");
         MultiValueMap<String, HttpCookie> cookies = queryVisitorContext.getCookies();
-        if (actionType.equalsIgnoreCase(QUERY_ORG_USERS)) {
-            return Mono.just(BardaApiQueryExecutionContext.builder()
+        if (actionType.equalsIgnoreCase(QUERY_ORG_USERS) || actionType.equalsIgnoreCase(QUERY_FOLDER_APPS)) {
+            return Mono.just(builder()
                     .actionType(actionType)
                     .visitorId(queryVisitorContext.getVisitorId())
                     .applicationOrgId(queryVisitorContext.getApplicationOrgId())
                     .requestCookies(cookies)
+                    .folderName(folderName)
                     .port(queryVisitorContext.getSystemPort())
                     .build());
         }
@@ -86,6 +95,8 @@ public class BardaApiExecutor implements QueryExecutor<BardaApiDatasourceConfig,
         String actionType = context.getActionType();
         if (actionType.equals(QUERY_ORG_USERS)) {
             return doListOrgUsers0(context);
+        } else if (actionType.equals(QUERY_FOLDER_APPS)) {
+            return doListAppsOfFolder(context);
         }
 
         throw new PluginException(BardaApiPluginError.BARDA_API_INVALID_REQUEST_TYPE, "BARDA_INTERNAL_INVALID_REQUEST_TYPE");
@@ -118,6 +129,55 @@ public class BardaApiExecutor implements QueryExecutor<BardaApiDatasourceConfig,
                                 .map(it -> MapUtils.getObject(it, "members", emptyList()))
                                 .orElse(emptyList())
                         );
+                    }
+                    return error(BardaApiPluginError.BARDA_API_REQUEST_ERROR, "REQUEST_ERROR",
+                            responseView.getCode(), responseView.getMessage());
+                })
+                .onErrorResume(e -> Mono.just(
+                        QueryExecutionResult.error(BardaApiPluginError.BARDA_API_REQUEST_ERROR, "BARDA_INTERNAL_REQUEST_ERROR",
+                                e.getMessage())));
+    }
+
+    /**
+     * 执行查询操作，查询文件夹中的应用列表。
+     *
+     * @param context 查询执行上下文
+     * @return 查询执行结果的 Mono
+     */
+    private Mono<QueryExecutionResult> doListAppsOfFolder(BardaApiQueryExecutionContext context) {
+        String folderParam = "";
+        final boolean isFolderId = Pattern.compile("^\\w{24}$").matcher(context.getFolderName().trim()).matches();
+        String visitorId = context.getVisitorId();
+        if (isAnonymousUser(visitorId)) {
+            return Mono.just(QueryExecutionResult.success(emptyList()));
+        }
+        if (isFolderId) {
+            folderParam = "?id=" + context.getFolderName();
+        }
+
+        String url = "http://localhost:" + context.getPort() + "/api/folders/elements" + folderParam;
+
+        return WebClient.builder()
+                .defaultCookies(injectCookies(context))
+                .build()
+                .method(HttpMethod.GET)
+                .uri(url)
+                .exchangeToMono(clientResponse -> clientResponse.bodyToMono(FolderResponse.class))
+                .map(responseView -> {
+                    if (responseView.isSuccess()) {
+                        List<Object> filteredData = responseView.getData();
+                        if (!context.getFolderName().isEmpty() && !isFolderId) {
+                            filteredData = filteredData.stream()
+                                    .filter(item -> {
+                                        Map<String, Object> folderData = (Map<String, Object>) item;
+                                        boolean isFolder = (boolean) folderData.get("folder");
+                                        String itemName = (String) folderData.get("name");
+                                        return isFolder && context.getFolderName().equals(itemName);
+                                    })
+                                    .collect(Collectors.toList());
+                        }
+                        return success(ofNullable(filteredData)
+                                .orElse(emptyList()));
                     }
                     return error(BardaApiPluginError.BARDA_API_REQUEST_ERROR, "REQUEST_ERROR",
                             responseView.getCode(), responseView.getMessage());
@@ -170,6 +230,23 @@ public class BardaApiExecutor implements QueryExecutor<BardaApiDatasourceConfig,
          *
          * @return 如果响应成功，返回 true，否则返回 false
          */
+        public boolean isSuccess() {
+            return code == SUCCESS;
+        }
+    }
+
+    /**
+     * 定义了 FolderResponse 内部类，用于表示文件夹查询的响应。
+     * 该类包含了响应的状态码、消息和数据列表。
+     */
+    @Getter
+    @Setter
+    private static class FolderResponse {
+        public static final int SUCCESS = 1;
+        private int code;
+        private String message;
+        private List<Object> data;
+
         public boolean isSuccess() {
             return code == SUCCESS;
         }

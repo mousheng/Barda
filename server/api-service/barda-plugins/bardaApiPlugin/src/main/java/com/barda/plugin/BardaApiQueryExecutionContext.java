@@ -40,4 +40,9 @@ public class BardaApiQueryExecutionContext extends QueryExecutionContext {
      * 在查询操作中需要发送的 Cookie。
      */
     private MultiValueMap<String, HttpCookie> requestCookies;
+
+    /**
+     * 文件夹名称或 ID。
+     */
+    private String folderName;
 }
