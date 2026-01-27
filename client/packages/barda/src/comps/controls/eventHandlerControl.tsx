@@ -389,6 +389,11 @@ export const closeEvent: EventConfigType = {
   value: "close",
   description: trans("event.closeDesc"),
 };
+export const openEvent: EventConfigType = {
+  label: trans("event.open"),
+  value: "open",
+  description: trans("event.openDesc"),
+};
 export const successEvent: EventConfigType = {
   label: trans("event.success"),
   value: "success",

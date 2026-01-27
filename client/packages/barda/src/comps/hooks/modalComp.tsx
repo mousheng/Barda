@@ -23,6 +23,7 @@ import { isNumeric } from "util/stringUtils";
 import { NameConfig, withExposingConfigs } from "../generators/withExposing";
 
 const EventOptions = [
+  { label: trans("modalComp.open"), value: "open", description: trans("modalComp.openDesc") },
   { label: trans("modalComp.close"), value: "close", description: trans("modalComp.closeDesc") },
 ] as const;
 
@@ -129,6 +130,11 @@ let TmpModalComp = (function () {
               }}
               afterClose={() => {
                 props.onEvent("close");
+              }}
+              afterOpenChange={(open) => {
+                if (open) {
+                  props.onEvent("open");
+                }
               }}
               zIndex={Layers.modal}
               modalRender={(node) => <ModalStyled $style={props.style}>{node}</ModalStyled>}

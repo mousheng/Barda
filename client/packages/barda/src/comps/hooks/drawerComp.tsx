@@ -9,7 +9,7 @@ import { BoolControl } from "comps/controls/boolControl";
 import { NumberControl, StringControl } from "comps/controls/codeControl";
 import { booleanExposingStateControl } from "comps/controls/codeStateControl";
 import { dropdownControl, PositionControl } from "comps/controls/dropdownControl";
-import { closeEvent, eventHandlerControl } from "comps/controls/eventHandlerControl";
+import { closeEvent, eventHandlerControl, openEvent } from "comps/controls/eventHandlerControl";
 import { styleControl } from "comps/controls/styleControl";
 import { DrawerStyle, parseBoxValues } from "comps/controls/styleControlConstants";
 import { withDefault } from "comps/generators";
@@ -18,12 +18,12 @@ import { BackgroundColorContext } from "comps/utils/backgroundColorContext";
 import { CanvasContainerID } from "constants/domLocators";
 import { Layers } from "constants/Layers";
 import { trans } from "i18n";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import styled from "styled-components";
 import { useUserViewMode } from "util/hooks";
 import { NameConfig, withExposingConfigs } from "../generators/withExposing";
 
-const EventOptions = [closeEvent] as const;
+const EventOptions = [openEvent, closeEvent] as const;
 
 const DEFAULT_WIDTH = 378;
 
@@ -121,7 +121,9 @@ let TmpDrawerComp = (function () {
               props.visible.onChange(false);
             }}
             afterOpenChange={(visible) => {
-              if (!visible) {
+              if (visible) {
+                props.onEvent("open");
+              } else {
                 props.onEvent("close");
               }
             }}

@@ -278,6 +278,8 @@ export const zh = {
         clickDesc: "在点击时触发",
         close: "关闭",
         closeDesc: "在关闭时触发",
+        open: "打开",
+        openDesc: "在打开时触发",
         parse: "解析",
         parseDesc: "在解析时触发",
         success: "成功",
@@ -1630,6 +1632,8 @@ export const zh = {
         loadingDesc: "表单是否正在加载中?",
     },
     modalComp: {
+        open: "打开",
+        openDesc: "对话框打开时触发",
         close: "关闭",
         closeDesc: "对话框关闭时触发",
         openModalDesc: "打开对话框",

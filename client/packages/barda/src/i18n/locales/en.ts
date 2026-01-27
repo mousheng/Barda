@@ -283,6 +283,8 @@ export const en = {
     clickDesc: "Triggers on click",
     close: "Close",
     closeDesc: "Triggers on close",
+    open: "Open",
+    openDesc: "Triggers on open",
     parse: "Parse",
     parseDesc: "Triggers on parse",
     success: "Success",
@@ -1651,6 +1653,8 @@ export const en = {
     loadingDesc: "Whether the form is loading?",
   },
   modalComp: {
+    open: "Open",
+    openDesc: "Triggered when the dialog box is opened",
     close: "Close",
     closeDesc: "Triggered when the dialog box is closed",
     openModalDesc: "Open the dialog box",
