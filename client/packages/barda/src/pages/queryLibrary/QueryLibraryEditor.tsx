@@ -1,31 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-import { fetchDatasource, fetchDataSourceTypes } from "../../redux/reduxActions/datasourceActions";
-import { useDispatch, useSelector } from "react-redux";
-import { getUser } from "../../redux/selectors/usersSelectors";
 import {
-  createQueryLibrary,
-  createQueryLibraryRecord,
-  fetchQueryLibrary,
-  fetchQueryLibraryRecord,
-  updateQueryLibrary,
-} from "../../redux/reduxActions/queryLibraryActions";
-import {
-  getQueryLibrary,
-  getQueryLibraryRecords,
-} from "../../redux/selectors/queryLibrarySelectors";
-import styled from "styled-components";
-import { LeftNav } from "./LeftNav";
-import { ResCreatePanel } from "../../components/ResCreatePanel";
-import { EmptyQueryWithoutTab } from "../editor/bottom/BottomContent";
-import { BottomResTypeEnum } from "../../types/bottomRes";
-import { useCompInstance } from "../../comps/utils/useCompInstance";
-import { QueryLibraryComp } from "../../comps/comps/queryLibrary/queryLibraryComp";
-import { useSearchParam, useThrottle } from "react-use";
-import { Comp } from "barda-core";
-import { LibraryQuery } from "../../api/queryLibraryApi";
-import { NameGenerator } from "../../comps/utils";
-import { QueryLibraryHistoryView } from "./QueryLibraryHistoryView";
+  Datasource,
+  apiPluginsForQueryLibrary,
+  databasePlugins,
+} from "@barda/constants/datasourceConstants";
 import { Form } from "antd";
+import { CheckboxOptionType } from "antd/lib/checkbox/Group";
+import { Comp } from "barda-core";
 import {
   CustomModal,
   DatasourceForm,
@@ -33,18 +13,38 @@ import {
   FormRadioItem,
   FormSection,
   TacoButton,
+  messageInstance,
 } from "barda-design";
-import { CheckboxOptionType } from "antd/lib/checkbox/Group";
+import { registryDataSourcePlugin } from "constants/queryConstants";
 import { trans } from "i18n";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useSearchParam, useThrottle } from "react-use";
+import styled from "styled-components";
+import { LibraryQuery } from "../../api/queryLibraryApi";
+import { ResCreatePanel } from "../../components/ResCreatePanel";
+import { QueryLibraryComp } from "../../comps/comps/queryLibrary/queryLibraryComp";
+import { NameGenerator } from "../../comps/utils";
+import { useCompInstance } from "../../comps/utils/useCompInstance";
+import { fetchDataSourceTypes, fetchDatasource } from "../../redux/reduxActions/datasourceActions";
+import {
+  createQueryLibrary,
+  createQueryLibraryRecord,
+  fetchQueryLibrary,
+  fetchQueryLibraryRecord,
+  updateQueryLibrary,
+} from "../../redux/reduxActions/queryLibraryActions";
 import { getDataSource } from "../../redux/selectors/datasourceSelectors";
 import {
-  apiPluginsForQueryLibrary,
-  databasePlugins,
-  Datasource,
-} from "@barda/constants/datasourceConstants";
+  getQueryLibrary,
+  getQueryLibraryRecords,
+} from "../../redux/selectors/queryLibrarySelectors";
+import { getUser } from "../../redux/selectors/usersSelectors";
+import { BottomResTypeEnum } from "../../types/bottomRes";
+import { EmptyQueryWithoutTab } from "../editor/bottom/BottomContent";
+import { LeftNav } from "./LeftNav";
+import { QueryLibraryHistoryView } from "./QueryLibraryHistoryView";
 import { importQueryLibrary } from "./importQueryLibrary";
-import { registryDataSourcePlugin } from "constants/queryConstants";
-import { messageInstance } from "barda-design";
 
 const Wrapper = styled.div`
   display: flex;
@@ -145,9 +145,11 @@ export const QueryLibraryEditor = () => {
     .map((info) => info.datasource);
 
   const recentlyUsed = Object.values(queryLibrary)
-    .map((i) => i.libraryQueryDSL?.query.datasourceId)
-    .map((id) => datasource.find((d) => d.id === id))
-    .filter((i) => !!i) as Datasource[];
+    .sort((a, b) => (b.createTime || 0) - (a.createTime || 0))
+    .map((i) => i.libraryQueryDSL?.query.compType)
+    .filter((compType) => !!compType)
+    .map((compType) => datasource.find((d) => d.type === compType))
+    .filter((d) => !!d) as Datasource[];
 
   const nameGenerator = new NameGenerator();
   nameGenerator.init(Object.values(queryLibrary).map((t) => t.name));
@@ -189,22 +191,7 @@ export const QueryLibraryEditor = () => {
         readOnly={showHistory}
       />
       <RightContent>
-        {!selectedQuery || !comp?.children.query.children.id.getView() ? (
-          EmptyQueryWithoutTab
-        ) : showHistory ? (
-          <QueryLibraryHistoryView
-            libraryQueryId={selectedQuery}
-            compContainer={container}
-            onClose={() => setShowHistory(false)}
-          />
-        ) : (
-          comp.propertyView({
-            onPublish: () => setPublishModalVisible(true),
-            onHistoryShow: () => setShowHistory(true),
-          })
-        )}
-
-        {isCreatePanelShow && (
+        {isCreatePanelShow ? (
           <ResCreatePanel
             recentlyUsed={recentlyUsed}
             datasource={datasource.filter((d) => d.creationSource !== 2)}
@@ -223,6 +210,19 @@ export const QueryLibraryEditor = () => {
               })
             }
           />
+        ) : !selectedQuery || !comp?.children.query.children.id.getView() ? (
+          EmptyQueryWithoutTab
+        ) : showHistory ? (
+          <QueryLibraryHistoryView
+            libraryQueryId={selectedQuery}
+            compContainer={container}
+            onClose={() => setShowHistory(false)}
+          />
+        ) : (
+          comp.propertyView({
+            onPublish: () => setPublishModalVisible(true),
+            onHistoryShow: () => setShowHistory(true),
+          })
         )}
       </RightContent>
       <PublishModal
