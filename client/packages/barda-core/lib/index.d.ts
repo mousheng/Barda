@@ -207,6 +207,7 @@ declare class ValueAndMsg<T> {
 interface CodeNodeOptions {
     codeType?: CodeType;
     evalWithMethods?: boolean;
+    isAsync?: boolean;
 }
 /**
  * 用户输入节点
@@ -223,6 +224,7 @@ declare class CodeNode extends AbstractNode<ValueAndMsg<unknown>> {
     readonly type = "input";
     private readonly codeType?;
     private readonly evalWithMethods;
+    private readonly isAsync;
     private directDepends;
     constructor(unevaledValue: string, options?: CodeNodeOptions | undefined);
     private convertedValue;

@@ -1,4 +1,4 @@
-import { FunctionControl } from "comps/controls/codeControl";
+import { AsyncFunctionControl } from "comps/controls/codeControl";
 import { MultiCompBuilder } from "comps/generators";
 import { QueryResult } from "./queryComp";
 import { QueryTutorials } from "util/tutorialUtils";
@@ -11,7 +11,7 @@ import { promiseWithTimeout } from "barda-core";
 
 export const JSQuery = (function () {
   const childrenMap = {
-    script: FunctionControl,
+    script: AsyncFunctionControl,
   };
   return new MultiCompBuilder(childrenMap, (props) => {
     const { orgCommonSettings } = getGlobalSettings();
@@ -45,7 +45,7 @@ export const JSQuery = (function () {
       return (
         <>
           {children.script.propertyView({
-            placeholder: "return 1 + 1",
+            placeholder: "return await query1.run()",
             placement: "bottom",
             styleName: "medium",
           })}

@@ -1389,13 +1389,13 @@ function evalFunctionResult(unevaledValue, context, methods) {
         });
     });
 }
-function string2Fn(unevaledValue, type, methods) {
+function string2Fn(unevaledValue, type, methods, isAsync) {
     if (type) {
         switch (type) {
             case "JSON":
                 return function (context) { return evalJson(unevaledValue, context); };
             case "Function":
-                return function (context) { return evalFunction(unevaledValue, context, methods); };
+                return function (context) { return evalFunction(unevaledValue, context, methods, isAsync); };
         }
     }
     return function (context) { return evalDefault(unevaledValue, context); };
@@ -1417,7 +1417,7 @@ var CodeNode = /** @class */ (function (_super) {
     __extends(CodeNode, _super);
     function CodeNode(unevaledValue, options) {
         var _this = this;
-        var _a;
+        var _a, _b;
         _this = _super.call(this) || this;
         _this.unevaledValue = unevaledValue;
         _this.options = options;
@@ -1425,6 +1425,7 @@ var CodeNode = /** @class */ (function (_super) {
         _this.directDepends = new Map();
         _this.codeType = options === null || options === void 0 ? void 0 : options.codeType;
         _this.evalWithMethods = (_a = options === null || options === void 0 ? void 0 : options.evalWithMethods) !== null && _a !== void 0 ? _a : true;
+        _this.isAsync = (_b = options === null || options === void 0 ? void 0 : options.isAsync) !== null && _b !== void 0 ? _b : false;
         return _this;
     }
     // FIXME: optimize later
@@ -1524,7 +1525,7 @@ var CodeNode = /** @class */ (function (_super) {
             // 合并具有相同名称的节点
             var dependingNodes = mergeNodesWithSameName(dependingNodeMap);
             // 将未评估的值和相关配置转换为函数
-            var fn = string2Fn(this.unevaledValue, this.codeType, this.evalWithMethods ? methods : {});
+            var fn = string2Fn(this.unevaledValue, this.codeType, this.evalWithMethods ? methods : {}, this.isAsync);
             // 使用依赖节点和转换后的函数创建评估节点
             var evalNode = withFunction(fromRecord(dependingNodes), fn);
             // 评估当前节点的值

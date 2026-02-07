@@ -432,7 +432,7 @@ const esLintSource = async (view: EditorView) => {
   // refer to esLint implementation from @codemirror/lang-javascript
   // config reference: https://eslint.org/docs/head/user-guide/configuring/
   const config: any = {
-    parserOptions: { ecmaVersion: "latest", sourceType: "script" },
+    parserOptions: { ecmaVersion: "2022", sourceType: "script" },
     env: { browser: true, node: true, es2021: true },
     rules: {
       // https://github.com/mysticatea/eslint4b/issues/17

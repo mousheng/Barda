@@ -1984,7 +1984,7 @@
   },
   "await": {
     "!type": "+Object",
-    "!doc": "await操作符用于等待Promise。它只能在async函数中使用。",
+    "!doc": "await操作符用于等待Promise。",
     "!url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/await"
   },
   "const": {

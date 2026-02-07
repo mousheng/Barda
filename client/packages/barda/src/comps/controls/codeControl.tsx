@@ -67,7 +67,7 @@ interface CodeControlParams<T> extends CodeNodeOptions {
 export function codeControl<
   T extends JSONValue | RegExp | undefined | Function | Record<string, unknown>
 >(transformFn: (value: unknown) => T, codeControlParams?: CodeControlParams<T>) {
-  const { defaultValue, defaultCode, codeType, evalWithMethods = false } = codeControlParams || {};
+  const { defaultValue, defaultCode, codeType, evalWithMethods = false, isAsync = false } = codeControlParams || {};
   const transform = transformWrapper(transformFn, defaultValue);
 
   class CodeControl extends AbstractComp<T, string, Node<ValueAndMsg<T>>> {
@@ -90,7 +90,7 @@ export function codeControl<
       super(params);
       this.unevaledValue = params.value?.toString() ?? defaultCode ?? "";
       this._node = withFunction(
-        new CodeNode(this.unevaledValue, { codeType, evalWithMethods }),
+        new CodeNode(this.unevaledValue, { codeType, evalWithMethods, isAsync }),
         transform
       );
       this._exposingNode = withFunction(this._node, (x) => x.value);
@@ -528,6 +528,16 @@ export const FunctionControl = codeControl<CodeFunction>(
     return () => { };
   },
   { codeType: "Function", evalWithMethods: true }
+);
+
+export const AsyncFunctionControl = codeControl<CodeFunction>(
+  (value) => {
+    if (typeof value === "function") {
+      return value as CodeFunction;
+    }
+    return () => { };
+  },
+  { codeType: "Function", evalWithMethods: true, isAsync: true }
 );
 
 export const TransformerCodeControl = codeControl<JSONValue>(

@@ -199,13 +199,13 @@ export async function evalFunctionResult(
   }
 }
 
-export function string2Fn(unevaledValue: string, type?: CodeType, methods?: EvalMethods): Fn {
+export function string2Fn(unevaledValue: string, type?: CodeType, methods?: EvalMethods, isAsync?: boolean): Fn {
   if (type) {
     switch (type) {
       case "JSON":
         return (context) => evalJson(unevaledValue, context);
       case "Function":
-        return (context) => evalFunction(unevaledValue, context, methods);
+        return (context) => evalFunction(unevaledValue, context, methods, isAsync);
     }
   }
   return (context) => evalDefault(unevaledValue, context);

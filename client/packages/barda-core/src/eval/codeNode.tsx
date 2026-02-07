@@ -15,6 +15,9 @@ export interface CodeNodeOptions {
 
   // whether to support comp methods?
   evalWithMethods?: boolean;
+
+  // 函数是否为异步函数
+  isAsync?: boolean;
 }
 
 const IS_FETCHING_FIELD = "isFetching";
@@ -35,12 +38,14 @@ export class CodeNode extends AbstractNode<ValueAndMsg<unknown>> {
 
   private readonly codeType?: CodeType;
   private readonly evalWithMethods: boolean;
+  private readonly isAsync: boolean;
   private directDepends = new Map<Node<unknown>, Set<string>>();
 
   constructor(readonly unevaledValue: string, readonly options?: CodeNodeOptions) {
     super();
     this.codeType = options?.codeType;
     this.evalWithMethods = options?.evalWithMethods ?? true;
+    this.isAsync = options?.isAsync ?? false;
   }
 
   // FIXME: optimize later
@@ -148,7 +153,7 @@ export class CodeNode extends AbstractNode<ValueAndMsg<unknown>> {
       // 合并具有相同名称的节点
       const dependingNodes = mergeNodesWithSameName(dependingNodeMap);
       // 将未评估的值和相关配置转换为函数
-      const fn = string2Fn(this.unevaledValue, this.codeType, this.evalWithMethods ? methods : {});
+      const fn = string2Fn(this.unevaledValue, this.codeType, this.evalWithMethods ? methods : {}, this.isAsync);
       // 使用依赖节点和转换后的函数创建评估节点
       const evalNode = withFunction(fromRecord(dependingNodes), fn);
       // 评估当前节点的值

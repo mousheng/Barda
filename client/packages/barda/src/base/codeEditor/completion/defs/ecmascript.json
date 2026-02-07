@@ -1984,7 +1984,7 @@
   },
   "await": {
     "!type": "+Object",
-    "!doc": "The await operator is used to wait for a Promise. It can only be used inside an async function.",
+    "!doc": "The await operator is used to wait for a Promise.",
     "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await"
   },
   "const": {
