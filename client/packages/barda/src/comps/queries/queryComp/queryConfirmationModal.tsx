@@ -34,7 +34,7 @@ export const QueryConfirmationModal = new MultiCompBuilder(
       {children.showConfirmationModal.propertyView({
         label: trans("query.showConfirmationModal"),
         type: "checkbox",
-        placement: "bottom",
+        placement: "right",
       })}
       {children.showConfirmationModal.getView() &&
         children.confirmationMessage.propertyView({

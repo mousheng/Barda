@@ -68,6 +68,13 @@ const SwitchDiv = styled.div<{
     }
   }
   ${(props) => {
+    if (props.$placement === "right") {
+      return css`
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+        margin-left: 112px;
+      `;
+    }
     if (props.$placement === "bottom") {
       return css`
         margin-left: 112px;
@@ -82,12 +89,14 @@ const LabelDiv = styled.div`
   justify-content: space-between;
 `;
 
-const ChildrenWrapper = styled.div`
-  flex: 1;
+const ChildrenWrapper = styled.div<{
+  $placement?: ControlPlacement;
+}>`
+  flex: ${(props) => (props.$placement === "right" ? "0 0 auto" : "1")};
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: ${(props) => (props.$placement === "right" ? "flex-start" : "flex-end")};
 `;
 
 const SwitchLastNode = styled.div`
@@ -161,7 +170,7 @@ export const SwitchWrapper = (props: {
           <ToolTipLabel title={tooltip} label={label} />
         </LabelDiv>
       ) : ""}
-      <ChildrenWrapper>
+      <ChildrenWrapper $placement={props.placement}>
         <SwitchLastNode className="last-node">{props.lastNode}</SwitchLastNode>
         {props.children}
       </ChildrenWrapper>

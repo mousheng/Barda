@@ -189,7 +189,7 @@ export const QueryNotificationControl = class extends QueryNotificationTmpContro
           {this.children.showFail.propertyView({
             label: trans("query.showFailNotification"),
             type: "checkbox",
-            placement: "bottom",
+            placement: "right",
           })}
 
           {this.children.fail.propertyView({
@@ -210,7 +210,7 @@ export const QueryNotificationControl = class extends QueryNotificationTmpContro
             {this.children.showSuccess.propertyView({
               label: trans("query.showSuccessNotification"),
               type: "checkbox",
-              placement: "bottom",
+              placement: "right",
             })}
             {this.children.success.getPropertyView()}
           </QuerySectionWrapper>
