@@ -121,7 +121,7 @@ export function QueryPropertyView(props: { comp: InstanceType<typeof QueryComp> 
                     {children.cancelPrevious.propertyView({
                       label: trans("query.cancelPrevious"),
                       type: "checkbox",
-                      placement: "bottom",
+                      placement: "right",
                       tooltip: trans("query.cancelPreviousTooltip"),
                     })}
                   </>
