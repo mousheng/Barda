@@ -2329,8 +2329,8 @@ export const en = {
   },
   queryTutorial: {
     js: "",
-    transformer: "https://docs.barda.dev/build-apps/write-javascript/transformers",
-    tempState: "https://docs.barda.dev/build-apps/write-javascript/temporary-state",
+    transformer: "https://docs.barda.com.cn/#/javascript-in-barda/using-transformer",
+    tempState: "https://docs.barda.com.cn/#/javascript-in-barda/using-temp-state",
   },
   customComponent: {
     entryUrl: "https://custom-component.barda.dev/index.html",

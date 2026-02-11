@@ -2298,8 +2298,8 @@ export const zh = {
     },
     queryTutorial: {
         js: "",
-        transformer: "https://docs.Barda.cloud/build-apps/write-javascript/transformers",
-        tempState: "https://docs.Barda.cloud/build-apps/write-javascript/temporary-state",
+        transformer: "https://docs.barda.com.cn/#/javascript-in-barda/using-transformer",
+        tempState: "https://docs.barda.com.cn/#/javascript-in-barda/using-temp-state",
     },
     customComponent: {
         entryUrl: "https://sdk.Barda.cloud/custom_component.html",
