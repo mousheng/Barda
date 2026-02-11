@@ -1411,7 +1411,7 @@ export const en = {
   },
   audio: {
     src: "Audio URL",
-    defaultSrcUrl: "https://cdn-files.barda.dev/canon-excerpt.mp3",
+    defaultSrcUrl: "https://files.barda.com.cn/barda/birds-chirping.mp3",
     autoPlay: "Autoplay",
     loop: "Loop",
     srcDesc: "Current audio URL",
@@ -1807,7 +1807,7 @@ export const en = {
     phoneColumn: "Phone",
     subTitle: "Title",
     linkLabel: "Link",
-    linkUrl: "cloud.barda.dev",
+    linkUrl: "www.barda.com.cn",
     progressLabel: "Progress",
     sliderLabel: "Slider",
     radioLabel: "Radio",
@@ -2150,7 +2150,7 @@ export const en = {
     jsLibraryInstallSuccess: "JavaScript library installed successfully",
     jsLibraryInstallFailed: "JavaScript library installation failed",
     jsLibraryInstallFailedCloud:
-      "Perhaps the library is not available in the sandbox, [Documentation](https://docs.barda.dev/build-apps/write-javascript/use-third-party-libraries#manually-import-libraries)\n{message}",
+      "Perhaps the library is not available in the sandbox, [Documentation](https://docs.Barda.com.cn/build-apps/write-javascript/use-third-party-libraries#manually-import-libraries)\n{message}",
     jsLibraryInstallFailedHost: "{message}",
     add: "Add New",
     jsHelpText: "Add a global method or variable to the current application.",
@@ -2301,8 +2301,8 @@ export const en = {
     showBorder: "Show border",
   },
   docUrls: {
-    docHome: "https://docs.barda.dev/",
-    components: "https://cloud.barda.dev/components?n={compType}",
+    docHome: "https://docs.barda.com.cn/",
+    components: "https://www.barda.com.cn/components/{compType}",
     module: "",
     optionList: "",
     terms: "",
@@ -2310,12 +2310,12 @@ export const en = {
     aboutUs: "",
     changeLog: "",
     introVideo: "",
-    devNpmPlugin: "https://docs.barda.dev/build-plugins/develop-your-first-plugin",
+    devNpmPlugin: "https://docs.barda.com.cn/build-plugins/develop-your-first-plugin",
     devNpmPluginText: "How to develop npm plugin",
-    useHost: "https://docs.barda.dev/self-hosting/access-local-database-or-api",
+    useHost: "https://docs.barda.com.cn/#/visit-host-api-or-db",
     eventHandlerSlowdown:
-      "https://docs.barda.dev/build-apps/event-handlers#debounce-and-throttle",
-    thirdLib: "https://docs.barda.dev/build-apps/write-javascript/use-third-party-libraries",
+      "https://docs.barda.com.cn/#/event-handler?id=%e9%98%b2%e6%8a%96%e8%8a%82%e6%b5%81",
+    thirdLib: "https://docs.barda.com.cn/#/javascript-in-barda/use-third-party-libraries",
     thirdLibUrlText: "Use third-party libraries",
   },
   datasourceTutorial: {
@@ -2332,15 +2332,11 @@ export const en = {
     transformer: "https://docs.barda.com.cn/#/javascript-in-barda/using-transformer",
     tempState: "https://docs.barda.com.cn/#/javascript-in-barda/using-temp-state",
   },
-  customComponent: {
-    entryUrl: "https://custom-component.barda.dev/index.html",
-  },
   template: {
     cloneUrl: "/apps/template-import/",
   },
   bardaUrl: {
-    createIssue: "https://github.com/barda-dev/barda/issues",
-    discord: "https://discord.com/invite/z5W2YHXdtt",
+    createIssue: "https://github.com/mousheng/Barda/issues",
   },
   componentDoc: {
     markdownDemoText:

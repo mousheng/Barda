@@ -174,7 +174,6 @@ const docHomeUrl = trans("docUrls.docHome");
 const changeLogDocUrl = trans("docUrls.changeLog");
 const introVideoUrl = trans("docUrls.introVideo");
 const issueUrl = trans("bardaUrl.createIssue");
-const discordUrl = trans("bardaUrl.discord");
 
 export const HelpDropdown = memo((props: HelpDropdownProps) => {
   const [showHelp, setShowHelp] = useState(true);
@@ -251,9 +250,6 @@ export const HelpDropdown = memo((props: HelpDropdownProps) => {
         case "issue":
           window.open(issueUrl);
           return;
-        case "discord":
-          window.open(discordUrl);
-          return;
         case "shortcutList":
           props.setShowShortcutList?.(true);
           return;
@@ -309,17 +305,6 @@ export const HelpDropdown = memo((props: HelpDropdownProps) => {
               <ItemWrapper>
                 <HelpGithubIcon />
                 <span>{trans("help.submitIssue")}</span>
-              </ItemWrapper>
-            ),
-          }
-          : null,
-        discordUrl
-          ? {
-            key: "discord",
-            label: (
-              <ItemWrapper>
-                <HelpDiscordIcon />
-                <span>{trans("help.chat")}</span>
               </ItemWrapper>
             ),
           }

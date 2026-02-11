@@ -1392,7 +1392,7 @@ export const zh = {
     },
     audio: {
         src: "音频链接",
-        defaultSrcUrl: "https://cdn-files.Barda.dev/canon-excerpt.mp3",
+        defaultSrcUrl: "https://files.barda.com.cn/barda/birds-chirping.mp3",
         autoPlay: "自动播放",
         loop: "循环播放",
         srcDesc: "当前音频链接",
@@ -1786,7 +1786,7 @@ export const zh = {
         phoneColumn: "电话",
         subTitle: "标题",
         linkLabel: "链接",
-        linkUrl: "cloud.Barda.dev",
+        linkUrl: "www.barda.com.cn",
         progressLabel: "进度",
         sliderLabel: "滑块",
         radioLabel: "单选按钮",
@@ -2270,8 +2270,8 @@ export const zh = {
         showBorder: "显示边框"
     },
     docUrls: {
-        docHome: "https://docs.Barda.cloud/",
-        components: "https://cloud.Barda.dev/components?n={compType}",
+        docHome: "https://docs.barda.com.cn/",
+        components: "https://www.barda.com.cn/components/{compType}",
         module: "",
         optionList: "",
         terms: "",
@@ -2281,10 +2281,10 @@ export const zh = {
         introVideo: "",
         devNpmPlugin: "https://docs.Barda.cloud/build-plugins/develop-your-first-plugin",
         devNpmPluginText: "如何开发npm插件?",
-        useHost: "https://docs.Barda.cloud/self-hosting/access-local-database-or-api",
+        useHost: "https://docs.barda.com.cn/#/visit-host-api-or-db",
         eventHandlerSlowdown:
-            "https://docs.Barda.cloud/build-apps/event-handlers#debounce-and-throttle",
-        thirdLib: "https://docs.Barda.cloud/build-apps/write-javascript/use-third-party-libraries",
+            "https://docs.barda.com.cn/#/event-handler?id=%e9%98%b2%e6%8a%96%e8%8a%82%e6%b5%81",
+        thirdLib: "https://docs.barda.com.cn/#/javascript-in-barda/use-third-party-libraries",
         thirdLibUrlText: "使用第三方插件库",
     },
     datasourceTutorial: {
@@ -2301,15 +2301,11 @@ export const zh = {
         transformer: "https://docs.barda.com.cn/#/javascript-in-barda/using-transformer",
         tempState: "https://docs.barda.com.cn/#/javascript-in-barda/using-temp-state",
     },
-    customComponent: {
-        entryUrl: "https://sdk.Barda.cloud/custom_component.html",
-    },
     template: {
         cloneUrl: "/apps/template-import/",
     },
     bardaUrl: {
-        createIssue: "https://github.com/barda-dev/barda/issues",
-        discord: "https://discord.com/invite/z5W2YHXdtt",
+        createIssue: "https://github.com/mousheng/Barda/issues",
     },
     componentDoc: {
         markdownDemoText: "**Barda** 是一个开发人员友好的开源低代码平台,可在几分钟内构建内部应用.",
