@@ -218,6 +218,13 @@ public class OrganizationServiceImpl implements OrganizationService {
                     organization.setState(ACTIVE);
                     return Mono.just(organization);
                 })
+                .flatMap(org -> repository.count()
+                        .map(count -> {
+                            if (count == 0 && !org.isPrimary()) {
+                                org.setIsPrimaryOrganization(true);
+                            }
+                            return org;
+                        }))
                 .flatMap(repository::save)
                 .flatMap(newOrg -> onOrgCreated(creatorId, newOrg))
                 .log();

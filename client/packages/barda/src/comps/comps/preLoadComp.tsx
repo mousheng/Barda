@@ -11,7 +11,7 @@ import {
 import { PlusIcon, ScrollBar } from "barda-design";
 import { EmptyContent } from "components/EmptyContent";
 import { HelpText } from "components/HelpText";
-import { JSLibraryModal } from "components/JSLibraryModal";
+import { UnifiedLibraryModal } from "components/UnifiedLibraryModal";
 import { JSLibraryTree } from "components/JSLibraryTree";
 import { CodeTextControl } from "comps/controls/codeTextControl";
 import SimpleStringControl from "comps/controls/simpleStringControl";
@@ -290,12 +290,18 @@ export class PreloadComp extends PreloadCompBase {
           title={trans("advanced.preloadLibsTitle")}
           extra={
             <AddJSLibraryButton>
-              <JSLibraryModal
+              <UnifiedLibraryModal
                 runInHost={libs.runInHost}
                 trigger={<PlusIcon height={"46px"} />}
-                onCheck={(url) => !libs.getAllLibs().includes(url)}
+                onCheck={(url) => !libs.getAllLibs().includes(url ?? "")}
                 onLoad={(url) => libs.loadScript(url)}
                 onSuccess={(url) => libs.dispatch(libs.pushAction(url))}
+                onDelete={(url) => {
+                  const idx = libs.getView().findIndex((i: InstanceType<typeof SimpleStringControl>) => i.getView() === url);
+                  if (idx !== -1) {
+                    libs.dispatch(libs.deleteAction(idx));
+                  }
+                }}
               />
             </AddJSLibraryButton>
           }

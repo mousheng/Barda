@@ -5,7 +5,7 @@ import { AxiosResponse } from "axios";
 import { validateResponse } from "api/apiUtils";
 import log from "loglevel";
 import { messageInstance } from "barda-design";
-import { JSLibraryApi, JSLibraryMeta, RecommendedJSLibraryMeta } from "api/jsLibraryApi";
+import { JSLibraryApi, JSLibraryMeta } from "api/jsLibraryApi";
 import { FetchJSLibraryMetasPayload } from "redux/reduxActions/jsLibraryActions";
 
 function* fetchMetas(action: ReduxAction<FetchJSLibraryMetasPayload>) {
@@ -28,7 +28,7 @@ function* fetchMetas(action: ReduxAction<FetchJSLibraryMetasPayload>) {
 
 function* fetchRecommends() {
   try {
-    const response: AxiosResponse<GenericApiResponse<RecommendedJSLibraryMeta[]>> =
+    const response: AxiosResponse<GenericApiResponse<JSLibraryMeta[]>> =
       yield JSLibraryApi.fetchRecommends();
     const isValidResponse: boolean = validateResponse(response);
 

@@ -158,20 +158,29 @@ export const JSLibraryTree = (props: {
 
   const finalMetas = useMemo(
     () =>
-      nameAndVersions.map(({ name, ...others }) => ({
-        ...metas[name],
-        ...others,
-        name,
-      })),
+      nameAndVersions.map(({ name, url, ...others }) => {
+        // 对于内部库，使用URL作为key；对于外部库，使用name作为key
+        const metaKey = url.startsWith('/api/libraries/') ? url : name;
+        return {
+          ...metas[metaKey],
+          ...others,
+          name,
+          url,
+        };
+      }),
     [nameAndVersions, metas]
   );
 
   useEffect(() => {
     const notExistMetas = nameAndVersions
-      .filter(({ name }) => !metas[name])
-      .map(({ name }) => name);
+      .filter(({ name, url }) => {
+        // 对于内部库，使用URL作为key；对于外部库，使用name作为key
+        const metaKey = url.startsWith('/api/libraries/') ? url : name;
+        return !metas[metaKey];
+      })
+      .map(({ name, url }) => url.startsWith('/api/libraries/') ? url : name);
     !!notExistMetas.length && dispatch(fetchJSLibraryMetasAction(notExistMetas));
-  }, []);
+  }, [dispatch, metas, nameAndVersions]);
 
   return (
     <JSLibraryCollapse

@@ -156,6 +156,13 @@ public final class NewUrl {
     public static final String MATERIAL_URL = PREFIX + "/materials";
 
     /**
+     * 用于构建库文件 URL 的常量。
+     *
+     * 该常量用于在 URL 前添加 "/api/libraries" 前缀。
+     */
+    public static final String LIBRARY_URL = PREFIX + "/libraries";
+
+    /**
      * 用于构建联系同步 URL 的常量。
      *
      * 该常量用于在 URL 前添加 "/api/sync" 前缀。

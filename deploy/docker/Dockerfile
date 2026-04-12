@@ -54,7 +54,7 @@ RUN chmod +x /barda/api-service/*.sh
 ## To create a separate image out of it, build it with:
 ##   DOCKER_BUILDKIT=1 docker build -f deploy/docker/Dockerfile -t bardadev/barda-ce-api-service --target barda-ce-api-service .
 ##
-FROM ubuntu:jammy as barda-ce-api-service
+FROM ubuntu:jammy AS barda-ce-api-service
 LABEL maintainer="barda"
 
 # 使用国内镜像源加速apt-get
@@ -76,7 +76,7 @@ CMD [ "sh" , "/barda/api-service/entrypoint.sh" ]
 ##
 ## Build barda node service
 ##
-FROM ubuntu:jammy as build-node-service
+FROM ubuntu:jammy AS build-node-service
 
 # 使用国内镜像源加速apt-get
 RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.aliyun.com@g' /etc/apt/sources.list \
@@ -105,7 +105,7 @@ RUN chmod +x /barda/node-service/*.sh
 ## To create a separate image out of it, build it with:
 ##   DOCKER_BUILDKIT=1 docker build -f deploy/docker/Dockerfile -t bardadev/barda-ce-node-service --target barda-ce-node-service .
 ##
-FROM ubuntu:jammy as barda-ce-node-service
+FROM ubuntu:jammy AS barda-ce-node-service
 LABEL maintainer="barda"
 
 # 使用国内镜像源加速apt-get
@@ -152,7 +152,7 @@ RUN yarn build
 ## To create a separate image out of it, build it with:
 ##   DOCKER_BUILDKIT=1 docker build -f deploy/docker/Dockerfile -t bardadev/barda-ce-frontend --target barda-ce-frontend .
 ##
-FROM nginx:1.23.3 as barda-ce-frontend
+FROM nginx:1.23.3 AS barda-ce-frontend
 LABEL maintainer="barda"
 
 # Change default nginx user into barda user
@@ -180,6 +180,9 @@ EXPOSE 3000
 FROM barda-ce-frontend
 LABEL maintainer="barda"
 
+# 创建预装库目录
+RUN mkdir -p /app/preload-libraries
+
 # 使用国内镜像源加速apt-get
 RUN sed -i 's|deb.debian.org|mirrors.aliyun.com|g; s|deb.debian.org|mirrors.aliyun.com|g' /etc/apt/sources.list \
   && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y bash gnupg curl lsb-release \
@@ -194,8 +197,18 @@ RUN sed -i 's|deb.debian.org|mirrors.aliyun.com|g; s|deb.debian.org|mirrors.aliy
   supervisor \
   gosu \
   nodejs \
+  wget \
   && npm install -g yarn \
-  && rm -rf /var/cache/apt/lists
+  && rm -rf /var/cache/apt/lists  \
+  && cd /app/preload-libraries && \
+  # JMESPath 0.16.0
+  wget -O jmespath.min.js https://cdn.jsdelivr.net/npm/jmespath@0.16.0/jmespath.min.js && \
+  # jsPDF 4.2.1
+  wget -O jspdf.min.js https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js  && \
+  # i18next 26.0.4
+  wget -O i18next.min.js https://cdn.jsdelivr.net/npm/i18next@26.0.4/i18next.min.js && \
+  # JSONPath 1.3.0
+  wget -O jsonpath.min.js https://cdn.jsdelivr.net/npm/jsonpath@1.3.0/jsonpath.min.js
 
 # Add barda api-service
 COPY --chown=barda:barda --from=barda-ce-api-service /barda/api-service /barda/api-service

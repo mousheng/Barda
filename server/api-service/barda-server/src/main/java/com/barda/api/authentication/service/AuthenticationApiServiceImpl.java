@@ -34,6 +34,7 @@ import com.barda.api.usermanagement.InvitationApiService;
 import com.barda.api.usermanagement.OrgApiService;
 import com.barda.api.usermanagement.UserApiService;
 import com.barda.api.util.BusinessEventPublisher;
+import com.barda.runner.PreloadLibraryRunner;
 import com.barda.domain.authentication.AuthenticationService;
 import com.barda.domain.authentication.FindAuthConfig;
 import com.barda.domain.authentication.context.AuthRequestContext;
@@ -41,6 +42,7 @@ import com.barda.domain.authentication.context.FormAuthRequestContext;
 import com.barda.domain.organization.model.OrgMember;
 import com.barda.domain.organization.model.Organization;
 import com.barda.domain.organization.model.OrganizationDomain;
+import com.barda.domain.organization.repository.OrganizationRepository;
 import com.barda.domain.organization.service.OrgMemberService;
 import com.barda.domain.organization.service.OrganizationService;
 import com.barda.domain.user.model.AuthUser;
@@ -76,6 +78,9 @@ public class AuthenticationApiServiceImpl implements AuthenticationApiService {
      */
     @Autowired
     private OrganizationService organizationService;
+
+    @Autowired
+    private PreloadLibraryRunner preloadLibraryRunner;
 
     /**
      * 身份验证请求工厂。
@@ -136,6 +141,12 @@ public class AuthenticationApiServiceImpl implements AuthenticationApiService {
      */
     @Autowired
     private OrgMemberService orgMemberService;
+
+    /**
+     * 组织仓库。
+     */
+    @Autowired
+    private OrganizationRepository organizationRepository;
 
     /**
      * 基于表单的身份验证。
@@ -321,7 +332,26 @@ public class AuthenticationApiServiceImpl implements AuthenticationApiService {
      * @return 空Mono
      */
     protected Mono<Void> onUserRegister(User user) {
-        return organizationService.createDefault(user).then();
+        return organizationService.createDefault(user)
+                .flatMap(organization -> {
+                    // 检查是否是第一个组织（count == 1），如果是则导入预载入库
+                    return organizationRepository.count()
+                            .flatMap(count -> {
+                                if (count == 1) {
+                                    log.info("检测到第一个组织 ({}), 正在导入预载库...", organization.getId());
+                                    return preloadLibraryRunner.checkAndImportPreloadLibraries()
+                                            .doOnSuccess(imported -> {
+                                                if (imported) {
+                                                    log.info("预载库导入成功");
+                                                }
+                                            })
+                                            .doOnError(error -> log.error("预载库导入失败", error))
+                                            .onErrorResume(error -> Mono.empty());
+                                }
+                                return Mono.empty();
+                            })
+                            .then();
+                });
     }
 
     /**

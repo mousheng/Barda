@@ -25,8 +25,8 @@ const defaultCode = `
   }
   </style>
   
-  <link rel="stylesheet" type="text/css" href="https://unpkg.com/antd@4.21.4/dist/antd.min.css"/>
-  <script type="text/javascript" src="https://unpkg.com/antd@4.21.4/dist/antd.min.js" ></script>
+  <link rel="stylesheet" type="text/css" href="./lib/antd.min.css"/>
+  <script type="text/javascript" src="./lib/antd.min.js" ></script>
   
   <div id="root"></div>
   

@@ -11,7 +11,7 @@ import { createHtmlPlugin } from "vite-plugin-html";
 import { ensureLastSlash } from "barda-dev-utils/util";
 import { buildVars } from "barda-dev-utils/buildVars";
 import { globalDepPlugin } from "barda-dev-utils/globalDepPlguin";
-import { copyFileSync, mkdirSync, readdirSync, statSync } from "fs";
+import { copyFileSync, mkdirSync, readdirSync, statSync, writeFileSync } from "fs";
 import { join } from "path";
 
 dotenv.config();
@@ -55,41 +55,93 @@ buildVars.forEach(({ name, defaultValue }) => {
   define[name] = JSON.stringify(process.env[name] || defaultValue);
 });
 
-// 复制static文件夹的插件
+// 需要在 build 时下载到 static/lib/ 的 CDN 库
+const SHARED_LIBS = [
+  {
+    url: "https://unpkg.com/react@18/umd/react.production.min.js",
+    filename: "react.production.min.js",
+  },
+  {
+    url: "https://unpkg.com/react-dom@18/umd/react-dom.production.min.js",
+    filename: "react-dom.production.min.js",
+  },
+  {
+    url: "https://unpkg.com/@babel/standalone/babel.min.js",
+    filename: "babel.min.js",
+  },
+  {
+    url: "https://unpkg.com/antd@4.21.4/dist/antd.min.css",
+    filename: "antd.min.css",
+  },
+  {
+    url: "https://unpkg.com/antd@4.21.4/dist/antd.min.js",
+    filename: "antd.min.js",
+  }
+];
+
+// 复制static文件夹的插件，同时自动下载依赖库到 build/static/lib/
 const copyStaticPlugin = () => {
   return {
     name: 'copy-static',
-    closeBundle() {
+    async closeBundle() {
+      // 1. 下载缺失的库到 build/static/lib/
+      const libTargetDir = path.resolve(__dirname, 'build/static/lib');
+      if (!statSync(libTargetDir, { throwIfNoEntry: false })?.isDirectory()) {
+        mkdirSync(libTargetDir, { recursive: true });
+      }
+
+      for (const lib of SHARED_LIBS) {
+        const destPath = join(libTargetDir, lib.filename);
+        if (statSync(destPath, { throwIfNoEntry: false })?.isFile()) {
+          console.log(`⏭️  跳过已有库: ${lib.filename}`);
+          continue;
+        }
+        try {
+          console.log(`📥 正在下载: ${lib.url}`);
+          const response = await fetch(lib.url);
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+          const content = await response.text();
+          writeFileSync(destPath, content);
+          console.log(`✅ 已下载并保存: ${lib.filename}`);
+        } catch (error: any) {
+          console.warn(`⚠️  下载失败 ${lib.filename}: ${error.message}`);
+        }
+      }
+      
+
+      // 2. 复制本地 static 目录到 build/static/
       const sourceDir = path.resolve(__dirname, 'static');
       const targetDir = path.resolve(__dirname, 'build/static');
-      
+
       const copyDir = (src: string, dest: string) => {
         try {
           if (!statSync(src).isDirectory()) return;
-          
+
           if (!statSync(dest, { throwIfNoEntry: false })?.isDirectory()) {
             mkdirSync(dest, { recursive: true });
           }
-          
+
           const files = readdirSync(src);
-          files.forEach(file => {
+          files.forEach((file) => {
             const srcPath = join(src, file);
             const destPath = join(dest, file);
-            
+
             if (statSync(srcPath).isDirectory()) {
               copyDir(srcPath, destPath);
             } else {
               copyFileSync(srcPath, destPath);
             }
           });
-          console.log(`✅ 成功复制static文件夹到 ${targetDir}`);
         } catch (error) {
           console.warn(`❌ 复制static文件夹时出错: ${error.message}`);
         }
       };
-      
+
       copyDir(sourceDir, targetDir);
-    }
+      console.log(`✅ 成功复制static文件夹到 ${targetDir}`);
+    },
   };
 };
 

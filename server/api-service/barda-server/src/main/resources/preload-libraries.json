@@ -1,0 +1,30 @@
+[
+  {
+    "libraryId": "jmespath",
+    "displayName": "JMESPath",
+    "version": "0.16.0",
+    "filename": "jmespath.min.js",
+    "description": "JavaScript 中的 JMESPath 实现"
+  },
+  {
+    "libraryId": "jspdf",
+    "displayName": "jsPDF",
+    "version": "4.2.1",
+    "filename": "jspdf.min.js",
+    "description": "使用JavaScript创建PDF文档"
+  },
+  {
+    "libraryId": "i18next",
+    "displayName": "i18next",
+    "version": "26.0.4",
+    "filename": "i18next.min.js",
+    "description": "i18next 国际化框架"
+  },
+  {
+    "libraryId": "jsonpath",
+    "displayName": "JSONPath Plus",
+    "version": "1.3.0",
+    "filename": "jsonpath.min.js",
+    "description": "使用JSONPath表达式查询JavaScript对象。"
+  }
+]

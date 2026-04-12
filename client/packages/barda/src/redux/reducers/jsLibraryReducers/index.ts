@@ -1,9 +1,9 @@
 import { createReducer } from "util/reducerUtils";
-import { JSLibraryMeta, RecommendedJSLibraryMeta } from "api/jsLibraryApi";
+import { JSLibraryMeta } from "api/jsLibraryApi";
 import { ReduxAction, ReduxActionTypes } from "constants/reduxActionConstants";
 
 export interface JSLibraryState {
-  recommends: RecommendedJSLibraryMeta[];
+  recommends: JSLibraryMeta[];
   meta: Record<string, JSLibraryMeta>;
 }
 
@@ -21,13 +21,17 @@ const jsLibraryReducer = createReducer(initialState, {
       ...state,
       meta: {
         ...state.meta,
-        ...action.payload.reduce((obj, item) => Object.assign(obj, { [item.name]: item }), {}),
+        ...action.payload.reduce((obj, item) => {
+          // 对于内部库，使用downloadUrl作为key；对于外部库，使用name作为key
+          const key = item.downloadUrl?.startsWith('/api/libraries/') ? item.downloadUrl : item.name;
+          return Object.assign(obj, { [key]: item });
+        }, {}),
       },
     };
   },
   [ReduxActionTypes.FETCH_JS_LIB_RECOMMENDS_SUCCESS]: (
     state: JSLibraryState,
-    action: ReduxAction<RecommendedJSLibraryMeta[]>
+    action: ReduxAction<JSLibraryMeta[]>
   ): JSLibraryState => {
     return {
       ...state,

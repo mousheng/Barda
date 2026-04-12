@@ -65,6 +65,13 @@ public class Organization extends HasIdAndAuditing implements BeforeMongodbWrite
     private String contactPhoneNumber;
 
     /**
+     * 是否为主要组织。
+     * 主要组织的管理员可以管理共享库文件。
+     * 默认为 false，向后兼容。
+     */
+    private Boolean isPrimaryOrganization = false;
+
+    /**
      * 组织徽标的资产 ID。
      * 该 ID 用于在 MongoDB 存储中引用徽标资产。
      */
@@ -179,5 +186,14 @@ public class Organization extends HasIdAndAuditing implements BeforeMongodbWrite
         return Optional.ofNullable(organizationDomain)
                 .map(OrganizationDomain::getConfigs)
                 .orElse(Collections.emptyList());
+    }
+
+    /**
+     * 判断是否为主要组织。
+     *
+     * @return true - 是主要组织，false - 不是主要组织
+     */
+    public boolean isPrimary() {
+        return Boolean.TRUE.equals(isPrimaryOrganization);
     }
 }

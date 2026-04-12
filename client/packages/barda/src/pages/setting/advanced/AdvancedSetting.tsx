@@ -18,7 +18,7 @@ import { Prompt } from "react-router";
 import history from "util/history";
 import { Location } from "history";
 import { useExtraAdvanceSettings } from "@barda/pages/setting/advanced/extraAdvancedSetting";
-import { JSLibraryModal } from "components/JSLibraryModal";
+import { UnifiedLibraryModal } from "components/UnifiedLibraryModal";
 import { JSLibraryTree } from "components/JSLibraryTree";
 import { getGlobalSettings } from "comps/utils/globalSettings";
 import { fetchJSLibrary } from "util/jsLibraryUtils";
@@ -217,10 +217,10 @@ export function AdvancedSetting() {
         <div className="section-title">{trans("advanced.preloadLibsTitle")}</div>
         <HelpText style={{ marginBottom: 12 }}>{trans("advanced.preloadLibsHelp")}</HelpText>
         <div className="section-content">
-          <JSLibraryModal
+          <UnifiedLibraryModal
             trigger={<SaveButton buttonType="primary">{trans("addItem")}</SaveButton>}
             runInHost={runJSInHost}
-            onCheck={(url) => !commonSettings.preloadLibs?.includes(url)}
+            onCheck={(url) => !commonSettings.preloadLibs?.includes(url?? "")}
             onLoad={(url) =>
               fetchJSLibrary(url).then((code) => {
                 evalFunc(
@@ -236,6 +236,14 @@ export function AdvancedSetting() {
             }
             onSuccess={(url) => {
               handleSave("preloadLibs")([...(settings.preloadLibs || []), url]);
+            }}
+            onDelete={(url) => {
+              const updatedLibs = (settings.preloadLibs || []).filter((lib) => lib !== url);
+              if (updatedLibs.length !== (settings.preloadLibs || []).length) {
+                handleSave("preloadLibs")(updatedLibs);
+              } else {
+                dispatch(fetchCommonSettings({ orgId: currentUser.currentOrgId }));
+              }
             }}
           />
           {(settings.preloadLibs || [])?.length === 0 && (

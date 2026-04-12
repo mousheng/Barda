@@ -6,3 +6,4 @@ client/packages/openblocks/visualizer.html
 develop/.temp
 .claude/*
 CLAUDE.md
+client/static/lib/*

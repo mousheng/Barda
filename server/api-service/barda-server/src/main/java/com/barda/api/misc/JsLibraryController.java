@@ -19,6 +19,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +32,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.barda.api.framework.view.ResponseView;
+import com.barda.api.library.LibraryApiService;
+import com.barda.domain.library.model.LibraryType;
 import com.barda.infra.constant.NewUrl;
 import com.barda.infra.localcache.ReloadableCache;
 import com.barda.sdk.util.JsonUtils;
@@ -49,6 +52,9 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping(NewUrl.JS_LIBRARY)
 public class JsLibraryController {
+
+    @Autowired
+    private LibraryApiService libraryApiService;
 
     /**
      * NPMJS元数据URL模板。
@@ -134,14 +140,59 @@ public class JsLibraryController {
         }
         return Flux.fromIterable(names)
                 .flatMap(name -> {
+                    // 检查是否是内部库路径
+                    if (isInternalLibraryPath(name)) {
+                        return fetchInternalLibraryMeta(name);
+                    }
+                    // 检查是否是推荐库
                     if (RECOMMENDED_JS_LIB_META_CACHE.containsKey(name)) {
                         return RECOMMENDED_JS_LIB_META_CACHE.get(name).getMonoValue();
                     }
+                    // 从 npm 获取
                     return JS_LIB_META_CACHE.getUnchecked(name)
                             .onErrorReturn(JsLibraryMeta.builder().name(name).build());
                 })
                 .collectList()
                 .map(ResponseView::success);
+    }
+
+    /**
+     * 检查是否是内部库路径。
+     *
+     * @param name 库名称或路径
+     * @return 是否是内部库路径
+     */
+    private boolean isInternalLibraryPath(String name) {
+        return name.startsWith("/api/libraries/shared/") || name.startsWith("/api/libraries/org/");
+    }
+
+    /**
+     * 获取内部库的元数据。
+     *
+     * @param path 库路径
+     * @return 库元数据
+     */
+    private Mono<JsLibraryMeta> fetchInternalLibraryMeta(String path) {
+        // 解析路径：/api/libraries/{type}/{filename}
+        String[] parts = path.split("/");
+        if (parts.length < 5) {
+            return Mono.just(JsLibraryMeta.builder().name(path).build());
+        }
+
+        String typeStr = parts[3];  // "shared" 或 "org"
+        String filename = parts[4];  // 文件名
+
+        LibraryType type = "shared".equals(typeStr) ? LibraryType.SHARED : LibraryType.ORG;
+
+        return libraryApiService.findLibrary(filename, type)
+                .map(libraryMeta -> JsLibraryMeta.builder()
+                        .name(libraryMeta.getDisplayName() != null ? libraryMeta.getDisplayName() : filename)
+                        .latestVersion(libraryMeta.getVersion())
+                        .homepage(null)
+                        .description(libraryMeta.getDescription())
+                        .downloadUrl(path)
+                        .build())
+                .onErrorReturn(JsLibraryMeta.builder().name(path).build());
     }
 
     /**

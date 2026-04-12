@@ -8,6 +8,9 @@ import org.springframework.data.mongodb.UncategorizedMongoDbException;
 import org.springframework.data.mongodb.core.index.CompoundIndexDefinition;
 import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.data.mongodb.core.index.IndexOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
@@ -173,6 +176,51 @@ public class DatabaseChangelog {
     @ChangeSet(order = "018", id = "complete-auth-type", author = "")
     public void completeAuthType(CompleteAuthType completeAuthType) {
         completeAuthType.complete();
+    }
+
+    @ChangeSet(order = "019", id = "init-primary-organization", author = "")
+    public void initPrimaryOrganization(MongockTemplate mongoTemplate) {
+        log.info("开始初始化主要组织...");
+
+        // 检查是否已经有主要组织
+        Organization existingPrimary = mongoTemplate.findOne(
+                Query.query(Criteria.where("isPrimaryOrganization").is(true)),
+                Organization.class
+        );
+
+        if (existingPrimary != null) {
+            log.info("主要组织已存在: {}", existingPrimary.getId());
+            return;
+        }
+
+        // 查找创建时间最早的组织
+        Organization firstOrg = mongoTemplate.findOne(
+                new Query().with(Sort.by(Sort.Direction.ASC, "createdAt")).limit(1),
+                Organization.class
+        );
+
+        if (firstOrg == null) {
+            log.warn("系统中没有组织，跳过主要组织初始化");
+            return;
+        }
+
+        // 标记为主要组织
+        mongoTemplate.updateFirst(
+                Query.query(Criteria.where("_id").is(firstOrg.getId())),
+                Update.update("isPrimaryOrganization", true),
+                Organization.class
+        );
+
+        log.info("已将组织 {} ({}) 标记为主要组织", firstOrg.getName(), firstOrg.getId());
+    }
+
+    @ChangeSet(order = "020", id = "add-library-meta-indexes", author = "")
+    public void addLibraryMetaIndexes(MongockTemplate mongoTemplate) {
+        ensureIndexes(mongoTemplate, com.barda.domain.library.model.LibraryMeta.class,
+                makeIndex("filename", "type", "orgId").unique(),
+                makeIndex("type"),
+                makeIndex("orgId")
+        );
     }
 
     public static Index makeIndex(String... fields) {

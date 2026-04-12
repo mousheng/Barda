@@ -8,11 +8,9 @@ export interface JSLibraryMeta {
   latestVersion: string;
   homepage?: string;
   description?: string;
+  downloadUrl?: string;
 }
 
-export interface RecommendedJSLibraryMeta extends JSLibraryMeta {
-  downloadUrl: string;
-}
 
 export class JSLibraryApi extends Api {
   static url = "/misc/js-library";
@@ -23,7 +21,7 @@ export class JSLibraryApi extends Api {
     return Api.get(JSLibraryApi.url + `/metas`, { name: request.names.join(",") });
   }
 
-  static fetchRecommends(): AxiosPromise<GenericApiResponse<RecommendedJSLibraryMeta[]>> {
+  static fetchRecommends(): AxiosPromise<GenericApiResponse<JSLibraryMeta[]>> {
     return Api.get(JSLibraryApi.url + `/recommendations`);
   }
 }
