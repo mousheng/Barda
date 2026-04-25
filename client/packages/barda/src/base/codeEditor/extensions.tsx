@@ -6,7 +6,7 @@ import {
   closeCompletion,
   moveCompletionSelection,
 } from "@codemirror/autocomplete";
-import { esLint, javascript } from "@codemirror/lang-javascript";
+import { javascript } from "@codemirror/lang-javascript";
 import { json, jsonParseLinter } from "@codemirror/lang-json";
 import { sql } from "@codemirror/lang-sql";
 import { css } from "@codemirror/lang-css";
@@ -426,13 +426,16 @@ function tooltipExtension(tooltipContainer?: HTMLElement): Extension {
 }
 
 const esLintSource = async (view: EditorView) => {
+  const { state } = view;
+  if (state.doc.length === 0) return [];
+
   const eslint4bPrebuilt = await import("eslint4b-prebuilt-2");
   const ESLinter = eslint4bPrebuilt.default;
   const eSLinter = new ESLinter();
   // refer to esLint implementation from @codemirror/lang-javascript
   // config reference: https://eslint.org/docs/head/user-guide/configuring/
   const config: any = {
-    parserOptions: { ecmaVersion: "2022", sourceType: "script" },
+    parserOptions: { ecmaVersion: 2022, sourceType: "script" },
     env: { browser: true, node: true, es2021: true },
     rules: {
       // https://github.com/mysticatea/eslint4b/issues/17
@@ -442,7 +445,52 @@ const esLintSource = async (view: EditorView) => {
   eSLinter.getRules().forEach((desc: any, name: any) => {
     if (desc.meta.docs.recommended && !(name in config.rules)) config.rules[name] = "error";
   });
-  return esLint(eSLinter, config)(view);
+
+  // 不直接使用 @codemirror/lang-javascript 的 esLint() 包装函数，
+  // 因为其内部 mapPos 没有边界检查：当 eslint 报告的行号无效（如解析
+  // 错误时返回 undefined）或超出文档范围时，会导致 doc.line() 崩溃。
+  const { javascriptLanguage } = await import("@codemirror/lang-javascript");
+  const { lines: totalLines, length: docLength } = state.doc;
+  const found: Diagnostic[] = [];
+
+  // 将 eslint 报告的（行, 列）安全地映射到文档绝对偏移量。
+  // eslint 行号是相对于当前 JS 区间起点的 1-based 值，需加 offset.line 转换为文档行号。
+  // 任何无效值（NaN、越界）返回 null，调用方跳过该诊断，避免崩溃。
+  const makeMapPos =
+    (offset: { line: number; col: number }) =>
+    (line: number, col: number): number | null => {
+      const absLine = line + offset.line;
+      if (!Number.isFinite(absLine) || absLine < 1 || absLine > totalLines) return null;
+      const docLine = state.doc.line(absLine);
+      // 第 1 行需减去区间起点列偏移，其余行列号直接使用（eslint 列从 0-based 开始）
+      return docLine.from + col + (line === 1 ? offset.col - 1 : -1);
+    };
+
+  for (const { from, to } of javascriptLanguage.findRegions(state)) {
+    const fromLine = state.doc.lineAt(from);
+    const mapPos = makeMapPos({ line: fromLine.number - 1, col: from - fromLine.from });
+
+    for (const d of eSLinter.verify(state.sliceDoc(from, to), config)) {
+      const rawStart = mapPos(d.line, d.column);
+      if (rawStart === null) continue;
+
+      const start = Math.max(0, Math.min(rawStart, docLength));
+      let end = start;
+      if (d.endLine != null && d.endColumn !== 1) {
+        const rawEnd = mapPos(d.endLine, d.endColumn);
+        if (rawEnd !== null) end = Math.max(start, Math.min(rawEnd, docLength));
+      }
+
+      found.push({
+        from: start,
+        to: end,
+        message: d.message,
+        source: d.ruleId ? `eslint:${d.ruleId}` : "eslint",
+        severity: d.severity === 1 ? "warning" : "error",
+      });
+    }
+  }
+  return found;
 };
 
 function getLintExtension(
