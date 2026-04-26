@@ -2,7 +2,7 @@ import { AutocompleteDataType } from "base/codeEditor/completion/ternServer";
 import _ from "lodash";
 import { evalScript } from "barda-core";
 import { checkCursorInBinding } from "../codeEditorUtils";
-import { Completion, CompletionContext, CompletionResult, EditorView } from "../codeMirror";
+import { Completion, CompletionContext, CompletionResult } from "../codeMirror";
 import { CompletionSource } from "./completion";
 
 const PRIORITY_PROPS = ["value", "selectedRow", "data", "text"];
@@ -36,41 +36,20 @@ export class ExposingCompletionSource extends CompletionSource {
     }
     const [currentData, offset, prefix] = info;
     const keys = Object.keys(currentData).filter((key) => key.startsWith(prefix));
-    // const options = keys.map((key) => {
-    //   const dataType = getDataType(currentData[key]);
-    //   const isBoost = offset === 0 && this.boostExposingData?.hasOwnProperty(key);
-    //   const result: Completion = {
-    //     type: _.lowerCase(dataType),
-    //     label: key,
-    //     detail: _.capitalize(dataType),
-    //     boost: isBoost
-    //       ? 20
-    //       : PRIORITY_PROPS.includes(key)
-    //       ? 3
-    //       : PRIORITY_FUNCTIONS.includes(key)
-    //       ? 2
-    //       : 1,
-    //     apply:
-    //       offset === 0
-    //         ? undefined
-    //         : (view: EditorView, c: Completion, from: number, to: number) => {
-    //             view.dispatch({
-    //               changes: {
-    //                 from: from - 1,
-    //                 to: to,
-    //                 insert: key.match(/^[A-Za-z_$][\w$]*$/)
-    //                   ? `.${key}`
-    //                   : `['${key.replace(/[\\']/g, (c) => "\\" + c)}']`,
-    //               },
-    //             });
-    //           },
-    //   };
-    //   return result;
-    // });
+    const options = keys.map((key) => {
+      const dataType = getDataType(currentData[key]);
+      const result: Completion = {
+        type: _.lowerCase(dataType),
+        label: key,
+        detail: _.capitalize(dataType),
+        boost: offset === 0 ? 2 : 1,
+      };
+      return result;
+    });
     const completions = {
       from: matchPath.from + offset,
       validFor: /^\w*$/,
-      options: getPreCompletions(currentData, keys),
+      options: [...options, ...getPreCompletions(currentData, keys)],
     };
     // const token = context.state.sliceDoc(completions.from, context.pos);
     // const testFlag = completions.span.test(token);

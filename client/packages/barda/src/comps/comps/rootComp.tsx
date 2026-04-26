@@ -1,4 +1,4 @@
-import { CompAction, CompActionTypes } from "barda-core";
+import { CompAction, CompActionTypes, fromValue } from "barda-core";
 import {
   PropertySectionState,
 } from "barda-design";
@@ -222,6 +222,25 @@ export class RootComp extends RootCompBase {
   }
 
   nameAndExposingInfo(): NameAndExposingInfo {
+    const preloadLibExposing: NameAndExposingInfo = {};
+    try {
+      const libComp = (this.children.preload as any).children.libs;
+      const globalVars: Record<string, string[]> = libComp.globalVars || {};
+      // 预加载库的全局变量名 -> 占位值，使编辑器能识别这些名称
+      Object.values(globalVars).forEach((varNames) => {
+        varNames.forEach((name) => {
+          preloadLibExposing[name] = {
+            property: fromValue({}),
+            propertyValue: {},
+            propertyDesc: {},
+            methods: {},
+          };
+        });
+      });
+    } catch (e) {
+      // 预加载库数据不可用时跳过
+    }
+
     return {
       ...this.children.ui.nameAndExposingInfo(),
       ...this.children.queries.nameAndExposingInfo(),
@@ -229,6 +248,7 @@ export class RootComp extends RootCompBase {
       ...this.children.tempStates.nameAndExposingInfo(),
       ...this.children.transformers.nameAndExposingInfo(),
       ...this.children.dataResponders.nameAndExposingInfo(),
+      ...preloadLibExposing,
     };
   }
 }
