@@ -2,8 +2,7 @@ import styled from "styled-components";
 import { BottomResCompResult } from "../../types/bottomRes";
 import { useEffect, useMemo, useState } from "react";
 import { isArray, isObject, isObjectLike, isPlainObject } from "lodash";
-import JsonView from 'react18-json-view';
-import 'react18-json-view/src/style.css';
+import { VirtualJsonTree } from "./VirtualJsonTree";
 import { trans } from "../../i18n";
 import { DarkActiveTextColor, GreyTextColor } from "../../constants/style";
 import { Table as AntdTable } from "antd";
@@ -187,13 +186,19 @@ export function useResultPanel(params: BottomResCompResult & { onClose: () => vo
     return [false, []];
   }, [data, dataType]);
 
+  // Table 数据源缓存，避免大数组每次重渲染全量拷贝
+  const tableDataSource = useMemo(
+    () => (Array.isArray(data) ? data.map((d: Object, i: number) => ({ ...d, key: i })) : []),
+    [data]
+  );
+
   const result = useMemo(() => {
     if (errorMessage) {
       return errorMessage;
     }
 
     if (toJson) {
-      return <JsonView src={data} />;
+      return <VirtualJsonTree src={data} />;
     }
 
     switch (dataType) {
@@ -201,7 +206,7 @@ export function useResultPanel(params: BottomResCompResult & { onClose: () => vo
         return <TextResult>{trans("resultPanel.returnFunction")}</TextResult>;
       case "json":
         if (isObjectLike(data)) {
-          return <JsonView src={data} />;
+          return <VirtualJsonTree src={data} />;
         }
         return <TextResult>{String(data)}</TextResult>;
       default:
@@ -211,12 +216,12 @@ export function useResultPanel(params: BottomResCompResult & { onClose: () => vo
               virtual
               scroll={{ x: columns.length * 140, y: 140 }}
               columns={columns}
-              dataSource={data.map((d: Object, i: number) => ({ ...d, key: i }))}
+              dataSource={tableDataSource}
               pagination={false}
             />
           );
         } else if (isObjectLike(data)) {
-          return <JsonView src={data} />;
+          return <VirtualJsonTree src={data} />;
         } else {
           return <TextResult>{data}</TextResult>;
         }
