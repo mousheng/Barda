@@ -5,5 +5,4 @@ server/node-service/.yarn/cache/*.zip
 client/packages/openblocks/visualizer.html
 develop/.temp
 .claude/*
-CLAUDE.md
 client/static/lib/*

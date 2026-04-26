@@ -98,4 +98,8 @@
   * [组件文件简单介绍](developer/component-file.md)
   * [打包 Docker 镜像](developer/build-image.md)
   * [同步上游仓库代码](developer/upstream.md)
-
+  
+* [项目原理](developer/architecture/README.md)
+  * [预加载 JS 机制](developer/architecture/preload-js.md)
+  * [JS 库管理机制](developer/architecture/js-library.md)
+  * [代码编辑器机制](developer/architecture/code-editor.md)
