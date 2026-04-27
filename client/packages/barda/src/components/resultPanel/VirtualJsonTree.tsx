@@ -31,7 +31,7 @@ interface Props {
 // ─── CSS ──────────────────────────────────────────────────────────────
 
 const Tree = styled.div`
-  overflow-y: auto; overflow-x: overlay; height: 100%;
+  overflow-y: auto; overflow-x: hidden; height: 100%;
   font-family: "RobotoMono", monospace;
   font-size: 13px; line-height: 20px; user-select: text;
 
@@ -344,6 +344,7 @@ const RowBody = memo(function RowBody({ node, expanded }: { node: FlatNode; expa
 export function VirtualJsonTree({ src, rowHeight = 20 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [vh, setVh] = useState(300);
+  const [contentWidth, setContentWidth] = useState(0);
   const [, force] = useState(0);
 
   const stRef = useRef(0);
@@ -410,6 +411,11 @@ export function VirtualJsonTree({ src, rowHeight = 20 }: Props) {
     return () => { ro.disconnect(); cancelAnimationFrame(rafId); };
   }, []);
 
+  // let Tree expand beyond parent so outer container shows h-scroll
+  useEffect(() => {
+    if (ref.current) setContentWidth(ref.current.scrollWidth);
+  });
+
   // render visible rows with for loop (zero intermediate array)
   const rows: React.ReactNode[] = [];
   for (let i = si; i < ei; i++) {
@@ -434,7 +440,7 @@ export function VirtualJsonTree({ src, rowHeight = 20 }: Props) {
   }
 
   return (
-    <Tree ref={ref} onScroll={onScroll}>
+    <Tree ref={ref} onScroll={onScroll} style={{ minWidth: contentWidth || undefined }}>
       <div style={{ height: totalH, position: "relative" }}>
         {rows}
       </div>
