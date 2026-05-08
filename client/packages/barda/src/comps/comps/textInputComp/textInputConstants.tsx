@@ -181,7 +181,6 @@ export const textInputProps = (props: RecordConstructorToView<typeof textInputCh
 
 export const useTextInputProps = (props: RecordConstructorToView<typeof textInputChildren>) => {
   const [validateState, setValidateState] = useState({});
-  // const changeRef = useRef(false)
 
   const propsRef = useRef<RecordConstructorToView<typeof textInputChildren>>(props);
   propsRef.current = props;
@@ -194,8 +193,6 @@ export const useTextInputProps = (props: RecordConstructorToView<typeof textInpu
   }, [defaultValue]);
 
   useEffect(() => {
-    // if (!changeRef.current) return;
-
     setValidateState(
       textInputValidate({
         ...propsRef.current,
@@ -204,13 +201,11 @@ export const useTextInputProps = (props: RecordConstructorToView<typeof textInpu
         },
       })
     );
-    propsRef.current.onEvent("change");
-    // changeRef.current = false;
   }, [inputValue]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     props.value.onChange(e.target.value);
-    // changeRef.current = true;
+    props.onEvent("change");
   };
 
   return [

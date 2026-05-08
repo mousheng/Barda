@@ -14,7 +14,7 @@ import { RatingStyle, RatingStyleType } from "comps/controls/styleControlConstan
 import { migrateOldData } from "comps/generators/simpleGenerators";
 import { disabledPropertyView, hiddenPropertyView } from "comps/utils/propertyUtils";
 import { trans } from "i18n";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 const EventOptions = [changeEvent] as const;
 
@@ -46,19 +46,11 @@ const RatingBasicComp = (function () {
   };
   return new UICompBuilder(childrenMap, (props) => {
     const defaultValue = { ...props.defaultValue }.value;
-    const value = { ...props.value }.value;
-    const changeRef = useRef(false)
 
     useEffect(() => {
       props.value.onChange(defaultValue);
     }, [defaultValue]);
 
-    useEffect(() => {
-      if (!changeRef.current) return;
-
-      props.onEvent("change");
-      changeRef.current = false;
-    }, [value]);
     return props.label({
       style: props.style,
       children: (
@@ -67,7 +59,7 @@ const RatingBasicComp = (function () {
           value={props.value.value}
           onChange={(e: number) => {
             props.value.onChange(e);
-            changeRef.current = true;
+            props.onEvent("change");
           }}
           allowHalf={props.allowHalf}
           disabled={props.disabled}

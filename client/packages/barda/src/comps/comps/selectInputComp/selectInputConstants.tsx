@@ -77,11 +77,12 @@ export const useSelectInputValidate = (props: ValidationParams) => {
 
   useEffect(() => {
     handleValidate(selectValue);
-    props.onEvent?.("change");
   }, [selectValue]);
 
   const handleChange = (value: any) => {
     props.value.onChange?.(value);
+    handleValidate(value);
+    props.onEvent?.("change");
   };
 
   return {
