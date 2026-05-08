@@ -1,6 +1,5 @@
 import { useState, useMemo, ChangeEvent } from "react";
-import JsonView from 'react18-json-view';
-import 'react18-json-view/src/style.css';
+import { VirtualJsonTree } from "components/resultPanel/VirtualJsonTree";
 import { UICompLayoutInfo } from "comps/uiCompRegistry";
 import { Comp, customAction } from "barda-core";
 import { Button, Space, Input, Form } from "antd";
@@ -155,7 +154,7 @@ export function CompPlayground(props: IProps) {
           <div className="panel data-panel">
             <div className="panel-title">{trans("playground.data")}</div>
             <div className="panel-content">
-              <JsonView
+              <VirtualJsonTree
                 src={comp.exposingValues}
                 enableClipboard={false}
               />

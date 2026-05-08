@@ -7221,7 +7221,6 @@ __metadata:
     react-sortable-hoc: ^2.0.0
     react-test-renderer: ^18.1.0
     react-use: ^17.3.2
-    react18-json-view: ^0.2.8
     really-relaxed-json: ^0.3.2
     redux: 4.1.2
     redux-devtools-extension: ^2.13.9
@@ -16958,17 +16957,6 @@ __metadata:
     react: ">=15.3.0"
     react-dom: ">=15.3.0"
   checksum: 75c5872caeda009e7cb3b80a1e8312fe7e64be166c1dd7cf07f5e72813c892542d5f6f83b74ab40b8859034fbdd66801e53721c726487b43099d771580cb974e
-  languageName: node
-  linkType: hard
-
-"react18-json-view@npm:^0.2.8":
-  version: 0.2.9
-  resolution: "react18-json-view@npm:0.2.9"
-  dependencies:
-    copy-to-clipboard: ^3.3.3
-  peerDependencies:
-    react: ">=16.8.0"
-  checksum: ab599ccf03c5c7d41216b0ba353787b83802c9a8ffe5669f0295b771d6f4e17cadd4547fec09158d35e9264ae8a09695b8ba424a80359151930472f37edd4a76
   languageName: node
   linkType: hard
 

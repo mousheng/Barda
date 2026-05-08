@@ -1,8 +1,7 @@
 import { Section, sectionNames } from "barda-design";
 import { UICompBuilder, withDefault } from "../../generators";
 import { NameConfigHidden, NameConfig, withExposingConfigs } from "../../generators/withExposing";
-import JsonView from 'react18-json-view';
-import 'react18-json-view/src/style.css';
+import { VirtualJsonTree } from "../../../components/resultPanel/VirtualJsonTree";
 import { defaultData } from "./jsonConstants";
 import styled from "styled-components";
 import { BoolControl } from "comps/controls/boolControl";
@@ -12,8 +11,6 @@ import { hiddenPropertyView } from "comps/utils/propertyUtils";
 import { trans } from "i18n";
 import { styleControl } from "comps/controls/styleControl";
 import { JsonExplorerStyle } from "comps/controls/styleControlConstants";
-
-type ThemeKeys = "default" | "a11y" | "github" | "vscode" | "atom" | "winter-is-coming"
 
 const themeOptions = [
   { label: "default", value: "default" },
@@ -26,11 +23,11 @@ const themeOptions = [
 
 const JsonExplorerContainer = styled.div<{ $background: string, $border: string, $radius: string }>`
   height: 100%;
-  overflow-y: scroll;
+  overflow: hidden;
   background-color: ${(props) => props.$background};
   border: 1px solid ${props => props.$border};
   border-radius: ${props => props.$radius};
-  padding: 10px;
+  padding: 4px 0;
 `;
 
 let JsonExplorerTmpComp = (function () {
@@ -47,13 +44,11 @@ let JsonExplorerTmpComp = (function () {
       $border={props.style.border}
       $radius={props.style.radius}
     >
-      <JsonView
+      <VirtualJsonTree
         src={props.value}
-        theme={props.theme as ThemeKeys}
         collapsed={!props.expandToggle}
-        collapseStringsAfterLength={200}
         enableClipboard={props.enableClipboard}
-        matchesURL={true}
+        collapseStringsAfterLength={200}
       />
     </JsonExplorerContainer>
   ))
@@ -70,9 +65,6 @@ let JsonExplorerTmpComp = (function () {
 
           <Section name={sectionNames.style}>
             {children.style.getPropertyView()}
-            {children.theme.propertyView({
-              label: trans("jsonExplorer.theme"),
-            })}
           </Section>
 
           <Section name={sectionNames.layout}>{hiddenPropertyView(children)}</Section>

@@ -15,8 +15,7 @@ import { trans } from "i18n";
 import { Table } from "antd";
 import UserApi from "api/userApi";
 import { validateResponse } from "api/apiUtils";
-import JsonView from 'react18-json-view';
-import 'react18-json-view/src/style.css';
+import { VirtualJsonTree } from "components/resultPanel/VirtualJsonTree";
 import { StyledLink } from "pages/common/styledComponent";
 
 export const StyledTable = styled(AntdTable)`
@@ -372,7 +371,7 @@ export function UserDetailPopup(props: { userId: string; title: string }) {
           if (validateResponse(resp)) {
             setUserInfo({
               success: true,
-              view: <JsonView src={resp.data.data} />,
+              view: <VirtualJsonTree src={resp.data.data} />,
             });
           }
         })

@@ -13,8 +13,7 @@ import { useSelector } from "react-redux";
 import { getUser } from "redux/selectors/usersSelectors";
 import { Dayjs } from "dayjs";
 import styled from "styled-components";
-import JsonView from "react18-json-view";
-import "react18-json-view/src/style.css";
+import { VirtualJsonTree } from "components/resultPanel/VirtualJsonTree";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -65,11 +64,8 @@ const DetailPanel = styled(Card)`
 `;
 
 const JsonViewWrapper = styled.div`
-  font-size: 13px;
-
-  .json-view {
-    background: transparent !important;
-  }
+  height: 100%;
+  border-radius: 4px;
 `;
 
 export default function AuditSetting() {
@@ -351,7 +347,7 @@ export default function AuditSetting() {
         {selectedRow && (
           <DetailPanel title={trans("auditLog.detailData")} >
             <JsonViewWrapper>
-              <JsonView src={selectedRow} collapsed={2} theme="default" enableClipboard={true} />
+              <VirtualJsonTree src={selectedRow} collapsed={2} enableClipboard={true} />
             </JsonViewWrapper>
           </DetailPanel>
         )}
