@@ -282,7 +282,7 @@ export function AdvancedSetting() {
             <Alert
               type="warning"
               showIcon
-              message={trans("advanced.runJSInHostWarn")}
+              title={trans("advanced.runJSInHostWarn")}
               style={{ marginTop: 12, marginBottom: 12 }}
             />
           )}
