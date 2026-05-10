@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 // ─── Types ────────────────────────────────────────────────────────────
 
-type NodeType = "object" | "array" | "string" | "number" | "boolean" | "bigint" | "null" | "undefined";
+type NodeType = "object" | "array" | "string" | "number" | "boolean" | "bigint" | "null" | "undefined" | "function";
 
 interface FlatNode {
   key: string;
@@ -61,6 +61,7 @@ const Tree = styled.div`
   .vn { color: #b5cea8; }    /* number */
   .vb { color: #569cd6; }    /* boolean */
   .vx { color: #808080; font-style: italic; }  /* null / undefined */
+  .vf { color: #dcdcaa; font-style: italic; }  /* function */
   .vm { color: #9ca3af; margin-left: 6px; font-size: 12px; }
   .vp { color: #9ca3af; margin-left: 4px; }
   .vbk { color: #d4d4d4; }   /* bracket */
@@ -96,6 +97,7 @@ function t(val: any): NodeType {
   if (tp === "number") return "number";
   if (tp === "bigint") return "bigint";
   if (tp === "boolean") return "boolean";
+  if (tp === "function") return "function";
   if (Array.isArray(val)) return "array";
   if (tp === "object") return "object";
   return "undefined";
@@ -139,6 +141,7 @@ function copyValue(e: React.MouseEvent, node: FlatNode) {
     case "bigint": text = String(node.raw); break;
     case "number":
     case "boolean": text = String(node.raw); break;
+    case "function": text = (node.raw as Function).toString(); break;
     default: text = JSON.stringify(node.raw, null, 2);
   }
   navigator.clipboard.writeText(text).catch(() => {});
@@ -350,6 +353,10 @@ const LeafVal = memo(function LeafVal({ node, isExpanded, onToggleString, collap
     case "boolean": return <span className="vb">{String(node.raw)}</span>;
     case "null": return <span className="vx">null</span>;
     case "undefined": return <span className="vx">undefined</span>;
+    case "function": {
+      const name = (node.raw as Function).name;
+      return <span className="vf">{name ? `[Function: ${name}]` : "[Function]"}</span>;
+    }
     default: return <span>{String(node.raw)}</span>;
   }
 });
