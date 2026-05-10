@@ -174,7 +174,7 @@ export function evalFunction(
             : `return ${isAsync ? "async " : ""}function(){'use strict'; ${unevaledValue}\n}()`,
           args ? { ...context, ...args } : context,
           methods,
-          { disableLimit: runInHost, scope },
+          { disableLimit: runInHost, noSandbox: runInHost, scope },
           isAsync
         )
     );

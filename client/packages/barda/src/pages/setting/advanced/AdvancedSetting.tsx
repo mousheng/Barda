@@ -24,6 +24,7 @@ import { getGlobalSettings } from "comps/utils/globalSettings";
 import { fetchJSLibrary } from "util/jsLibraryUtils";
 import { evalFunc } from "barda-core";
 import { messageInstance } from "components/GlobalInstances";
+import { Switch, Alert } from "antd";
 
 const AdvancedSettingContent = styled.div`
   max-width: 840px;
@@ -267,6 +268,33 @@ export function AdvancedSetting() {
               }
             />
           )}
+        </div>
+        <div className="section-title">{trans("advanced.runJSInHostTitle")}</div>
+        <HelpText style={{ marginBottom: 12 }}>{trans("advanced.runJSInHostHelp")}</HelpText>
+        <div className="section-content">
+          <Switch
+            checked={settings.runJavaScriptInHost ?? false}
+            onChange={(checked) => {
+              setSettings((v) => ({ ...v, runJavaScriptInHost: checked }));
+            }}
+          />
+          {settings.runJavaScriptInHost && (
+            <Alert
+              type="warning"
+              showIcon
+              message={trans("advanced.runJSInHostWarn")}
+              style={{ marginTop: 12, marginBottom: 12 }}
+            />
+          )}
+          <div style={{ marginTop: 12 }}>
+            <SaveButton
+              buttonType="primary"
+              disabled={settings.runJavaScriptInHost === commonSettings.runJavaScriptInHost}
+              onClick={() => handleSave("runJavaScriptInHost")()}
+            >
+              {trans("advanced.saveBtn")}
+            </SaveButton>
+          </div>
         </div>
         {extraAdvanceSettings}
       </AdvancedSettingContent>

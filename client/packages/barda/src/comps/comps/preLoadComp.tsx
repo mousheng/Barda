@@ -132,14 +132,13 @@ const LibsComp = withPropertyViewFn(LibsCompBase, (comp) => {
 });
 
 function runScript(code: string, inHost?: boolean) {
-  if (inHost) {
-    runScriptInHost(code);
-    return;
-  }
   try {
     evalFunc(code, {}, {});
   } catch (e) {
     log.error(e);
+  }
+  if (inHost) {
+    runScriptInHost(code);
   }
 }
 

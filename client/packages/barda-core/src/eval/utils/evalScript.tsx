@@ -143,6 +143,13 @@ export interface SandBoxOption {
  * 当设置全局变量到沙箱时的处理器，仅在范围为函数时被调用
  */
   onSetGlobalVars?: (name: string) => void;
+
+  /**
+   * 完全绕过 Proxy 沙箱，直接以普通对象作为 this 执行代码。
+   * 消除所有 Proxy get/set/has 陷阱开销，性能最优。
+   * 仅适用于管理员完全信任的内部环境。
+   */
+  noSandbox?: boolean;
 }
 
 function isDomElement(obj: any): boolean {
@@ -285,6 +292,37 @@ export function evalFunc(
 
   // eslint-disable-next-line no-new-func
   const vm = new Function(code);
+  if (options?.noSandbox) {
+    // 完全绕过 Proxy 沙箱：直接以普通对象为 this 执行，消除所有 Proxy 陷阱开销
+    const plainContext: any = {};
+    // 将预加载库的导出（存储在 mockWindow 上）复制过来，使 noSandbox 模式下也能访问
+    if (mockWindow) {
+      for (const key of Object.keys(mockWindow)) {
+        plainContext[key] = mockWindow[key];
+      }
+    }
+    // context 覆盖 mockWindow 的同名属性（与沙箱行为一致）
+    if (context) {
+      for (const key of Object.keys(context)) {
+        plainContext[key] = context[key];
+      }
+    }
+    // methods 合并到已有对象值上，不覆盖 context 的已有属性（与沙箱 Object.assign 行为一致）
+    if (methods) {
+      for (const key of Object.keys(methods)) {
+        if (key in plainContext && typeof plainContext[key] === "object" && plainContext[key] !== null) {
+          plainContext[key] = Object.assign({}, plainContext[key], methods[key]);
+        }
+      }
+    }
+    // 让 window/self/globalThis 等别名指向 plainContext，模拟沙箱中对 window 的拦截
+    plainContext.window = plainContext;
+    plainContext.self = null;
+    plainContext.globalThis = null;
+    plainContext.global = null;
+    return vm.call(plainContext);
+  }
+
   const sandbox = proxySandbox(context, methods, options);
   const result = vm.call(sandbox);
   return result;

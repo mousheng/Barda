@@ -1862,6 +1862,11 @@ export const en = {
     preloadLibsEmpty: "No JavaScript libraries were added",
     preloadLibsAddBtn: "Add a library",
     saveSuccess: "Saved successfully",
+    runJSInHostTitle: "Run JavaScript in host environment",
+    runJSInHostHelp:
+      "When enabled, all JS queries and JS actions bypass sandbox isolation and run directly in the host environment, eliminating Proxy overhead and significantly improving JS execution performance.",
+    runJSInHostWarn:
+      "Security Warning: This option completely disables JavaScript sandbox isolation. User code can directly access browser APIs such as document, window, fetch, and can modify global variables. Only enable in environments where the administrator fully trusts the code source.",
   },
   branding: {
     title: "Branding",

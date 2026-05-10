@@ -1200,6 +1200,39 @@ function evalFunc(functionBody, context, methods, options, isAsync) {
     var code = "with(this){\n    return (".concat(isAsync ? "async " : "", "function() {\n      'use strict';\n      ").concat(functionBody, ";\n    }).call(this);\n  }");
     // eslint-disable-next-line no-new-func
     var vm = new Function(code);
+    if (options === null || options === void 0 ? void 0 : options.noSandbox) {
+        // 完全绕过 Proxy 沙箱：直接以普通对象为 this 执行，消除所有 Proxy 陷阱开销
+        var plainContext = {};
+        // 将预加载库的导出（存储在 mockWindow 上）复制过来，使 noSandbox 模式下也能访问
+        if (mockWindow) {
+            for (var _i = 0, _a = Object.keys(mockWindow); _i < _a.length; _i++) {
+                var key = _a[_i];
+                plainContext[key] = mockWindow[key];
+            }
+        }
+        // context 覆盖 mockWindow 的同名属性（与沙箱行为一致）
+        if (context) {
+            for (var _b = 0, _c = Object.keys(context); _b < _c.length; _b++) {
+                var key = _c[_b];
+                plainContext[key] = context[key];
+            }
+        }
+        // methods 合并到已有对象值上，不覆盖 context 的已有属性（与沙箱 Object.assign 行为一致）
+        if (methods) {
+            for (var _d = 0, _e = Object.keys(methods); _d < _e.length; _d++) {
+                var key = _e[_d];
+                if (key in plainContext && typeof plainContext[key] === "object" && plainContext[key] !== null) {
+                    plainContext[key] = Object.assign({}, plainContext[key], methods[key]);
+                }
+            }
+        }
+        // 让 window/self/globalThis 等别名指向 plainContext，模拟沙箱中对 window 的拦截
+        plainContext.window = plainContext;
+        plainContext.self = null;
+        plainContext.globalThis = null;
+        plainContext.global = null;
+        return vm.call(plainContext);
+    }
     var sandbox = proxySandbox(context, methods, options);
     var result = vm.call(sandbox);
     return result;
@@ -1358,7 +1391,7 @@ function evalFunction(unevaledValue, context, methods, isAsync) {
             if (scope === void 0) { scope = "function"; }
             return evalFunc(unevaledValue.startsWith("return")
                 ? unevaledValue + "\n"
-                : "return ".concat(isAsync ? "async " : "", "function(){'use strict'; ").concat(unevaledValue, "\n}()"), args ? __assign(__assign({}, context), args) : context, methods, { disableLimit: runInHost, scope: scope }, isAsync);
+                : "return ".concat(isAsync ? "async " : "", "function(){'use strict'; ").concat(unevaledValue, "\n}()"), args ? __assign(__assign({}, context), args) : context, methods, { disableLimit: runInHost, noSandbox: runInHost, scope: scope }, isAsync);
         });
     }
     catch (err) {

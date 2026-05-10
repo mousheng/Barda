@@ -467,6 +467,12 @@ interface SandBoxOption {
    * 当设置全局变量到沙箱时的处理器，仅在范围为函数时被调用
    */
     onSetGlobalVars?: (name: string) => void;
+    /**
+     * 完全绕过 Proxy 沙箱，直接以普通对象作为 this 执行代码。
+     * 消除所有 Proxy get/set/has 陷阱开销，性能最优。
+     * 仅适用于管理员完全信任的内部环境。
+     */
+    noSandbox?: boolean;
 }
 declare function evalScript(script: string, context: any, methods?: EvalMethods): any;
 declare function evalFunc(functionBody: string, context: any, methods?: EvalMethods, options?: SandBoxOption, isAsync?: boolean): any;

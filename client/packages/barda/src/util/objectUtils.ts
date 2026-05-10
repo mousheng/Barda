@@ -241,7 +241,21 @@ export function safeJSONStringify(obj: any): string {
     return obj;
   }
   try {
-    return JSON.stringify(obj, (_, v) => typeof v === 'bigint' ? v.toString() : v);
+    const seen = new WeakSet();
+    return JSON.stringify(obj, (_, v) => {
+      try {
+        if (typeof v === 'bigint') return v.toString();
+        // 过滤掉函数和宿主对象（DOM / Window 等），这些无法被序列化
+        if (typeof v === 'function') return v.name ? `[Function: ${v.name}]` : "[Function]";
+        if (typeof v === 'object' && v !== null) {
+          if (seen.has(v)) return "[Circular]";
+          seen.add(v);
+        }
+        return v;
+      } catch {
+        return undefined;
+      }
+    });
   } catch (e) {
     log.error("序列化失败:" + e);
     return "";

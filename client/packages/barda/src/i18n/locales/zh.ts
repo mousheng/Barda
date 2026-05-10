@@ -1841,6 +1841,11 @@ export const zh = {
         preloadLibsEmpty: "尚未添加 JavaScript 库",
         preloadLibsAddBtn: "添加库",
         saveSuccess: "保存成功",
+        runJSInHostTitle: "在宿主环境中运行JavaScript",
+        runJSInHostHelp:
+            "开启后，所有JS查询和JS操作将绕过沙箱隔离直接运行在宿主环境中，消除Proxy代理开销，显著提升JS执行性能。",
+        runJSInHostWarn:
+            "安全警告：此选项将完全禁用JavaScript沙箱隔离。用户代码可直接访问 document、window、fetch 等浏览器API，并可修改全局变量。仅建议在管理员完全信任代码来源的环境中启用。",
     },
     branding: {
         title: "品牌",
