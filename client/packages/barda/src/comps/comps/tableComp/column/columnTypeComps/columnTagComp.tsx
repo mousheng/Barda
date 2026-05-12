@@ -234,10 +234,9 @@ export const ColumnTagComp = (function () {
             style={tagStyle}
             icon={icon}
             key={index}
-            onClick={(e) => {
-              e.stopPropagation();
-              dispatch(updateActionContextAction({ clickedTag: tag }));
+            onClick={() => {
               props.onTagClick({clickedTag: tag});
+              dispatch(updateActionContextAction({ clickedTag: tag }));
             }}
           >
             {tagText}

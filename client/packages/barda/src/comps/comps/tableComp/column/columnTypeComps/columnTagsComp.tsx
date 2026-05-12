@@ -227,10 +227,9 @@ export const ColumnTagsComp = new ColumnTypeCompBuilder(
           style={tagStyle}
           icon={icon}
           key={i}
-          onClick={(e) => {
-            e.stopPropagation();
-            dispatch(updateActionContextAction({ clickedTag: tag }));
+          onClick={() => {
             props.onTagClick({ clickedTag: tag });
+            dispatch(updateActionContextAction({ clickedTag: tag }));
           }}
         >
           {tag}
