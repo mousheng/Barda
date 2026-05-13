@@ -4,9 +4,9 @@ import { DateTimeStyleType } from "../../controls/styleControlConstants";
 import { getStyle } from "comps/comps/dateComp/dateCompUtil";
 import { useUIView } from "../../utils/useUIView";
 import { checkIsMobile } from "util/commonUtils";
-import React, { useContext } from "react";
+import React from "react";
 import type { TimeCompViewProps } from "./timeComp";
-import { EditorContext } from "../../editorState";
+import { useEditorStore } from "comps/editorStore";
 import dayjs from "dayjs";
 import { hasIcon } from "comps/utils";
 import { omit } from "lodash";
@@ -27,7 +27,7 @@ export interface TimeRangeUIViewProps extends TimeCompViewProps {
 }
 
 export const TimeRangeUIView = (props: TimeRangeUIViewProps) => {
-  const editorState = useContext(EditorContext);
+  const maxWidth = useEditorStore((s) => s.rootComp?.children.settings.getView().maxWidth);
 
   return useUIView(
     <TimeRangeMobileUIView {...props} />,
@@ -39,7 +39,7 @@ export const TimeRangeUIView = (props: TimeRangeUIViewProps) => {
       onCalendarChange={(time: any) => {
         props.onChange(time?.[0], time?.[1]);
       }}
-      inputReadOnly={checkIsMobile(editorState?.getAppSettings().maxWidth)}
+      inputReadOnly={checkIsMobile(maxWidth)}
       suffixIcon={hasIcon(props.suffixIcon) && props.suffixIcon}
     />
   );

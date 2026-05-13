@@ -1,8 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { EditPopoverItemType, PointIcon, Search, SearchOutlinedIcon } from "barda-design";
 import { EditPopover } from "barda-design";
-import { EditorContext } from "comps/editorState";
+import { useSelectedComps, useNameAndExposingInfo, useRootComp } from "comps/editorSelectors";
+import { useEditorStore } from "comps/editorStore";
+import { createEditorStateCompat } from "comps/editorCompat";
 import { GridCompOperator } from "comps/utils/gridCompOperator";
 import { PopupCard } from "barda-design";
 import { EditText } from "barda-design";
@@ -12,6 +14,8 @@ import { UICompType } from "comps/uiCompRegistry";
 import { trans } from "i18n";
 import { getComponentDocUrl } from "comps/utils/compDocUtil";
 import { parseCompType } from "comps/utils/remote";
+import { checkName } from "comps/utils/rename";
+import { renameAction } from "barda-core";
 
 const CompDiv = styled.div<{ $width?: number; $hasSearch?: boolean; $showSearch?: boolean }>`
   width: ${(props) => (props.$width ? props.$width : 312)}px;
@@ -73,20 +77,41 @@ export const CompName = (props: Iprops) => {
   const [error, setError] = useState<string | undefined>(undefined);
   const [editing, setEditing] = useState(false);
   const [upgrading, setUpgrading] = useState(false);
-  const editorState = useContext(EditorContext);
-  const selectedComp = values(editorState.selectedComps())[0];
+  const selectedComps = useSelectedComps();
+  const nameAndExposingInfo = useNameAndExposingInfo();
+  const rootComp = useRootComp();
+  const setSelectedCompNames = useEditorStore((s) => s.setSelectedCompNames);
+  const selectedComp = values(selectedComps)[0];
   const compType = selectedComp.children.compType.getView() as UICompType;
   const compInfo = parseCompType(compType);
   const docUrl = getComponentDocUrl(compType);
 
   const items: EditPopoverItemType[] = [];
 
+  const checkRenameLocal = (oldName: string, name: string): string => {
+    const nameError = checkName(name);
+    if (nameError) return nameError;
+    if (name !== oldName && nameAndExposingInfo.hasOwnProperty(name)) {
+      return trans("comp.nameExists", { name });
+    }
+    return "";
+  };
+
+  const renameLocal = (oldName: string, name: string): boolean => {
+    const renameError = checkRenameLocal(oldName, name);
+    if (renameError) return false;
+    if (name !== oldName) {
+      rootComp?.dispatch(renameAction(oldName, name));
+    }
+    return true;
+  };
+
   const handleUpgrade = async () => {
     if (upgrading) {
       return;
     }
     setUpgrading(true);
-    await GridCompOperator.upgradeCurrentComp(editorState);
+    await GridCompOperator.upgradeCurrentComp(createEditorStateCompat());
     setUpgrading(false);
   };
 
@@ -119,12 +144,12 @@ export const CompName = (props: Iprops) => {
         <EditText
           text={props.name}
           onFinish={(value) => {
-            if (editorState.rename(props.name, value)) {
-              editorState.setSelectedCompNames(new Set([value]));
+            if (renameLocal(props.name, value)) {
+              setSelectedCompNames(new Set([value]));
               setError(undefined);
             }
           }}
-          onChange={(value) => setError(editorState.checkRename(props.name, value))}
+          onChange={(value) => setError(checkRenameLocal(props.name, value))}
           onEditStateChange={(editing) => setEditing(editing)}
         />
         <PopupCard
@@ -145,7 +170,7 @@ export const CompName = (props: Iprops) => {
       )}
       <EditPopover
         items={items}
-        del={() => GridCompOperator.deleteComp(editorState, editorState.selectedComps())}
+        del={() => GridCompOperator.deleteComp(createEditorStateCompat(), selectedComps)}
       >
         <Icon tabIndex={-1} />
       </EditPopover>

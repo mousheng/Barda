@@ -6,11 +6,13 @@ import { Key } from "antd/es/table/interface";
 import { layoutsNodeItem, LeftCommon, ScrollBar, SelectedComps } from "barda-design";
 import { EmptyContent } from "components/EmptyContent";
 import UIComp, { UiLayoutType } from "comps/comps/uiComp";
-import { EditorContext } from "comps/editorState";
+import { useEditorStore } from "comps/editorStore";
+import { useSelectedComps, useSelectedComp, useUIComp, useRootComp, useLayoutMode } from "comps/editorSelectors";
+import { createEditorStateCompat } from "comps/editorCompat";
 import { GridCompOperator } from "comps/utils/gridCompOperator";
 import { trans } from "i18n";
 import _ from "lodash";
-import { ReactElement, ReactNode, useContext } from "react";
+import { ReactElement, ReactNode } from "react";
 import { CompStateIcon } from "../editorConstants";
 
 const ScrollWrapper = (props: { children: ReactNode }) => (
@@ -89,15 +91,18 @@ const filterTreeData = (treeData: layoutsNodeItem[], selectedCompNames: Set<stri
 
 export default function PropertyView(props: PropertyViewProps) {
   const { uiComp } = props;
-  const editorState = useContext(EditorContext);
-  const selectedCompNames = editorState.selectedCompNames;
-  const selectedComp = editorState.selectedComp();
+  const selectedCompNames = useEditorStore((s) => s.selectedCompNames);
+  const selectedComp = useSelectedComp();
+  const uiComp_ = useUIComp();
+  const rootComp = useRootComp();
+  const setSelectedCompNames = useEditorStore((s) => s.setSelectedCompNames);
+  const selectedComps = useSelectedComps();
+  const layoutMode = useLayoutMode() ?? "grid";
   const moduleLayoutComp = uiComp?.getModuleLayoutComp();
   const layoutType = uiComp?.children.compType.getView() as UiLayoutType;
-  const AllLayouts = editorState.getUIComp().getComp()?.getAllLayouts?.() ?? {};
-  const treeLayouts = getTreeDataAndLayout(editorState.getUIComp().getTree(), AllLayouts!, []);
+  const AllLayouts = uiComp_?.getComp()?.getAllLayouts?.() ?? {};
+  const treeLayouts = getTreeDataAndLayout(uiComp_?.getTree() ?? { items: {}, children: {} }, AllLayouts!, []);
   const treeData: layoutsNodeItem[] = filterTreeData(treeLayouts, selectedCompNames);
-  const layoutMode = editorState.getLayoutMode();
   const renderIcon = (type?: UICompType) => (type ? (CompStateIcon[type] || <LeftCommon />) as ReactElement<any> : null);
 
   let propertyView;
@@ -111,16 +116,17 @@ export default function PropertyView(props: PropertyViewProps) {
         icon={(props: any) => renderIcon(props.type as UICompType)}
         onSelect={(selectedKeys: Key[], info) => {
           if (info?.node?.title) {
-            editorState.setSelectedCompNames(new Set([info.node.title as string]));
+            setSelectedCompNames(new Set([info.node.title as string]));
           }
         }}
         delete={() => {
-          GridCompOperator.deleteComp(editorState, editorState.selectedComps());
+          GridCompOperator.deleteComp(createEditorStateCompat(), selectedComps);
         }}
         onDrop={(info) => {
+          if (!rootComp) return;
           const newLayout: any = {}
           const dragPos = info.dragNode.pos.split('-');
-          const dsl = editorState.rootComp.toJsonValue();
+          const dsl = rootComp.toJsonValue();
           const layoutData = dsl?.ui.layout
           const dragPostion = Number(dragPos[dragPos.length - 1])
           if (layoutData) {
@@ -139,7 +145,7 @@ export default function PropertyView(props: PropertyViewProps) {
                 return { ...item, 'z': newLayout[item.i].z }
               } else return item
             })
-            editorState.rootComp.children.ui.dispatchChangeValueAction({
+            rootComp.children.ui.dispatchChangeValueAction({
               ...dsl.ui,
               layout,
             })

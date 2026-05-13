@@ -36,9 +36,9 @@ import { CustomListAction, list } from "comps/generators/list";
 import { simpleMultiComp } from "comps/generators/multi";
 import { trans } from "i18n";
 import _ from "lodash";
-import { Fragment, ReactNode, useContext, useEffect, useState } from "react";
+import { Fragment, ReactNode, useEffect, useState } from "react";
 import { memo } from "util/cacheUtils";
-import { EditorContext } from "../editorState";
+import { useSelectedOrFirstQueryComp } from "comps/editorSelectors";
 import { ActionSelectorControl } from "./actionSelector/actionSelectorControl";
 import { dropdownControl } from "./dropdownControl";
 
@@ -181,7 +181,7 @@ const EventHandlerControlPropertyView = (props: {
   eventConfigs: EventConfigsType;
 }) => {
   const { dispatch, pushAction, deleteAction, arrayMoveAction, inline = false, items, eventConfigs, type } = props;
-  const editorState = useContext(EditorContext);
+  const selectedOrFirstQueryComp = useSelectedOrFirstQueryComp();
   const [showNewCreate, setShowNewCreate] = useState(false);
   // 拖拽排序相关 state
   const [itemsOrder, setItemsOrder] = useState(items.map((_, idx) => String(idx)));
@@ -217,7 +217,7 @@ const EventHandlerControlPropertyView = (props: {
     const queryExecHandler = {
       compType: "executeQuery",
       comp: {
-        queryName: editorState?.selectedOrFirstQueryComp()?.children.name.getView(),
+        queryName: selectedOrFirstQueryComp?.children.name.getView(),
       },
     };
     const messageHandler = {

@@ -2,7 +2,8 @@ import { BoolCodeControl, StringControl } from "comps/controls/codeControl";
 import { dropdownControl } from "comps/controls/dropdownControl";
 import { ButtonEventHandlerControl } from "comps/controls/eventHandlerControl";
 import { IconControl } from "comps/controls/iconControl";
-import { CompNameContext, EditorContext, EditorState } from "comps/editorState";
+import { CompNameContext, EditorState } from "comps/editorState";
+import { EditorStateView } from "comps/editorCompat";
 import { withDefault } from "comps/generators";
 import { UICompBuilder } from "comps/generators/uiCompBuilder";
 import {
@@ -77,7 +78,7 @@ class SelectFormControl extends SimpleNameComp {
     const label = trans("button.formToSubmit");
     return controlItem(
       { filterText: label },
-      <EditorContext.Consumer>
+      <EditorStateView>
         {(editorState) => (
           <>
             <Dropdown
@@ -90,7 +91,7 @@ class SelectFormControl extends SimpleNameComp {
             {getFormEventHandlerPropertyView(editorState, this.value)}
           </>
         )}
-      </EditorContext.Consumer>
+      </EditorStateView>
     );
   }
 }
@@ -133,7 +134,7 @@ const ButtonTmpComp = (function () {
   };
   return new UICompBuilder(childrenMap, (props) => (
     <ButtonCompWrapper $disabled={props.disabled}>
-      <EditorContext.Consumer>
+      <EditorStateView>
         {(editorState) => (
           <Badge100
             count={props.budgeCount.value}
@@ -162,7 +163,7 @@ const ButtonTmpComp = (function () {
             </Button100>
           </Badge100>
         )}
-      </EditorContext.Consumer>
+      </EditorStateView>
     </ButtonCompWrapper>
   ))
     .setPropertyViewFn((children) => (

@@ -1,7 +1,9 @@
 import { executeQueryAction, routeByNameAction } from "barda-core";
 import { InputTypeEnum } from "comps/comps/moduleContainerComp/ioComp/inputListItemComp";
 import { SimpleNameComp } from "comps/comps/simpleNameComp";
-import { EditorContext, EditorState } from "comps/editorState";
+import { EditorStateView } from "comps/editorCompat";
+import type { EditorStateCompat } from "comps/editorCompat";
+import type { EditorState } from "comps/editorState";
 import { MultiCompBuilder } from "comps/generators/multi";
 import { BranchDiv, Dropdown } from "barda-design";
 import { BottomResTypeEnum } from "types/bottomRes";
@@ -46,7 +48,7 @@ export class ExecuteQueryAction extends ExecuteQueryTmpAction {
   }
 
   propertyView({ placement }: { placement?: "query" | "table" }) {
-    const getQueryOptions = (editorState?: EditorState) => {
+    const getQueryOptions = (editorState?: EditorStateCompat) => {
       const options: { label: string; value: string }[] =
         editorState
           ?.queryCompInfoList()
@@ -81,7 +83,7 @@ export class ExecuteQueryAction extends ExecuteQueryTmpAction {
     };
     return (
       <BranchDiv $type={"inline"}>
-        <EditorContext.Consumer>
+        <EditorStateView>
           {(editorState) => (
             <>
               <Dropdown
@@ -93,7 +95,7 @@ export class ExecuteQueryAction extends ExecuteQueryTmpAction {
               />
             </>
           )}
-        </EditorContext.Consumer>
+        </EditorStateView>
       </BranchDiv>
     );
   }

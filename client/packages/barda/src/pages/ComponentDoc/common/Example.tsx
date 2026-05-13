@@ -15,6 +15,8 @@ import { BorderContext } from "./BorderContext";
 import { ExampleContext } from "../ExampleContext";
 import { trans } from "i18n";
 import { EditorContext, EditorState } from "comps/editorState";
+import { createEditorStateCompat } from "comps/editorCompat";
+import { useEditorStore } from "comps/editorStore";
 import { RootComp } from "comps/comps/rootComp";
 
 const Wrapper = styled.div`
@@ -190,7 +192,8 @@ const externalState: ExternalEditorContextState = {
   appType: AppTypeEnum.Application,
 };
 
-const editorState = new EditorState(new RootComp({ value: {} }), () => { });
+useEditorStore.setState({ rootComp: new RootComp({ value: {} }) as any });
+const editorState = createEditorStateCompat();
 
 export default function Example(props: IProps) {
   const {

@@ -1,6 +1,7 @@
 import { triggerModuleEventAction, routeByNameAction } from "barda-core";
 import { SimpleNameComp } from "comps/comps/simpleNameComp";
-import { CompNameContext, EditorContext } from "comps/editorState";
+import { CompNameContext } from "comps/editorState";
+import { EditorStateView } from "comps/editorCompat";
 import { MultiCompBuilder } from "comps/generators/multi";
 import { BranchDiv, Dropdown } from "barda-design";
 import { ModuleLayoutCompName } from "constants/compConstants";
@@ -32,7 +33,7 @@ export class TriggerModuleEventActionComp extends TriggerModuleEventActionCompBa
 
   propertyView() {
     return (
-      <EditorContext.Consumer>
+      <EditorStateView>
         {(editorState) => {
           const moduleLayoutComp = editorState.getModuleLayoutComp();
           if (!moduleLayoutComp) {
@@ -63,7 +64,7 @@ export class TriggerModuleEventActionComp extends TriggerModuleEventActionCompBa
             </>
           );
         }}
-      </EditorContext.Consumer>
+      </EditorStateView>
     );
   }
 }

@@ -2,10 +2,11 @@ import RefTreeComp from "@barda/comps/comps/refTreeComp";
 import { messageInstance, NofileIcon } from "barda-design";
 import { MetaDataContext } from "base/codeEditor/codeEditorTypes";
 import { ResCreatePanel } from "components/ResCreatePanel";
-import { CompNameContext, EditorContext } from "comps/editorState";
+import { CompNameContext } from "comps/editorState";
+import { useEditorStateCompat } from "comps/editorCompat";
 import { trans } from "i18n";
 import { editorBottomClassName } from "pages/tutorials/tutorialsConstant";
-import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { getDataSource } from "redux/selectors/datasourceSelectors";
 import styled, { css } from "styled-components";
@@ -60,7 +61,7 @@ export function BottomSkeleton() {
 }
 
 export const BottomContent = () => {
-  const editorState = useContext(EditorContext);
+  const editorState = useEditorStateCompat();
   const datasourceInfos = useSelector(getDataSource);
   const selectedComp = editorState.selectedBottomResComp();
   const [isCreatePanelShow, showCreatePanel] = useState(false);

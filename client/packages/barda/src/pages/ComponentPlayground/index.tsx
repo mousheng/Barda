@@ -5,6 +5,8 @@ import { UICompType, UICompManifest, uiCompRegistry, UICompCategory } from "comp
 import { CompPlayground } from "ide/CompPlayground";
 import { Comp } from "barda-core";
 import { EditorContext, EditorState } from "comps/editorState";
+import { createEditorStateCompat } from "comps/editorCompat";
+import { useEditorStore } from "comps/editorStore";
 import { RootComp } from "comps/comps/rootComp";
 
 type CompInfo = UICompManifest & { key: string };
@@ -47,7 +49,8 @@ const Wrapper = styled.div`
   }
 `;
 
-const editorState = new EditorState(new RootComp({ value: {} }), () => {});
+useEditorStore.setState({ rootComp: new RootComp({ value: {} }) as any });
+const editorState = createEditorStateCompat();
 
 export default function ComponentPlayground() {
   window.__BARDA_DEV__ = {};

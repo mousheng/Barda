@@ -1,4 +1,4 @@
-import { EditorContext } from "comps/editorState";
+import { useEditorStore } from "comps/editorStore";
 import { EditorContainer } from "pages/common/styledComponent";
 import { Profiler, useContext, useRef, useState } from "react";
 import styled from "styled-components";
@@ -71,12 +71,12 @@ function getDragSelectedNames(
 const EmptySet = new Set<string>();
 
 export function CanvasView(props: ContainerBaseProps) {
-  const editorState = useContext(EditorContext);
   const [dragSelectedComps, setDragSelectedComp] = useState(EmptySet);
   const scrollContainerRef = useRef(null);
 
   const maxWidthFromHook = useMaxWidth();
-  const maxWidth = editorState.getAppSettings().maxWidth ?? maxWidthFromHook;
+  const appMaxWidth = useEditorStore((s) => s.rootComp?.children.settings.getView().maxWidth);
+  const maxWidth = appMaxWidth ?? maxWidthFromHook ?? 1600;
   const isMobile = checkIsMobile(maxWidth);
   const defaultContainerPadding = isMobile ? DEFAULT_MOBILE_PADDING : DEFAULT_CONTAINER_PADDING;
 
@@ -124,7 +124,7 @@ export function CanvasView(props: ContainerBaseProps) {
               setDragSelectedComp(EmptySet);
             }}
             onMouseUp={() => {
-              editorState.setSelectedCompNames(dragSelectedComps);
+              useEditorStore.getState().setSelectedCompNames(dragSelectedComps);
               setDragSelectedComp(EmptySet);
             }}
             onMouseMove={(checkSelectFunc) => {

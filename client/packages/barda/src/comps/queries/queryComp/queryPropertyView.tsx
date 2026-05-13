@@ -22,11 +22,12 @@ import {
   TriggerTypeStyled,
 } from "barda-design";
 import { BottomTabs } from "pages/editor/bottom/BottomTabs";
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { getDataSource, getDataSourceTypes } from "redux/selectors/datasourceSelectors";
 import { BottomResTypeEnum } from "types/bottomRes";
-import { EditorContext } from "../../editorState";
+import { useEditorStore } from "comps/editorStore";
+import { useQueriesComp } from "comps/editorSelectors";
 import { QueryComp } from "../queryComp";
 import { ResourceDropdown } from "../resourceDropdown";
 import { NOT_SUPPORT_GUI_SQL_QUERY, SQLQuery } from "../sqlQuery/SQLQuery";
@@ -34,7 +35,7 @@ import { NOT_SUPPORT_GUI_SQL_QUERY, SQLQuery } from "../sqlQuery/SQLQuery";
 export function QueryPropertyView(props: { comp: InstanceType<typeof QueryComp> }) {
   const { comp } = props;
 
-  const editorState = useContext(EditorContext);
+  const setShowResultCompName = useEditorStore((s) => s.setShowResultCompName);
   const datasource = useSelector(getDataSource);
 
   const children = comp.children;
@@ -135,7 +136,7 @@ export function QueryPropertyView(props: { comp: InstanceType<typeof QueryComp> 
       onRunBtnClick={() =>
         dispatch(
           executeQueryAction({
-            afterExecFunc: () => editorState.setShowResultCompName(children.name.getView()),
+            afterExecFunc: () => setShowResultCompName(children.name.getView()),
           })
         )
       }
@@ -152,7 +153,7 @@ export const QueryGeneralPropertyView = (props: {
   placement?: PageType;
 }) => {
   const { comp, placement = "editor" } = props;
-  const editorState = useContext(EditorContext);
+  const queriesComp = useQueriesComp();
   const datasource = useSelector(getDataSource);
 
   const children = comp.children;
@@ -237,9 +238,8 @@ export const QueryGeneralPropertyView = (props: {
                   )
                 );
 
-                if (datasourceStatus === "error") {
-                  const queries = editorState
-                    .getQueriesComp()
+                if (datasourceStatus === "error" && queriesComp) {
+                  const queries = queriesComp
                     .getView()
                     .filter(
                       (q) =>

@@ -3,12 +3,11 @@ import { KeyValueItem, KeyValueItemListWithNewCreateState } from "components/Key
 import { StringControl } from "comps/controls/codeControl";
 import CompNameControl from "comps/controls/compNameControl";
 import { dropdownControl } from "comps/controls/dropdownControl";
-import { EditorContext } from "comps/editorState";
+import { useNameGenerator } from "comps/editorSelectors";
 import { list } from "comps/generators/list";
 import { trans } from "i18n";
 import { multiChangeAction } from "barda-core";
 import { controlItem, Section } from "barda-design";
-import { useContext } from "react";
 import InputListItemComp, { getInputOptionLabel, InputTypeEnum } from "./inputListItemComp";
 
 const InputListCompBase = list(InputListItemComp);
@@ -74,10 +73,10 @@ interface PropertyViewProps {
 
 function PropertyView(props: PropertyViewProps) {
   const { onDelete, onTypeChange, onAdd, items } = props;
-  const editorState = useContext(EditorContext);
+  const nameGenerator = useNameGenerator();
 
   const handleAdd = () => {
-    const name = editorState.getNameGenerator().genItemName("moduleInput");
+    const name = nameGenerator.genItemName("moduleInput");
     onAdd(name);
   };
 

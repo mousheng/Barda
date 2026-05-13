@@ -28,7 +28,7 @@ import { NameGenerator } from "comps/utils";
 import { Section, sectionNames } from "barda-design";
 import { HintPlaceHolder } from "barda-design";
 import _ from "lodash";
-import React, { useContext } from "react";
+import React from "react";
 import styled, { css } from "styled-components";
 import { IContainer } from "../containerBase/iContainer";
 import { SimpleContainerComp } from "../containerBase/simpleContainerComp";
@@ -39,7 +39,7 @@ import { disabledPropertyView, hiddenPropertyView } from "comps/utils/propertyUt
 import { trans } from "i18n";
 import { BoolCodeControl } from "comps/controls/codeControl";
 import { DisabledContext } from "comps/generators/uiCompBuilder";
-import { EditorContext } from "comps/editorState";
+import { useEditorStore } from "comps/editorStore";
 import { checkIsMobile } from "util/commonUtils";
 import { messageInstance } from "barda-design";
 import { PositionControl } from "@barda/comps/controls/dropdownControl";
@@ -219,8 +219,7 @@ const TabbedContainer = (props: TabbedContainerProps) => {
   //   []
   // );
 
-  const editorState = useContext(EditorContext);
-  const maxWidth = editorState.getAppSettings().maxWidth;
+  const maxWidth = useEditorStore((s) => s.rootComp?.children.settings.getView().maxWidth);
   const isMobile = checkIsMobile(maxWidth);
   const bodyPadding = parseBoxValues(props.style.padding_UNIT, [11, 19, 11, 19], false) as number[];
   const containerPadding: [number, number] = [bodyPadding[1], bodyPadding[0]];

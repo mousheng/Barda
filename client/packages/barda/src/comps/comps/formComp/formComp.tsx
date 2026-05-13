@@ -6,7 +6,8 @@ import {
 } from "comps/generators/withExposing";
 import { Section, sectionNames } from "barda-design";
 import { genQueryId } from "comps/utils/idGenerator";
-import { CompNameContext, EditorContext, EditorState } from "comps/editorState";
+import { CompNameContext } from "comps/editorState";
+import { createEditorStateCompat } from "comps/editorCompat";
 import { withMethodExposing } from "comps/generators/withMethodExposing";
 import { ContainerPlaceholder } from "barda-design";
 import {
@@ -114,9 +115,9 @@ function onEventData(queryName: string) {
 function onCreate(
   data: CreateData,
   props: FormProps,
-  editorState: EditorState,
   formName: string
 ): string {
+  const editorState = createEditorStateCompat();
   const { dispatch } = props;
   const nameGenerator = editorState.getNameGenerator();
   const infos = data.columns.map((column) => {
@@ -151,7 +152,6 @@ function onCreate(
 }
 
 const BodyPlaceholder = (props: FormProps) => {
-  const editorState = useContext(EditorContext);
   const formName = useContext(CompNameContext);
   return (
     <ContainerPlaceholder>
@@ -159,7 +159,7 @@ const BodyPlaceholder = (props: FormProps) => {
       <br />
       <CreateForm
         onCreate={(data: CreateData) =>
-          Promise.resolve(onCreate(data, props, editorState, formName))
+          Promise.resolve(onCreate(data, props, formName))
         }
       />
     </ContainerPlaceholder>

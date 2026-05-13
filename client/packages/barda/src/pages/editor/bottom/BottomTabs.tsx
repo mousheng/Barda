@@ -10,12 +10,15 @@ import {
 import { trans } from "i18n";
 import _ from "lodash";
 import { ReadOnlyMask } from "pages/common/styledComponent";
-import React, { memo, ReactNode, useContext, useEffect, useState } from "react";
+import React, { memo, ReactNode, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { showAppSnapshotSelector } from "redux/selectors/appSnapshotSelector";
 import styled from "styled-components";
 import { BottomResTypeEnum } from "types/bottomRes";
-import { EditorContext } from "../../../comps/editorState";
+import { useNameAndExposingInfo, useRootComp } from "comps/editorSelectors";
+import { useEditorStore } from "comps/editorStore";
+import { checkName } from "comps/utils/rename";
+import { renameAction } from "barda-core";
 
 const Span = styled.span<{ $border: boolean }>`
   &&&{
@@ -187,12 +190,24 @@ export const BottomTabs = memo(<T extends TabsConfigType>(props: {
   const [key, setKey] = useState<TabsConfigKeyType<typeof tabsConfig>>("general");
   const [error, setError] = useState<string | undefined>(undefined);
   const [editing, setEditing] = useState(false);
-  const editorState = useContext(EditorContext);
+  const rootComp = useRootComp();
+  const nameAndExposingInfo = useNameAndExposingInfo();
+  const setSelectedBottomRes = useEditorStore((s) => s.setSelectedBottomRes);
+  const selectedBottomResName = useEditorStore((s) => s.selectedBottomResName);
   const readOnly = useSelector(showAppSnapshotSelector);
+
+  const checkRenameLocal = (oldName: string, name: string): string => {
+    const nameError = checkName(name);
+    if (nameError) return nameError;
+    if (name !== oldName && nameAndExposingInfo.hasOwnProperty(name)) {
+      return trans("comp.nameExists", { name });
+    }
+    return "";
+  };
 
   const valueInfoMap = _.fromPairs(tabsConfig.map((c) => [c.key, c]));
 
-  useEffect(() => setKey("general"), [editorState.selectedBottomResName]);
+  useEffect(() => setKey("general"), [selectedBottomResName]);
 
   return (
     <>
@@ -214,12 +229,16 @@ export const BottomTabs = memo(<T extends TabsConfigType>(props: {
             text={tabTitle}
             onFinish={(value) => {
               value = value.trim().slice(0, 25);
-              if (editorState.rename(tabTitle, value)) {
-                editorState.setSelectedBottomRes(value, type);
+              const renameError = checkRenameLocal(tabTitle, value);
+              if (!renameError) {
+                if (value !== tabTitle) {
+                  rootComp?.dispatch(renameAction(tabTitle, value));
+                }
+                setSelectedBottomRes(value, type);
                 setError(undefined);
               }
             }}
-            onChange={(value) => setError(editorState.checkRename(tabTitle, value))}
+            onChange={(value) => setError(checkRenameLocal(tabTitle, value))}
             onEditStateChange={(editing) => setEditing(editing)}
             disableHoverIcon={true}
           />

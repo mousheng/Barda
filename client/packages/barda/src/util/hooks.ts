@@ -2,7 +2,6 @@ import { AppPathParams } from "constants/applicationConstants";
 import React, {
   Dispatch,
   SetStateAction,
-  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -13,7 +12,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { DATASOURCE_URL, QUERY_LIBRARY_URL } from "../constants/routesURL";
 import { AuthSearchParams } from "constants/authConstants";
 import { checkIsMobile } from "util/commonUtils";
-import { EditorContext } from "comps/editorState";
+import { useEditorStore } from "comps/editorStore";
 import { getDataSourceStructures } from "redux/selectors/datasourceSelectors";
 import { DatasourceStructure } from "api/datasourceApi";
 
@@ -136,8 +135,8 @@ export function useCurrentPage(): PageType {
 }
 
 export function useIsMobile() {
-  const editorState = useContext(EditorContext);
-  return checkIsMobile(editorState?.getAppSettings().maxWidth);
+  const maxWidth = useEditorStore((s) => s.rootComp?.children.settings.getView().maxWidth);
+  return checkIsMobile(maxWidth);
 }
 
 function getMetaData(

@@ -15,7 +15,10 @@ import {
   wrapChildAction,
 } from "barda-core";
 import { parseBoxValues, StandardBoxMargin } from "comps/controls/styleControlConstants";
-import { EditorContext, EditorState, SelectSourceType } from "comps/editorState";
+import { EditorState, SelectSourceType } from "comps/editorState";
+import { useEditorStore } from "comps/editorStore";
+import { useAppSettings, useCanvasPositionParams } from "comps/editorSelectors";
+import { createEditorStateCompat } from "comps/editorCompat";
 import { sameTypeMap, stateComp, valueComp } from "comps/generators";
 import { addMapChildAction, addMapCompChildAction } from "comps/generators/sameTypeMap";
 import { hookCompCategory, HookCompType } from "comps/hooks/hookCompTypes";
@@ -320,7 +323,14 @@ export function InnerGrid(props: ViewPropsWithSelect) {
   } = props;
   const [currentRowCount, setRowCount] = useState(rowCount || Infinity);
   const [currentRowHeight, setRowHeight] = useState(DEFAULT_ROW_HEIGHT);
-  const editorState = useContext(EditorContext);
+  const canvasPositionParams = useCanvasPositionParams();
+  const selectedCompNames = useEditorStore((s) => s.selectedCompNames);
+  const selectSource = useEditorStore((s) => s.selectSource);
+  const isDragging = useEditorStore((s) => s.isDragging);
+  const forceShowGrid = useEditorStore((s) => s.forceShowGrid);
+  const disableInteract = useEditorStore((s) => s.disableInteract);
+  const setDragging = useEditorStore((s) => s.setDragging);
+  const setSelectedCompNames = useEditorStore((s) => s.setSelectedCompNames);
   const { readOnly } = useContext(ExternalEditorContext);
 
   const isDroppable =
@@ -333,11 +343,11 @@ export function InnerGrid(props: ViewPropsWithSelect) {
       getExtraLayout(
         props.items,
         props.layout,
-        editorState.selectedCompNames,
+        selectedCompNames,
         props.dragSelectedComps,
-        editorState.selectSource
+        selectSource
       ),
-    [props.items, props.layout, editorState.selectedCompNames, props.dragSelectedComps, editorState.selectSource]
+    [props.items, props.layout, selectedCompNames, props.dragSelectedComps, selectSource]
   );
 
   const [containerSelectNames, setContainerSelectNames] = useState<Set<string>>(new Set([]));
@@ -354,8 +364,8 @@ export function InnerGrid(props: ViewPropsWithSelect) {
   }, [extraLayout, containerSelectNames]);
 
   const canAddSelect = useMemo(
-    () => _.size(containerSelectNames) === _.size(editorState.selectedCompNames),
-    [containerSelectNames, editorState]
+    () => _.size(containerSelectNames) === _.size(selectedCompNames),
+    [containerSelectNames, selectedCompNames]
   );
 
   const dispatchPositionParamsTimerRef = useRef(0);
@@ -408,9 +418,9 @@ export function InnerGrid(props: ViewPropsWithSelect) {
   );
   const setSelectedNames = useCallback(
     (names: Set<string>) => {
-      editorState.setSelectedCompNames(names);
+      setSelectedCompNames(names);
     },
-    [editorState]
+    [setSelectedCompNames]
   );
   const { width, ref, height } = useResizeDetector({
     onResize,
@@ -427,7 +437,7 @@ export function InnerGrid(props: ViewPropsWithSelect) {
       if (!refItem || !refItem.comp || refItem.comp !== item.comp) {
         newView[key] = {
           ...item,
-          view: <GridItemWrapper key={key} disableInteract={editorState.disableInteract}>{item.view}</GridItemWrapper>,
+          view: <GridItemWrapper key={key} disableInteract={disableInteract}>{item.view}</GridItemWrapper>,
         };
       } else {
         newView[key] = itemViewRef.current[key];
@@ -453,10 +463,10 @@ export function InnerGrid(props: ViewPropsWithSelect) {
     }
   }, [isRowCountLocked, onRowCountChange]);
 
-  const maxWidth = editorState.getAppSettings().maxWidth;
+  const appSettings = useAppSettings();
+  const maxWidth = appSettings?.maxWidth;
 
-  const layoutMode = editorState.getAppSettings().layoutMode;
-  const isDragging = editorState.isDragging;
+  const layoutMode = appSettings?.layoutMode ?? "grid";
 
   // log.info("rowCount:", currentRowCount, "rowHeight:", currentRowHeight);
 
@@ -464,7 +474,7 @@ export function InnerGrid(props: ViewPropsWithSelect) {
     <NewGridLayout
       showScroll={props?.showScroll}
       isDragging={isDragging}
-      showGridLines={editorState.showGridLines() && (isDroppable || enableGridLines)}
+      showGridLines={(isDragging || forceShowGrid) && (isDroppable || enableGridLines)}
       innerRef={ref as any}
       className={props.className}
       style={props.style}
@@ -486,15 +496,16 @@ export function InnerGrid(props: ViewPropsWithSelect) {
           const defaultSize = checkIsMobile(maxWidth)
             ? { ...defaultLayout(compType), w: DEFAULT_GRID_COLUMNS * 2 }
             : defaultLayout(compType);
+          const posParams = canvasPositionParams;
           return {
             size: compLayout ?? defaultSize,
-            positionParams: editorState.canvasPositionParams(),
+            positionParams: posParams,
           };
         }
       }}
       onDrop={(layout, items, _event) => {
         // log.debug("layout: onDrop. style: ", props.type);
-        onDrop(layout, items, _event, props.dispatch, editorState);
+        onDrop(layout, items, _event, props.dispatch, createEditorStateCompat());
       }}
       onLayoutChange={(newLayout) => {
         // log.debug("layout: onLayoutChange. currentLayout: ", currentLayout, " newLayout: ", newLayout);
@@ -504,19 +515,19 @@ export function InnerGrid(props: ViewPropsWithSelect) {
         const items = _.pick(props.items, Object.keys(layoutItems));
         draggingUtils.setData("sourceDispatch", props.dispatch);
         draggingUtils.setData<Record<string, GridItemType>>("items", items);
-        editorState.setDragging(true);
+        setDragging(true);
         const names = Object.values(items).map((item) => item.name);
-        editorState.setSelectedCompNames(new Set(names));
+        setSelectedCompNames(new Set(names));
       }}
       onFlyDrop={(layout, items) => {
         onFlyDrop(layout, items, props.dispatch);
-        editorState.setDragging(false);
+        setDragging(false);
       }}
       onResizeStart={(e) => {
         e.stopPropagation();
-        editorState.setDragging(true);
+        setDragging(true);
       }}
-      onResizeStop={() => editorState.setDragging(false)}
+      onResizeStop={() => setDragging(false)}
       margin={[0, 0]}
       containerPadding={props.containerPadding}
       emptyRows={props.emptyRows}
@@ -529,12 +540,12 @@ export function InnerGrid(props: ViewPropsWithSelect) {
       minHeight={props.minHeight}
       bgColor={props.bgColor}
       radius={props.radius}
-      hintPlaceholder={!editorState.isDragging && !readOnly && props.hintPlaceholder}
+      hintPlaceholder={!isDragging && !readOnly && props.hintPlaceholder}
       selectedSize={_.size(containerSelectNames)}
       clickItem={clickItem}
       isCanvas={props.isCanvas}
       showName={props.showName}
-      disableDirectionKey={editorState.isDragging || readOnly}
+      disableDirectionKey={isDragging || readOnly}
     >
       {itemViews}
     </NewGridLayout>

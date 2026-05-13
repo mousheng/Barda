@@ -1,8 +1,7 @@
-import { EditorContext } from "comps/editorState";
+import { useQueryCompInfoList } from "comps/editorSelectors";
 import { MultiCompBuilder, valueComp } from "comps/generators";
 import { ControlPropertyViewWrapper } from "barda-design";
 import { Dropdown } from "barda-design";
-import { useContext } from "react";
 import { ControlParams } from "./controlParams";
 
 interface IProps {
@@ -12,13 +11,13 @@ interface IProps {
 
 function QuerySelect(props: IProps) {
   const { onChange, value } = props;
-  const editorState = useContext(EditorContext);
+  const queryCompInfoList = useQueryCompInfoList();
   return (
     <Dropdown
       showSearch={true}
       allowClear
       value={value}
-      options={editorState.queryCompInfoList().map((info) => ({
+      options={queryCompInfoList.map((info) => ({
         label: info.name,
         value: info.name,
       }))}

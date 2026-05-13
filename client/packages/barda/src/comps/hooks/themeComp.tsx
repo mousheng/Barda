@@ -1,5 +1,5 @@
 import { ThemeType } from "api/commonSettingApi";
-import { EditorContext } from "comps/editorState";
+import { useEditorStore } from "comps/editorStore";
 import { simpleMultiComp, stateComp, withViewFn } from "comps/generators";
 import { withSimpleExposing } from "comps/generators/withExposing";
 import { withMethodExposing } from "comps/generators/withMethodExposing";
@@ -44,8 +44,7 @@ let ThemeTempComp = withViewFn(
       () => commonThemes || globalThemes || [],
       [commonThemes, globalThemes]
     );
-    const editorState = useContext(EditorContext);
-    const appThemeId = editorState?.getAppSettings().themeId;
+    const appThemeId = useEditorStore((s) => s.rootComp?.children.settings.getView().themeId) ?? "";
     const currentTheme = getCurrentTheme(themeList, appThemeId);
     useEffect(() => {
       comp.children.stateValue.dispatchChangeValueAction({

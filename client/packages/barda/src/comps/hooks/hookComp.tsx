@@ -2,7 +2,8 @@ import { CompName } from "components/CompName";
 import { getAllCompItems } from "comps/comps/containerBase/utils";
 import { SimpleNameComp } from "comps/comps/simpleNameComp";
 import { StringControl } from "comps/controls/codeControl";
-import { EditorContext } from "comps/editorState";
+import { useSelectedComp, useSelectSource } from "comps/editorSelectors";
+import { useEditorStore } from "comps/editorStore";
 import {
   simpleMultiComp,
   withDefault,
@@ -20,7 +21,7 @@ import _ from "lodash";
 import dayjs from "dayjs";
 import { ConstructorToComp } from "barda-core";
 import { Section, sectionNames } from "barda-design";
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useInterval, useTitle, useWindowSize } from "react-use";
 import { useCurrentUser } from "util/currentUser";
 import { LocalStorageComp } from "./localStorageComp";
@@ -108,14 +109,15 @@ function SelectHookView(props: {
   compType: HookCompType;
   comp: ConstructorToComp<HookCompConstructor>;
 }) {
-  const editorState = useContext(EditorContext);
-  const selectedComp = editorState.selectedComp();
+  const selectedComp = useSelectedComp();
+  const selectSource = useSelectSource();
+  const setSelectedCompNames = useEditorStore((s) => s.setSelectedCompNames);
   // Select the modal and its subcomponents on the left to display the modal
   useEffect(() => {
     if (
       (props.compType !== "modal" && props.compType !== "drawer") ||
       !selectedComp ||
-      (editorState.selectSource !== "addComp" && editorState.selectSource !== "leftPanel")
+      (selectSource !== "addComp" && selectSource !== "leftPanel")
     ) {
       return;
     } else if ((selectedComp as any).children.comp === props.comp) {
@@ -139,10 +141,10 @@ function SelectHookView(props: {
         );
       }
     }
-  }, [selectedComp, editorState.selectSource]);
+  }, [selectedComp, selectSource]);
 
   return (
-    <div onClick={() => editorState.setSelectedCompNames(new Set([props.compName]))}>
+    <div onClick={() => setSelectedCompNames(new Set([props.compName]))}>
       {props.children}
     </div>
   );

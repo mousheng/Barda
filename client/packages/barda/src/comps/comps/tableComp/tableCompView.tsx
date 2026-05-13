@@ -22,7 +22,8 @@ import {
   handleToSelectedRow,
   TableStyleType,
 } from "comps/controls/styleControlConstants";
-import { CompNameContext, EditorContext } from "comps/editorState";
+import { CompNameContext } from "comps/editorState";
+import { useQueriesComp, useQueryCompInfoList } from "comps/editorSelectors";
 import { BackgroundColorContext } from "comps/utils/backgroundColorContext";
 import { PrimaryColor } from "constants/style";
 import { trans } from "i18n";
@@ -545,7 +546,8 @@ export function TableCompView(props: {
   onRefresh: (allQueryNames: Array<string>, setLoading: (loading: boolean) => void) => void;
   onDownload: (fileName: string) => void;
 }) {
-  const editorState = useContext(EditorContext);
+  const queryCompInfoList = useQueryCompInfoList();
+  const queriesComp = useQueriesComp();
   const { width, ref } = useResizeDetector({
     refreshMode: "debounce",
     refreshRate: 600,
@@ -667,9 +669,9 @@ export function TableCompView(props: {
   const selectionEvents = useMemo(() => compChildren.selection.getView()(onEvent), [compChildren.selection, onEvent])
   const onRefreshCallback = useCallback(() =>
     onRefresh(
-      editorState.queryCompInfoList().map((info) => info.name),
+      queryCompInfoList.map((info) => info.name),
       setLoading
-    ), [editorState.rootComp.children.queries, onRefresh])
+    ), [queriesComp, onRefresh])
   const onDownloadCallback = useCallback(() => onDownload(`${compName}-data`), [compName, onDownload])
   const onSaveChangesCallback = useCallback(() => handleChangeEvent("saveChanges"), [handleChangeEvent])
   const onCancelChangesCallback = useCallback(() => handleChangeEvent("cancelChanges"), [handleChangeEvent])

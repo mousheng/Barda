@@ -3,7 +3,8 @@ import { Menu } from "antd";
 import { MenuProps } from "antd/es/menu";
 import { PreloadComp } from "comps/comps/preLoadComp";
 import UIComp from "comps/comps/uiComp";
-import { EditorContext } from "comps/editorState";
+import { useEditorStore } from "comps/editorStore";
+import { useHooksComp, useAppSettings, useAppSettingsComp } from "comps/editorSelectors";
 import { Layers } from "constants/Layers";
 import { TopHeaderHeight } from "constants/style";
 import Header, { PanelStatus, TogglePanel } from "pages/common/header";
@@ -86,7 +87,14 @@ MemoizedMenu.displayName = "MemoizedMenu";
 
 function EditorView(props: EditorViewProps) {
   const { uiComp } = props;
-  const editorState = useContext(EditorContext);
+  const setDraggingCompType = useEditorStore((s) => s.setDraggingCompType);
+  const storeSetShowPropertyPane = useEditorStore((s) => s.setShowPropertyPane);
+  const showPropertyPane = useEditorStore((s) => s.showPropertyPane);
+  const hooksComp = useHooksComp();
+  const appSettings = useAppSettings();
+  const appSettingsComp = useAppSettingsComp();
+  const rootComp = useEditorStore((s) => s.rootComp);
+  const setDragging = useEditorStore((s) => s.setDragging);
   const { readOnly, hideHeader } = useContext(ExternalEditorContext);
   const application = useSelector(currentApplication);
   const locationState = useLocation<UserGuideLocationState>().state;
@@ -131,25 +139,26 @@ function EditorView(props: EditorViewProps) {
 
   const onCompDrag = useCallback(
     (dragCompKey: string) => {
-      editorState.setDraggingCompType(dragCompKey);
+      setDraggingCompType(dragCompKey);
     },
-    [editorState.draggingCompType]
+    [setDraggingCompType]
   );
   const setShowPropertyPane = useCallback(
     (tabKey: string) => {
-      editorState.setShowPropertyPane(tabKey === "property");
+      storeSetShowPropertyPane(tabKey === "property");
     },
-    [editorState.showPropertyPane]
+    [showPropertyPane]
   );
 
   const hookCompViews = useMemo(() => {
-    return Object.keys(editorState.getHooksComp().children).map((key) => (
+    if (!hooksComp) return [];
+    return Object.keys(hooksComp.children).map((key) => (
       // use appId as key, remount hook comp when app change. fix hookStateComp empty value
       <div key={key + "-" + application?.applicationId}>
-        {editorState.getHooksComp().children[key].getView()}
+        {hooksComp.children[key].getView()}
       </div>
     ));
-  }, [application?.applicationId, editorState.rootComp]);
+  }, [application?.applicationId, hooksComp]);
 
   useLayoutEffect(() => {
     function updateSize() {
@@ -172,7 +181,7 @@ function EditorView(props: EditorViewProps) {
     setMenuKey(params.key);
   }, [menuKey, panelStatus]);
 
-  const hideBodyHeader = useTemplateViewMode() || editorState.getAppSettings()?.hiddenHeader === "hiddenHeader";
+  const hideBodyHeader = useTemplateViewMode() || appSettings?.hiddenHeader === "hiddenHeader";
 
   const uiCompView = useMemo(() => {
     if (showAppSnapshot) {
@@ -223,12 +232,10 @@ function EditorView(props: EditorViewProps) {
   //   uiCompView = uiComp.getView();
   // }
 
-  const appSettingsComp = editorState.getAppSettingsComp();
-
   return (
     <Height100Div
       onDragEnd={(e: any) => {
-        editorState.setDragging(false);
+        setDragging(false);
         draggingUtils.clearData();
       }}
     >
@@ -282,7 +289,7 @@ function EditorView(props: EditorViewProps) {
             <RightPanel
               uiComp={uiComp}
               onCompDrag={onCompDrag}
-              showPropertyPane={editorState.showPropertyPane}
+              showPropertyPane={showPropertyPane}
               onTabChange={setShowPropertyPane}
             />
           )}

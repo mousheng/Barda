@@ -3,8 +3,9 @@ import { trans } from "@barda/i18n";
 import { NodeInfo, NodeItem } from "@barda/util/objectUtils";
 import { BasicDataNode, DataNode, EventDataNode } from "antd/es/tree";
 import { BaseSection, FoldedIcon, LeftClose, LeftCommon, LeftOpen, ScrollBar, Tooltip, UnfoldIcon } from "barda-design";
-import { EditorContext, SelectSourceType } from "comps/editorState";
-import React, { memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { SelectSourceType } from "comps/editorState";
+import { useUICompInfoList } from "comps/editorSelectors";
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CompStateIcon } from "../editorConstants";
 import { CollapseView } from "../LeftContent";
 import { CollapseWrapper, DirectoryTreeStyle, Node } from "../styledComponents";
@@ -17,8 +18,7 @@ interface CustomTreeNodeProps {
 
 const CustomTreeNode = React.memo((props: CustomTreeNodeProps) => {
     const { node, showData, setShowData } = props;
-    const editorState = useContext(EditorContext);
-    const compInfos = editorState.uiCompInfoList(comp => comp.children.name.getView() === node.title);
+    const compInfos = useUICompInfoList(comp => comp.children.name.getView() === node.title);
     const data = compInfos.length > 0 ? compInfos[0] : undefined;
     const info = showData.find((item: NodeInfo) => item.key === node.key);
 

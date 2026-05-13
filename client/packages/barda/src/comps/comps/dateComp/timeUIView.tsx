@@ -4,9 +4,9 @@ import { DateTimeStyleType } from "../../controls/styleControlConstants";
 import { getStyle } from "comps/comps/dateComp/dateCompUtil";
 import { useUIView } from "../../utils/useUIView";
 import { checkIsMobile } from "util/commonUtils";
-import React, { useContext } from "react";
+import React from "react";
 import type { TimeCompViewProps } from "./timeComp";
-import { EditorContext } from "../../editorState";
+import { useEditorStore } from "comps/editorStore";
 import dayjs from "dayjs"
 
 const TimePickerStyled = styled(TimePicker) <{ $style: DateTimeStyleType }>`
@@ -24,7 +24,7 @@ export interface TimeUIViewProps extends TimeCompViewProps {
 }
 
 export const TimeUIView = (props: TimeUIViewProps) => {
-  const editorState = useContext(EditorContext);
+  const maxWidth = useEditorStore((s) => s.rootComp?.children.settings.getView().maxWidth);
 
   return useUIView(
     <TimeMobileUIView {...props} />,
@@ -32,7 +32,7 @@ export const TimeUIView = (props: TimeUIViewProps) => {
       {...props}
       ref={props.viewRef as any}
       hideDisabledOptions
-      inputReadOnly={checkIsMobile(editorState?.getAppSettings().maxWidth)}
+      inputReadOnly={checkIsMobile(maxWidth)}
     />
   );
 };

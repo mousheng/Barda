@@ -1,5 +1,5 @@
 import { StandardBoxMargin } from "@barda/comps/controls/styleControlConstants";
-import { EditorContext } from "@barda/comps/editorState";
+import { useEditorStore } from "@barda/comps/editorStore";
 import { UICompType } from "@barda/comps/uiCompRegistry";
 import { ModulePrimaryColor, PrimaryColor } from "@barda/constants/style";
 import clsx from "clsx";
@@ -71,7 +71,6 @@ const LAYOUT_CLASS_NAME = "react-grid-layout";
  * @returns 
  */
 export const NewGridLayout = (props: GridLayoutProps) => {
-    const editorState = useContext(EditorContext);
     // 用于组件刷新
     const [refreshCanvasCount, setRefreshCanvasCount] = useState<number>(0)
     // 最终呈现的布局
@@ -525,7 +524,7 @@ export const NewGridLayout = (props: GridLayoutProps) => {
                 )
                 SetLayoutOPSWrapper(ops, "拖拽结束-当前容器");
                 inCanvasCountRef.current = 0;
-                editorState.setDragging(false);
+                useEditorStore.getState().setDragging(false);
             } else {
                 // 组件拖到其他容器
                 compsHeightMap.current = _.omit(compsHeightMap.current, flyStartInfo.flyItemKeys)

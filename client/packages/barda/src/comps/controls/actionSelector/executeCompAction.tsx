@@ -3,7 +3,8 @@ import { CompParams, ConstructorToDataType } from "barda-core";
 import { GridItemComp } from "comps/comps/gridItemComp";
 import { SimpleNameComp } from "comps/comps/simpleNameComp";
 import { TemporaryStateItemComp } from "comps/comps/temporaryStateComp";
-import { CompNameContext, EditorContext, EditorState } from "comps/editorState";
+import { CompNameContext, EditorState } from "comps/editorState";
+import { EditorStateView } from "comps/editorCompat";
 import { valueComp, withTypeAndChildren } from "comps/generators";
 import { list } from "comps/generators/list";
 import { MultiCompBuilder } from "comps/generators/multi";
@@ -123,7 +124,7 @@ export function executeCompAction(params: ExecuteCompActionOptions) {
 
     propertyView() {
       return (
-        <EditorContext.Consumer>
+        <EditorStateView>
           {(editorState) => {
             const compMethods: Record<string, Record<string, ParamsConfig>> = {};
             const compList = compListGetter(editorState);
@@ -200,7 +201,7 @@ export function executeCompAction(params: ExecuteCompActionOptions) {
               </>
             );
           }}
-        </EditorContext.Consumer>
+        </EditorStateView>
       );
     }
   }

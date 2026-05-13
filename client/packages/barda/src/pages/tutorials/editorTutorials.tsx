@@ -1,7 +1,7 @@
 // Intro guide
 import Joyride, { ACTIONS, CallBackProps, EVENTS, STATUS, Step } from "react-joyride";
-import { useContext, useEffect, useState } from "react";
-import { EditorContext, EditorState } from "comps/editorState";
+import { useEffect, useState } from "react";
+import { createEditorStateCompat } from "comps/editorCompat";
 import {
   changeChildAction,
   executeQueryAction,
@@ -111,7 +111,8 @@ const tourSteps: Step[] = [
   },
 ];
 
-function addTable(editorState: EditorState) {
+function addTable() {
+  const editorState = createEditorStateCompat();
   const tableCompName = "table1";
   const compType = "table";
   if (editorState.getUICompByName(tableCompName)) {
@@ -148,7 +149,8 @@ function addTable(editorState: EditorState) {
   );
 }
 
-function addQuery(editorState: EditorState, datasourceInfos: DatasourceInfo[]) {
+function addQuery(datasourceInfos: DatasourceInfo[]) {
+  const editorState = createEditorStateCompat();
   const queryName = "query1";
   if (
     editorState
@@ -197,7 +199,7 @@ function addQuery(editorState: EditorState, datasourceInfos: DatasourceInfo[]) {
 export default function EditorTutorials() {
   const [run, setRun] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
-  const editorState = useContext(EditorContext);
+  const editorState = createEditorStateCompat();
   const dispatch = useDispatch();
   const history = useHistory<UserGuideLocationState>();
   const datasourceInfos = useSelector((state: AppState) => state.entities.datasource.data);
@@ -253,11 +255,11 @@ export default function EditorTutorials() {
     }
     if (index === 0 && action === ACTIONS.NEXT) {
       setStepIndex(nextIndex);
-      setTimeout(() => addTable(editorState), 0);
+      setTimeout(() => addTable(), 0);
     } else if (index === 1 && action === ACTIONS.NEXT) {
       // re-try to add table in case of the deletion in the prev step
-      addTable(editorState);
-      addQuery(editorState, datasourceInfos);
+      addTable();
+      addQuery(datasourceInfos);
       // select table in advance
       editorState.setSelectedCompNames(new Set(["table1"]));
       setStepIndex(nextIndex);

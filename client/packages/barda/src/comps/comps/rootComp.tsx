@@ -4,7 +4,8 @@ import {
 } from "barda-design";
 import { ModuleLoading } from "components/ModuleLoading";
 import { defaultTheme as localDefaultTheme } from "comps/controls/styleControlConstants";
-import { EditorContext, EditorState } from "comps/editorState";
+import { EditorContext, useEditorStateCompat } from "comps/editorCompat";
+import { useEditorStore } from "comps/editorStore";
 import { simpleMultiComp } from "comps/generators";
 import { HookListComp } from "comps/hooks/hookListComp";
 import { QueryListComp } from "comps/queries/queryComp";
@@ -48,8 +49,8 @@ const childrenMap = {
 function RootView(props: RootViewProps) {
   const previewTheme = useContext(ThemeContext);
   const { comp, isModuleRoot, ...divProps } = props;
-  const [editorState, setEditorState] = useState<EditorState>();
   const [propertySectionState, setPropertySectionState] = useState<PropertySectionState>({});
+  const setRootComp = useEditorStore((s) => s.setRootComp);
   const appThemeId = comp.children.settings.getView().themeId;
   const { orgCommonSettings } = getGlobalSettings();
   const themeList = orgCommonSettings?.themeList || [];
@@ -59,18 +60,17 @@ function RootView(props: RootViewProps) {
     getCurrentTheme(themeList, appThemeId)?.theme ||
     localDefaultTheme;
 
-  useEffect(() => {
-    const newEditorState = new EditorState(comp, (changeEditorStateFn) => {
-      setEditorState((oldState) => (oldState ? changeEditorStateFn(oldState) : undefined));
-    });
-    setEditorState(newEditorState);
-  }, []);
+  // Subscribe to rootComp via useSyncExternalStore so that when setRootComp
+  // fires in the effect below, React detects the snapshot change and triggers
+  // a re-render. Without this, useSyncExternalStore would not fire because
+  // the setRootComp selector above returns a stable function reference.
+  useEditorStore((s) => s.rootComp);
 
   useEffect(() => {
-    if (editorState != null) {
-      editorState.setComp(() => comp);
-    }
-  }, [comp]);
+    setRootComp(comp);
+  }, [comp, setRootComp]);
+
+  const editorState = useEditorStateCompat();
 
   /**
    * ensure memo, otherwise all component caches will be invalid
@@ -82,7 +82,7 @@ function RootView(props: RootViewProps) {
     [theme]
   );
 
-  if (!editorState) {
+  if (!editorState || !editorState.rootComp) {
     if (isModuleRoot) {
       return <ModuleLoading />;
     }

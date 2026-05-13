@@ -3,10 +3,10 @@ import type { DateCompViewProps } from "./dateComp";
 import { disabledDate, getStyle } from "comps/comps/dateComp/dateCompUtil";
 import { useUIView } from "../../utils/useUIView";
 import { checkIsMobile } from "util/commonUtils";
-import React, { useContext } from "react";
+import React from "react";
 import styled from "styled-components";
 import type { DateTimeStyleType } from "../../controls/styleControlConstants";
-import { EditorContext } from "../../editorState";
+import { useEditorStore } from "comps/editorStore";
 import { DatePicker } from "antd";
 
 const DatePickerStyled = styled(DatePicker) <{ $style: DateTimeStyleType }>`
@@ -24,7 +24,7 @@ const DateMobileUIView = React.lazy(() =>
   import("./dateMobileUIView").then((m) => ({ default: m.DateMobileUIView }))
 );
 export const DateUIView = (props: DataUIViewProps) => {
-  const editorState = useContext(EditorContext);
+  const maxWidth = useEditorStore((s) => s.rootComp?.children.settings.getView().maxWidth);
   return useUIView(
     <DateMobileUIView {...props} />,
     <DatePickerStyled
@@ -32,7 +32,7 @@ export const DateUIView = (props: DataUIViewProps) => {
       ref={props.viewRef as any}
       disabledDate={(current: dayjs.Dayjs) => disabledDate(current, props.minDate, props.maxDate)}
       picker={"date"}
-      inputReadOnly={checkIsMobile(editorState?.getAppSettings().maxWidth)}
+      inputReadOnly={checkIsMobile(maxWidth)}
     />
   );
 };

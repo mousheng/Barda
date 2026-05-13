@@ -7,7 +7,8 @@ import Draggable from "react-draggable";
 import { Resizable, ResizeCallbackData } from "react-resizable";
 import { useWindowSize } from "react-use";
 import styled from "styled-components";
-import { CompNameContext, EditorContext } from "../../comps/editorState";
+import { CompNameContext } from "../../comps/editorState";
+import { useEditorStore } from "../../comps/editorStore";
 import { Layers } from "../../constants/Layers";
 import Handle from "../../layout/handler";
 import { getPanelStyle, savePanelStyle } from "../../util/localStorageUtil";
@@ -125,11 +126,11 @@ export const CodeEditorPanel = (props: {
   const [pinned, setpinned] = useState(false);
 
   const compName = useContext(CompNameContext);
-  const editorState = useContext(EditorContext);
+  const setCodeEditorPanelOpen = useEditorStore((s) => s.setCodeEditorPanelOpen);
 
   const updateEditorState = useCallback(() => {
-    editorState?.setCodeEditorPanelOpen(visible);
-  }, [visible]);
+    setCodeEditorPanelOpen(visible);
+  }, [visible, setCodeEditorPanelOpen]);
 
   useEffect(() => {
     updateEditorState();

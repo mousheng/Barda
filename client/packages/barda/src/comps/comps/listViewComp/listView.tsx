@@ -1,5 +1,5 @@
 import { Pagination } from "antd";
-import { EditorContext } from "comps/editorState";
+import { useEditorStore } from "comps/editorStore";
 import { BackgroundColorContext } from "comps/utils/backgroundColorContext";
 import _ from "lodash";
 import { changeChildAction, ConstructorToView, deferAction } from "barda-core";
@@ -127,8 +127,7 @@ type Props = {
 
 export function ListView(props: Props) {
   // console.info("<---- listView renders.");
-  const editorState = useContext(EditorContext);
-  const isDragging = editorState.isDragging;
+  const isDragging = useEditorStore((s) => s.isDragging);
   const [listHeight, setListHeight] = useDelayState(0, isDragging);
   const onResize = useCallback((payload: ResizePayload) => {
     if (payload.height) setListHeight(payload.height);
@@ -206,7 +205,7 @@ export function ListView(props: Props) {
 
   const commonLayout = comp.realSimpleContainer()!.children.layout.getView();
   const isOneItem =
-    pageInfo.currentPageSize > 0 && (_.isEmpty(commonLayout) || editorState.isDragging);
+    pageInfo.currentPageSize > 0 && (_.isEmpty(commonLayout) || isDragging);
   const noOfRows = isOneItem
     ? 1
     : Math.floor((pageInfo.currentPageSize + noOfColumns - 1) / noOfColumns);
@@ -263,7 +262,7 @@ export function ListView(props: Props) {
     return render;
   });
 
-  const maxWidth = editorState.getAppSettings().maxWidth;
+  const maxWidth = useEditorStore((s) => s.rootComp?.children.settings.getView().maxWidth);
   const isMobile = checkIsMobile(maxWidth);
   const paddingWidth = isMobile ? scaleNumbersInString(style.padding_UNIT, 0.25, { type: 'round' },) : style.padding_UNIT;
   const divStyle = useMemo(() => ({ height: autoHeight ? "auto" : "100%" }), [autoHeight]);

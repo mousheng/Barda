@@ -1,6 +1,6 @@
 import { getBottomResIcon } from "@barda/util/bottomResUtils";
 import { codeControl, TransformerCodeControl } from "comps/controls/codeControl";
-import { EditorContext } from "comps/editorState";
+import { EditorStateView } from "comps/editorCompat";
 import { MultiCompBuilder, valueComp } from "comps/generators";
 import { bottomResListComp } from "comps/generators/bottomResList";
 import { withExposingRaw } from "comps/generators/withExposing";
@@ -23,7 +23,7 @@ const TransformerItemCompBase = new MultiCompBuilder(
 )
   .setPropertyViewFn((children) => {
     return (
-      <EditorContext.Consumer>
+      <EditorStateView>
         {(editorState) => {
           return (
             <BottomTabs
@@ -57,7 +57,7 @@ const TransformerItemCompBase = new MultiCompBuilder(
             />
           );
         }}
-      </EditorContext.Consumer>
+      </EditorStateView>
     );
   })
   .build();

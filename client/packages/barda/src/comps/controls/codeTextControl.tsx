@@ -1,6 +1,7 @@
 import { CodeEditor } from "base/codeEditor/codeEditor";
 import { CompParams } from "barda-core";
-import { EditorContext } from "comps/editorState";
+import { useEditorStore } from "comps/editorStore";
+import { useNameAndExposingInfo } from "comps/editorSelectors";
 import { valueComp } from "comps/generators";
 import { CompExposingContext } from "comps/generators/withContext";
 import { exposingDataForAutoComplete } from "comps/utils/exposingTypes";
@@ -20,17 +21,18 @@ const emptyExposingData = {};
 function CodeTextEditor(props: CodeTextEditorProps) {
   const { codeText, onChange, enableExposingDataAutoCompletion = false, ...params } = props;
   const compExposingData = useContext(CompExposingContext);
-  const editorState = useContext(EditorContext);
+  const nameAndExposingInfo = useNameAndExposingInfo();
+  const forceShowGrid = useEditorStore((s) => s.forceShowGrid);
 
   const expsoingData = useMemo(() => {
     if (enableExposingDataAutoCompletion) {
       return {
-        ...exposingDataForAutoComplete(editorState?.nameAndExposingInfo(), true),
+        ...exposingDataForAutoComplete(nameAndExposingInfo, true),
         ...compExposingData,
       };
     }
     return emptyExposingData;
-  }, [compExposingData, editorState, enableExposingDataAutoCompletion]);
+  }, [compExposingData, nameAndExposingInfo, enableExposingDataAutoCompletion]);
 
   return (
     <CodeEditor
@@ -41,7 +43,7 @@ function CodeTextEditor(props: CodeTextEditorProps) {
       exposingData={expsoingData}
       boostExposingData={compExposingData}
       onChange={(state) => onChange(state.doc.toString())}
-      enableClickCompName={editorState.forceShowGrid}
+      enableClickCompName={forceShowGrid}
     />
   );
 }

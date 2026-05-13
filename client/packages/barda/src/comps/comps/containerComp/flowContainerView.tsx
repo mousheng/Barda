@@ -4,7 +4,7 @@ import _ from "lodash";
 import { FlowLayout } from "layout/utils";
 import { CompSelectionWrapper } from "layout/compSelectionWrapper";
 import { useContext } from "react";
-import { EditorContext } from "comps/editorState";
+import { useEditorStore } from "comps/editorStore";
 import { ThemeContext } from "comps/utils/themeContext";
 import { defaultTheme } from "comps/controls/styleControlConstants";
 import styled from "styled-components";
@@ -36,7 +36,10 @@ export function FlowContainerView(
 ) {
   const layouts = props.layout;
   const { selectable, minHeight, maxWidth } = props;
-  const editorState = useContext(EditorContext);
+  const isDragging = useEditorStore((s) => s.isDragging);
+  const forceShowGrid = useEditorStore((s) => s.forceShowGrid);
+  const selectedCompNames = useEditorStore((s) => s.selectedCompNames);
+  const setSelectedCompNames = useEditorStore((s) => s.setSelectedCompNames);
   const bgColor = (useContext(ThemeContext)?.theme || defaultTheme).canvas;
 
   return (
@@ -49,8 +52,8 @@ export function FlowContainerView(
         return (
           <CompItem key={comp.name}>
             <CompSelectionWrapper
-              isDragging={editorState.isDragging}
-              showGridLines={editorState.showGridLines()}
+              isDragging={isDragging}
+              showGridLines={isDragging || forceShowGrid}
               compType={comp.compType}
               isSelectable={selectable}
               isDraggable={false}
@@ -65,9 +68,9 @@ export function FlowContainerView(
               }}
               autoHeight={false}
               resizeHandles={[]}
-              isSelected={editorState.selectedCompNames.has(comp.name)}
+              isSelected={selectedCompNames.has(comp.name)}
               onClick={() => {
-                editorState.setSelectedCompNames(new Set([comp.name]));
+                setSelectedCompNames(new Set([comp.name]));
               }}
               hidden={comp.hidden}
             >

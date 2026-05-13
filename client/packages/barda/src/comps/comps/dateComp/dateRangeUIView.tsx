@@ -3,10 +3,10 @@ import type { DateCompViewProps } from "./dateComp";
 import { disabledDate, getStyle } from "comps/comps/dateComp/dateCompUtil";
 import { useUIView } from "../../utils/useUIView";
 import { checkIsMobile } from "util/commonUtils";
-import React, { useContext } from "react";
+import React from "react";
 import styled from "styled-components";
 import type { DateTimeStyleType } from "../../controls/styleControlConstants";
-import { EditorContext } from "../../editorState";
+import { useEditorStore } from "comps/editorStore";
 import { DatePicker } from "antd";
 import { hasIcon } from "comps/utils";
 import { omit } from "lodash";
@@ -28,7 +28,7 @@ export interface DateRangeUIViewProps extends DateCompViewProps {
 }
 
 export const DateRangeUIView = (props: DateRangeUIViewProps) => {
-  const editorState = useContext(EditorContext);
+  const maxWidth = useEditorStore((s) => s.rootComp?.children.settings.getView().maxWidth);
 
   return useUIView(
     <DateRangeMobileUIView {...props} />,
@@ -40,7 +40,7 @@ export const DateRangeUIView = (props: DateRangeUIViewProps) => {
       onCalendarChange={(time: any) => {
         props.onChange(time?.[0], time?.[1]);
       }}
-      inputReadOnly={checkIsMobile(editorState?.getAppSettings().maxWidth)}
+      inputReadOnly={checkIsMobile(maxWidth)}
       suffixIcon={hasIcon(props.suffixIcon) && props.suffixIcon}
     />
   );

@@ -2,7 +2,7 @@ import { EditorState } from "@codemirror/state";
 import { isThemeColorKey } from "api/commonSettingApi";
 import { CodeEditor } from "base/codeEditor";
 import { Language } from "base/codeEditor/codeEditorTypes";
-import { EditorContext } from "comps/editorState";
+import { EditorStateView } from "comps/editorCompat";
 import { withDefault } from "comps/generators/simpleGenerators";
 import { CompExposingContext } from "comps/generators/withContext";
 import { exposingDataForAutoComplete } from "comps/utils/exposingTypes";
@@ -185,7 +185,7 @@ export function codeControl<
         ? ""
         : getCardContent(this.unevaledValue, this.valueAndMsg, codeControlParams);
       return (
-        <EditorContext.Consumer>
+        <EditorStateView>
           {(editorState) => (
             <CompExposingContext.Consumer>
               {(exposingData) => (
@@ -214,7 +214,7 @@ export function codeControl<
               )}
             </CompExposingContext.Consumer>
           )}
-        </EditorContext.Consumer>
+        </EditorStateView>
       );
     }
 

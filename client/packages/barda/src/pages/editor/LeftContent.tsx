@@ -12,11 +12,13 @@ import {
 } from "barda-design";
 import { Tabs, TabTitle } from "components/Tabs";
 import UIComp from "comps/comps/uiComp";
-import { EditorContext, SelectSourceType } from "comps/editorState";
+import { useEditorStore } from "comps/editorStore";
+import { useHooksCompInfoList, useUIComp, useHooksComp, useSelectedComps, useBottomResComInfoList } from "comps/editorSelectors";
+import { SelectSourceType } from "comps/editorState";
 import { BackgroundColor, TopHeaderHeight } from "constants/style";
 import { trans } from "i18n";
 import _ from "lodash";
-import React, { memo, ReactNode, useCallback, useContext, useMemo, useState } from "react";
+import React, { memo, ReactNode, useCallback, useMemo, useState } from "react";
 import { useDeepCompareEffect } from "react-use";
 import styled from "styled-components";
 import { BottomResTypeEnum } from "types/bottomRes";
@@ -262,46 +264,42 @@ const LeftContentWrapper = styled.div`
 
 export const LeftContent = React.memo((props: LeftContentProps) => {
   const { uiComp } = props;
-  const editorState = useContext(EditorContext);
-  const globalVariablesInfoList = useMemo(() => editorState.hooksCompInfoList(),
-    [editorState.rootComp.children.hooks])
+  const globalVariablesInfoList = useHooksCompInfoList();
+  const uiComp_ = useUIComp();
+  const hooksComp = useHooksComp();
+  const selectedCompNames = useEditorStore((s) => s.selectedCompNames);
+  const selectedComps = useSelectedComps();
+  const setSelectedCompNames = useEditorStore((s) => s.setSelectedCompNames);
+  const setSelectedBottomRes = useEditorStore((s) => s.setSelectedBottomRes);
+  const bottomResList = useBottomResComInfoList();
+  const selectedBottomResName = useEditorStore((s) => s.selectedBottomResName);
 
   const UITreeData = useMemo(() => {
-    return getComponentTree(editorState.getUIComp().getTree(), [])
-  }, [editorState.rootComp.children.ui])
+    return getComponentTree(uiComp_?.getTree() ?? { items: {}, children: {} }, [])
+  }, [uiComp_])
 
   // 对话框面板数据
   const [selectedCompId, setSelectedCompId] = useState<string[]>([]);
   const ModalTreeData = useMemo(() => {
-    return getComponentTree(editorState.getHooksComp().getUITree(), [])
-  }, [editorState.rootComp.children.hooks])
+    return getComponentTree(hooksComp?.getUITree() ?? { items: {}, children: {} }, [])
+  }, [hooksComp])
 
   useDeepCompareEffect(() => {
-    if (editorState.selectedCompNames.size > 0) {
-      setSelectedCompId([Object.keys(editorState.selectedComps())[0]])
+    if (selectedCompNames.size > 0) {
+      setSelectedCompId([Object.keys(selectedComps)[0]])
     }
-  }, [Array.from(editorState.selectedCompNames).sort()])
+  }, [Array.from(selectedCompNames).sort()])
 
-  const clickNode = useCallback((selectedCompNames: Set<string>, selectSource?: SelectSourceType) =>
-    editorState.setSelectedCompNames(selectedCompNames, selectSource),
-    [editorState.setSelectedCompNames])
+  const clickNode = useCallback((compNames: Set<string>, selectSource?: SelectSourceType) =>
+    setSelectedCompNames(compNames, selectSource),
+    [setSelectedCompNames])
 
   const handleBottomResItemClick = useCallback(
     (name: string, type?: BottomResTypeEnum) => {
-      editorState.setSelectedBottomRes(name, type);
+      setSelectedBottomRes(name, type);
     },
-    [editorState.setSelectedBottomRes]
+    [setSelectedBottomRes]
   );
-
-  const bottomResList = useMemo(() => editorState.bottomResComInfoList(), [
-    editorState.rootComp.children.hooks,
-    editorState.rootComp.children.queries,
-    editorState.rootComp.children.tempStates,
-    editorState.rootComp.children.dataResponders,
-    editorState.rootComp.children.transformers,
-  ]);
-
-  const selectedBottomResName = useMemo(() => editorState.selectedBottomResName, [editorState.selectedBottomResName]);
 
   const moduleLayoutComp = uiComp.getModuleLayoutComp();
   const stateContent = (

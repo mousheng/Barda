@@ -1,5 +1,5 @@
 import React, { useCallback, useContext } from "react";
-import { EditorContext, EditorState } from "comps/editorState";
+import { createEditorStateCompat, EditorStateCompat } from "comps/editorCompat";
 import { GridCompOperator } from "comps/utils/gridCompOperator";
 import { ExternalEditorContext } from "util/context/ExternalEditorContext";
 import { EditorHistory } from "util/editoryHistory";
@@ -33,7 +33,7 @@ type GlobalProps = Props & {
 // global hotkeys
 function handleGlobalKeyDown(
   e: KeyboardEvent,
-  editorState: EditorState,
+  editorState: EditorStateCompat,
   editorHistory: EditorHistory | undefined,
   togglePanel: TogglePanel,
   toggleShortcutList: () => void,
@@ -84,12 +84,12 @@ function handleGlobalKeyDown(
   e.preventDefault();
 }
 
-function setGlobalState(editorState: EditorState, e?: KeyboardEvent | MouseEvent) {
+function setGlobalState(editorState: EditorStateCompat, e?: KeyboardEvent | MouseEvent) {
   editorState.setForceShowGrid(e ? modKeyPressed(e) : false);
   editorState.setDisableInteract(e ? selectCompModifierKeyPressed(e) : false);
 }
 
-function handleMouseDown(e: MouseEvent, editorState: EditorState, showLeftPanel: () => void) {
+function handleMouseDown(e: MouseEvent, editorState: EditorStateCompat, showLeftPanel: () => void) {
   if (!modKeyPressed(e)) {
     return;
   }
@@ -117,12 +117,12 @@ function handleMouseDown(e: MouseEvent, editorState: EditorState, showLeftPanel:
 }
 
 export function EditorGlobalHotKeys(props: GlobalProps) {
-  const editorState = useContext(EditorContext);
   const { history: editorHistory } = useContext(ExternalEditorContext);
   const { togglePanel, panelStatus, toggleShortcutList } = props;
   const applicationId = useApplicationId();
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
+      const editorState = createEditorStateCompat();
       setGlobalState(editorState, e);
       handleGlobalKeyDown(
         e,
@@ -134,18 +134,22 @@ export function EditorGlobalHotKeys(props: GlobalProps) {
       );
       editorState.getAppSettingsComp().children.customShortcuts.handleKeyEvent(e);
     },
-    [editorState, editorHistory, togglePanel, toggleShortcutList, applicationId]
+    [editorHistory, togglePanel, toggleShortcutList, applicationId]
   );
   const setGlobalStateCb = useCallback(
-    (e: KeyboardEvent | MouseEvent) => setGlobalState(editorState, e),
-    [editorState]
+    (e: KeyboardEvent | MouseEvent) => {
+      const editorState = createEditorStateCompat();
+      setGlobalState(editorState, e);
+    },
+    []
   );
   const onMouseDown = useCallback(
     (e: MouseEvent) => {
+      const editorState = createEditorStateCompat();
       setGlobalState(editorState, e);
       handleMouseDown(e, editorState, () => !panelStatus.left && togglePanel("left"));
     },
-    [editorState, panelStatus, togglePanel]
+    [panelStatus, togglePanel]
   );
   return (
     <GlobalShortcutsWrapper
@@ -161,7 +165,7 @@ export function EditorGlobalHotKeys(props: GlobalProps) {
 }
 
 // local hotkeys
-function handleEditorKeyDown(e: React.KeyboardEvent, editorState: EditorState) {
+function handleEditorKeyDown(e: React.KeyboardEvent, editorState: EditorStateCompat) {
   switch (getShortcutAction(e, "editor")) {
     case "selectAllComps":
       editorState.setSelectedCompNames(
@@ -193,16 +197,15 @@ function handleEditorKeyDown(e: React.KeyboardEvent, editorState: EditorState) {
 
 
 export function EditorHotKeys(props: Props) {
-  const editorState = useContext(EditorContext);
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.ctrlKey && e.key === 'a' && !e.altKey && !e.shiftKey) {
         e.stopPropagation();
         e.preventDefault();
       }
-      handleEditorKeyDown(e, editorState)
+      handleEditorKeyDown(e, createEditorStateCompat())
     },
-    [editorState]
+    []
   );
   return (
     <ShortcutsWrapper
@@ -216,12 +219,11 @@ export function EditorHotKeys(props: Props) {
 }
 
 export function CustomShortcutWrapper(props: { children: React.ReactNode }) {
-  const editorState = useContext(EditorContext);
   const handleCustomShortcut = useCallback(
     (e: KeyboardEvent) => {
-      editorState.getAppSettingsComp().children.customShortcuts.handleKeyEvent(e);
+      createEditorStateCompat().getAppSettingsComp().children.customShortcuts.handleKeyEvent(e);
     },
-    [editorState]
+    []
   );
   return (
     <GlobalShortcutsWrapper onKeyDownCapture={handleCustomShortcut}>

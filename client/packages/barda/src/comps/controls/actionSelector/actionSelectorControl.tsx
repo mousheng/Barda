@@ -12,13 +12,12 @@ import {
 } from "barda-core";
 import { Dropdown, HighContainer, Treediv } from "barda-design";
 import { BoolCodeControl } from "comps/controls/codeControl";
-import { EditorContext } from "comps/editorState";
+import { useIsModule } from "comps/editorSelectors";
 import { withTypeAndChildren } from "comps/generators";
 import { MultiCompBuilder } from "comps/generators/multi";
 import { getReduceContext } from "comps/utils/reduceContext";
 import { trans } from "i18n";
 import { omit } from "lodash";
-import { useContext } from "react";
 import { limitExecutor, setFieldsNoTypeCheck } from "util/objectUtils";
 import { getPromiseAfterExecuteDispatch, handlePromiseAfterResult } from "util/promiseUtils";
 import { dropdownControl } from "../dropdownControl";
@@ -156,7 +155,7 @@ interface PropertyViewProps {
 
 function ActionSelectorControlPropertyView(props: PropertyViewProps) {
   const { comp, placement, label } = props;
-  const editorState = useContext(EditorContext);
+  const isModule = useIsModule();
   const eventHandlerSlowdownUrl = trans("docUrls.eventHandlerSlowdown");
   return (
     <>
@@ -167,7 +166,7 @@ function ActionSelectorControlPropertyView(props: PropertyViewProps) {
           if (window.__BARDA_DEV__) {
             return devActions.includes(i.value);
           }
-          if (editorState?.isModule()) {
+          if (isModule) {
             return true;
           }
           return !moduleOnlyActions.includes(i.value);
