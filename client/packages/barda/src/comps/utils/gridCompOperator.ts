@@ -51,12 +51,12 @@ export class GridCompOperator {
     const compKeys = Object.keys(compRecords);
 
     if (_.size(compRecords) <= 0) {
-      messageInstance.info({ content: trans("gridCompOperator.selectAtLeastOneComponent"), key: "selectAtLeastOneComponent" });
+      messageInstance.info(trans("gridCompOperator.selectAtLeastOneComponent"), 1);
       return false;
     }
     const container = editorState.findContainer(compKeys[0]);
     if (!container) {
-      messageInstance.info({ content: trans("gridCompOperator.selectAtLeastOneComponent"), key: "selectAtLeastOneComponent" });
+      messageInstance.info(trans("gridCompOperator.selectAtLeastOneComponent"), 1);
       return false;
     }
     const simpleContainer = container.realSimpleContainer(compKeys[0]);
@@ -70,7 +70,7 @@ export class GridCompOperator {
 
     const toCopyComps = Object.values(compMap).filter((item) => !!item.item && !!item.layout);
     if (!toCopyComps || _.size(toCopyComps) <= 0) {
-      messageInstance.info({ content: trans("gridCompOperator.selectAtLeastOneComponent"), key: "selectAtLeastOneComponent" });
+      messageInstance.info(trans("gridCompOperator.selectAtLeastOneComponent"), 1);
       return false;
     }
     this.copyComps = toCopyComps;
@@ -81,7 +81,8 @@ export class GridCompOperator {
 
   static pasteComp(editorState: EditorState) {
     if (editorState.isPasting) return;
-    else editorState.setIsPasting(true);
+    editorState.setIsPasting(true);
+    try {
     if (!this.copyComps || _.size(this.copyComps) <= 0 || !this.sourcePositionParams) {
       messageInstance.info(trans("gridCompOperator.selectCompFirst"));
       return false;
@@ -163,9 +164,11 @@ export class GridCompOperator {
       })
     );
     editorState.setSelectedCompNames(copyCompNames);
-    messageInstance.destroy("Pasting");
-    messageInstance.success({ content: trans("gridCompOperator.pasteCompsSuccess"), key: "Pasting" })
+    messageInstance.success(trans("gridCompOperator.pasteCompsSuccess"), 1)
     return true;
+    } finally {
+      editorState.setIsPasting(false);
+    }
   }
 
   static deleteComp(editorState: EditorState, compRecords: Record<string, Comp>): boolean {
@@ -203,7 +206,7 @@ export class GridCompOperator {
       return false;
     }
     const hooksComp = editorState.getHooksComp();
-    Object.entries(compRecords).forEach(([key, item]) => {
+    Object.entries(compRecords).forEach(([, item]) => {
       const compInfos: ActionExtraInfo["compInfos"] = [
         {
           type: "delete",

@@ -102,7 +102,9 @@ export const useEditorStore = create<EditorStore>()((set) => ({
   setDisableInteract: (disable) =>
     set((s) => (s.disableInteract !== disable ? { disableInteract: disable } : s)),
 
-  setIsPasting: (pasting) => set({ isPasting: pasting }),
+  setIsPasting: (pasting) =>
+    set((s) => (s.isPasting !== pasting ? { isPasting: pasting } : s)),
 
-  resetPasting: () => set({ isPasting: false }),
+  resetPasting: () =>
+    set((s) => (s.isPasting ? { isPasting: false } : s)),
 }));

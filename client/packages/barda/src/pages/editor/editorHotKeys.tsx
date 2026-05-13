@@ -180,7 +180,7 @@ function handleEditorKeyDown(e: React.KeyboardEvent, editorState: EditorStateCom
       return;
     case "copyComps":
       if (GridCompOperator.copyComp(editorState, editorState.selectedComps())) {
-        messageInstance.success({ content: trans("gridCompOperator.copyCompsSuccess", { pasteKey }), key: "Copied" })
+        messageInstance.success({ content: trans("gridCompOperator.copyCompsSuccess", { pasteKey }), duration: 1})
       };
       return;
     case "pasteComps":
