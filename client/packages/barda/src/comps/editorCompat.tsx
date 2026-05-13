@@ -35,23 +35,24 @@ export function createEditorStateCompat(): EditorStateCompat {
  * React hook that returns a compat object which updates when the store changes.
  * Uses useRef + useEffect + useReducer instead of useSyncExternalStore to avoid
  * React 18 "getSnapshot should be cached" warnings when zustand fires subscribers
- * on every set() call (including empty partials).
+ * on every set() call.
  *
- * The compat ref is synced with the store on every render so it never returns
- * a stale snapshot — even when the store was updated between initial mount
- * and the subscription effect registering.
+ * Only rebuilds the compat object when the store state reference changes, so
+ * re-renders not triggered by store updates (e.g. local state in RootView) do
+ * not cascade through EditorContext.Provider.
  */
 export function useEditorStateCompat(): EditorStateCompat {
   const [, forceUpdate] = useReducer((x: number) => x + 1, 0);
   const compatRef = useRef<EditorStateCompat>(
     new EditorStateCompat(useEditorStore.getState())
   );
+  const prevStoreStateRef = useRef(useEditorStore.getState());
 
-  // Always sync with the latest store state during render.
-  // The subscription below drives re-renders; this line guarantees the
-  // returned object is never stale when a re-render happens (regardless
-  // of whether the subscription callback has caught up yet).
-  compatRef.current = new EditorStateCompat(useEditorStore.getState());
+  const currentStoreState = useEditorStore.getState();
+  if (currentStoreState !== prevStoreStateRef.current) {
+    compatRef.current = new EditorStateCompat(currentStoreState);
+    prevStoreStateRef.current = currentStoreState;
+  }
 
   useEffect(() => {
     const unsub = useEditorStore.subscribe(() => {

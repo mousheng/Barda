@@ -62,17 +62,17 @@ export const useEditorStore = create<EditorStore>()((set) => ({
 
   // === Actions ===
   setRootComp: (comp) =>
-    set((s) => (s.rootComp === comp ? {} : { rootComp: comp })),
+    set((s) => (s.rootComp === comp ? s : { rootComp: comp })),
 
   setShowPropertyPane: (show) => set({ showPropertyPane: show }),
 
   setCodeEditorPanelOpen: (isOpen) =>
-    set((s) => (s.isCodeEditorPanelOpen !== isOpen ? { isCodeEditorPanelOpen: isOpen } : {})),
+    set((s) => (s.isCodeEditorPanelOpen !== isOpen ? { isCodeEditorPanelOpen: isOpen } : s)),
 
   setSelectedCompNames: (names, selectSource) =>
     set((s) => {
       if (names.size === 0 && s.selectedCompNames.size === 0) {
-        return {};
+        return s;
       }
       return {
         selectedCompNames: names,
@@ -87,16 +87,20 @@ export const useEditorStore = create<EditorStore>()((set) => ({
   setShowResultCompName: (name) => set({ showResultCompName: name }),
 
   setDragging: (dragging) =>
-    set((s) => (s.isDragging !== dragging ? { isDragging: dragging } : {})),
+    set((s) => (s.isDragging !== dragging ? { isDragging: dragging } : s)),
 
   setDraggingCompType: (compType) =>
-    set({ draggingCompType: compType, isDragging: true }),
+    set((s) =>
+      s.draggingCompType !== compType
+        ? { draggingCompType: compType, isDragging: true }
+        : s
+    ),
 
   setForceShowGrid: (show) =>
-    set((s) => (s.forceShowGrid !== show ? { forceShowGrid: show } : {})),
+    set((s) => (s.forceShowGrid !== show ? { forceShowGrid: show } : s)),
 
   setDisableInteract: (disable) =>
-    set((s) => (s.disableInteract !== disable ? { disableInteract: disable } : {})),
+    set((s) => (s.disableInteract !== disable ? { disableInteract: disable } : s)),
 
   setIsPasting: (pasting) => set({ isPasting: pasting }),
 
