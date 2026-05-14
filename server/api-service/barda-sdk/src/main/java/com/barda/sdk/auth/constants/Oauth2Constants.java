@@ -38,4 +38,22 @@ public class Oauth2Constants {
             + "&access_type=offline"
             + "&scope=openid email profile"
             + "&prompt=select_account";
+
+    /**
+     * Feishu 授权URL。
+     */
+    public static final String FEISHU_AUTHORIZE_URL = "https://open.feishu.cn/open-apis/authen/v1/index"
+            + "?app_id=" + CLIENT_ID_PLACEHOLDER
+            + "&redirect_uri=" + REDIRECT_URL_PLACEHOLDER
+            + "&state=" + STATE_PLACEHOLDER;
+
+    /**
+     * DingTalk 授权URL。
+     */
+    public static final String DINGTALK_AUTHORIZE_URL = "https://login.dingtalk.com/oauth2/auth"
+            + "?response_type=code"
+            + "&client_id=" + CLIENT_ID_PLACEHOLDER
+            + "&redirect_uri=" + REDIRECT_URL_PLACEHOLDER
+            + "&scope=openid"
+            + "&state=" + STATE_PLACEHOLDER;
 }

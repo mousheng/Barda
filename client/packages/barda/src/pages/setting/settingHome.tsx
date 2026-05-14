@@ -5,7 +5,7 @@ import { AdvancedSetting } from "./advanced/AdvancedSetting";
 import { currentOrgAdmin } from "util/permissionUtils";
 import { trans } from "i18n";
 import AuditSetting from "@barda/pages/setting/audit";
-import { isEE, isEnterpriseMode, isSelfDomain, showAuditLog } from "util/envUtils";
+import { isEE, isEnterpriseMode, isSelfDomain } from "util/envUtils";
 import { TwoColumnSettingPageContent } from "./styled";
 import SubSideBar from "components/layout/SubSideBar";
 import { Menu } from "barda-design";
@@ -43,18 +43,15 @@ export function SettingHome() {
       key: SettingPageEnum.Organization,
       label: trans("settings.organization"),
     },
-    // {
-    //   key: SettingPageEnum.IdSource,
-    //   label: (
-    //     <span>
-    //       <span className="text">{trans("settings.idSource")}</span>
-    //       {(!currentOrgAdmin(user) || (!isSelfDomain(config) && !isEnterpriseMode(config))) && (
-    //         <FreeLimitTag text={trans("settings.premium")} />
-    //       )}
-    //     </span>
-    //   ),
-    //   disabled: !currentOrgAdmin(user) || (!isSelfDomain(config) && !isEnterpriseMode(config)),
-    // },
+    {
+      key: SettingPageEnum.IdSource,
+      label: (
+        <span>
+          <span className="text">{trans("settings.idSource")}</span>
+        </span>
+      ),
+      disabled: false,
+    },
     {
       key: SettingPageEnum.Audit,
       label: (

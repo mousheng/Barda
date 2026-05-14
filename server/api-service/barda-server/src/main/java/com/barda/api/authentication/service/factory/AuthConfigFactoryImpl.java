@@ -4,6 +4,10 @@ import static com.barda.sdk.constants.AuthSourceConstants.GITHUB;
 import static com.barda.sdk.constants.AuthSourceConstants.GITHUB_NAME;
 import static com.barda.sdk.constants.AuthSourceConstants.GOOGLE;
 import static com.barda.sdk.constants.AuthSourceConstants.GOOGLE_NAME;
+import static com.barda.sdk.constants.AuthSourceConstants.FEISHU;
+import static com.barda.sdk.constants.AuthSourceConstants.FEISHU_NAME;
+import static com.barda.sdk.constants.AuthSourceConstants.DINGTALK;
+import static com.barda.sdk.constants.AuthSourceConstants.DINGTALK_NAME;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
@@ -37,6 +41,8 @@ public class AuthConfigFactoryImpl implements AuthConfigFactory {
             case AuthTypeConstants.FORM -> buildEmailAuthConfig(authConfigRequest, enable);
             case AuthTypeConstants.GITHUB -> buildOauth2SimpleAuthConfig(GITHUB, GITHUB_NAME, authConfigRequest, enable);
             case AuthTypeConstants.GOOGLE -> buildOauth2SimpleAuthConfig(GOOGLE, GOOGLE_NAME, authConfigRequest, enable);
+            case AuthTypeConstants.FEISHU -> buildOauth2SimpleAuthConfig(FEISHU, FEISHU_NAME, authConfigRequest, enable);
+            case AuthTypeConstants.DINGTALK -> buildOauth2SimpleAuthConfig(DINGTALK, DINGTALK_NAME, authConfigRequest, enable);
             default -> throw new UnsupportedOperationException(authConfigRequest.getAuthType());
         };
     }
@@ -51,7 +57,9 @@ public class AuthConfigFactoryImpl implements AuthConfigFactory {
         return Set.of(
                 AuthTypeConstants.FORM,
                 AuthTypeConstants.GITHUB,
-                AuthTypeConstants.GOOGLE
+                AuthTypeConstants.GOOGLE,
+                AuthTypeConstants.FEISHU,
+                AuthTypeConstants.DINGTALK
         );
     }
 

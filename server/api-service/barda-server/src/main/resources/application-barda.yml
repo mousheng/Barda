@@ -42,7 +42,7 @@ common:
   js-executor:
     host: ${JS_EXECUTOR_URI:http://127.0.0.1:6060}
   workspace:
-    mode: enterprise
+    mode: saas
 
 material:
   mongodb-grid-fs:

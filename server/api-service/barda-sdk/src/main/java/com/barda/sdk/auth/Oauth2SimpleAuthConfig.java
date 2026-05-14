@@ -72,6 +72,8 @@ public class Oauth2SimpleAuthConfig extends AbstractAuthConfig {
         return switch (authType) {
             case AuthTypeConstants.GOOGLE -> Oauth2Constants.GOOGLE_AUTHORIZE_URL;
             case AuthTypeConstants.GITHUB -> Oauth2Constants.GITHUB_AUTHORIZE_URL;
+            case AuthTypeConstants.FEISHU -> Oauth2Constants.FEISHU_AUTHORIZE_URL;
+            case AuthTypeConstants.DINGTALK -> Oauth2Constants.DINGTALK_AUTHORIZE_URL;
             default -> null;
         };
     }

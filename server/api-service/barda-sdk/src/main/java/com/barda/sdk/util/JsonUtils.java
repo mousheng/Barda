@@ -3,6 +3,8 @@ package com.barda.sdk.util;
 import static com.barda.sdk.auth.constants.AuthTypeConstants.FORM;
 import static com.barda.sdk.auth.constants.AuthTypeConstants.GITHUB;
 import static com.barda.sdk.auth.constants.AuthTypeConstants.GOOGLE;
+import static com.barda.sdk.auth.constants.AuthTypeConstants.DINGTALK;
+import static com.barda.sdk.auth.constants.AuthTypeConstants.FEISHU;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -58,6 +60,8 @@ public final class JsonUtils {
         OBJECT_MAPPER.registerSubtypes(new NamedType(EmailAuthConfig.class, FORM));
         OBJECT_MAPPER.registerSubtypes(new NamedType(Oauth2SimpleAuthConfig.class, GITHUB));
         OBJECT_MAPPER.registerSubtypes(new NamedType(Oauth2SimpleAuthConfig.class, GOOGLE));
+        OBJECT_MAPPER.registerSubtypes(new NamedType(Oauth2SimpleAuthConfig.class, FEISHU));
+        OBJECT_MAPPER.registerSubtypes(new NamedType(Oauth2SimpleAuthConfig.class, DINGTALK));
     }
 
     /**

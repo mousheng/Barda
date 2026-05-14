@@ -9,7 +9,7 @@ import Login, { ThirdPartyBindCard } from "pages/userAuth/login";
 import UserRegister from "pages/userAuth/register";
 import { AuthRedirect } from "pages/userAuth/thirdParty/authRedirect";
 import React from "react";
-import { GoogleLoginIcon, GithubLoginIcon, EmailLoginIcon } from "assets/icons";
+import { GoogleLoginIcon, GithubLoginIcon, EmailLoginIcon, DingTalkLoginIcon, FeishuLoginIcon } from "assets/icons";
 
 export type AuthInviteInfo = InviteInfo & { invitationId: string };
 export type AuthLocationState = { inviteInfo?: AuthInviteInfo; thirdPartyAuthError?: boolean };
@@ -74,7 +74,7 @@ export const AuthRoutes: Array<{ path: string; component: React.ComponentType<an
   { path: OAUTH_REDIRECT, component: AuthRedirect },
 ];
 
-export type ServerAuthType = "GOOGLE" | "GITHUB" | "FORM";
+export type ServerAuthType = "GOOGLE" | "GITHUB" | "FORM" | "FEISHU" | "DINGTALK";
 
 export type ServerAuthTypeInfoValueType = { logo: string; isOAuth2?: boolean };
 export const ServerAuthTypeInfo: { [key in ServerAuthType]?: ServerAuthTypeInfoValueType } = {
@@ -83,6 +83,8 @@ export const ServerAuthTypeInfo: { [key in ServerAuthType]?: ServerAuthTypeInfoV
     isOAuth2: true,
   },
   GITHUB: { logo: GithubLoginIcon, isOAuth2: true },
+  FEISHU: { logo: FeishuLoginIcon, isOAuth2: true },
+  DINGTALK: { logo: DingTalkLoginIcon, isOAuth2: true },
   FORM: { logo: EmailLoginIcon },
 };
 

@@ -21,4 +21,14 @@ public class AuthTypeConstants {
      * GitHub 身份验证类型。
      */
     public static final String GITHUB = "GITHUB";
+
+    /**
+     * 飞书身份验证类型。
+     */
+    public static final String FEISHU = "FEISHU";
+
+    /**
+     * 钉钉身份验证类型。
+     */
+    public static final String DINGTALK = "DINGTALK";
 }

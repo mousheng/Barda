@@ -14,9 +14,12 @@ import org.springframework.stereotype.Component;
 import com.barda.api.authentication.dto.AuthConfigRequest;
 import com.barda.sdk.auth.AbstractAuthConfig;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 身份验证配置工厂门面类，用于将多个身份验证配置工厂聚合成一个门面，并提供统一的API。
  */
+@Slf4j
 @Primary
 @Component
 public class AuthConfigFactoryFacade implements AuthConfigFactory {
@@ -46,6 +49,8 @@ public class AuthConfigFactoryFacade implements AuthConfigFactory {
                 factoryMap.putIfAbsent(authType, factory);
             }
         }
+        // 记录已注册的认证类型，用于调试
+        log.info("Registered auth types: {}", factoryMap.keySet());
     }
 
     /**
@@ -58,9 +63,11 @@ public class AuthConfigFactoryFacade implements AuthConfigFactory {
      */
     @Override
     public AbstractAuthConfig build(AuthConfigRequest authConfigRequest, boolean enable) {
-        AuthConfigFactory factory = factoryMap.get(authConfigRequest.getAuthType());
+        String authType = authConfigRequest.getAuthType();
+        AuthConfigFactory factory = factoryMap.get(authType);
         if (factory == null) {
-            throw new UnsupportedOperationException(authConfigRequest.getAuthType());
+            log.error("Unsupported auth type: {}. Available types: {}", authType, factoryMap.keySet());
+            throw new UnsupportedOperationException("Unsupported auth type: " + authType + ". Available types: " + factoryMap.keySet());
         }
         return factory.build(authConfigRequest, enable);
     }
