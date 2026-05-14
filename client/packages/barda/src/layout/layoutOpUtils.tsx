@@ -152,6 +152,7 @@ export let getUILayout = (
   setHiddenCompHeightZero: boolean = false,
 ): Layout => {
   // console.log("getUILayout. layout: ", { layout, extraLayout, changedHs, ops, stickyItemMap });
+  const inputLayout = layout;
   const stickyItemMap = myGetStickyItemMap(layout);
   const hiddenItemHeight = _.fromPairs(
     _.toPairs(extraLayout)
@@ -177,8 +178,33 @@ export let getUILayout = (
       layout = reduce(layout, op, stickyItemMap);
     });
   }
+  const stabilized: Layout = {};
+  for (const key of Object.keys(layout)) {
+    const orig = inputLayout[key];
+    const curr = layout[key];
+    if (
+      orig &&
+      orig.x === curr.x &&
+      orig.y === curr.y &&
+      orig.w === curr.w &&
+      orig.h === curr.h &&
+      orig.minW === curr.minW &&
+      orig.minH === curr.minH &&
+      orig.maxW === curr.maxW &&
+      orig.maxH === curr.maxH &&
+      orig.isDragging === curr.isDragging &&
+      orig.placeholder === curr.placeholder &&
+      orig.hide === curr.hide &&
+      orig.static === curr.static &&
+      orig.delayCollision === curr.delayCollision
+    ) {
+      stabilized[key] = orig;
+    } else {
+      stabilized[key] = curr;
+    }
+  }
   // log.log("getUILayout. finalLayout: ", layout);
-  return layout;
+  return stabilized;
 };
 
 getUILayout = memoizeN(getUILayout, { comparators: _.isEqual, order: [3, 5, 1, 0, 2, 4] });

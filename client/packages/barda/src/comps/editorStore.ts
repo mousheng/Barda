@@ -44,6 +44,15 @@ export interface EditorStore {
   resetPasting: () => void;
 }
 
+function isSameSet<T>(a: Set<T>, b: Set<T>) {
+  if (a === b) return true;
+  if (a.size !== b.size) return false;
+  for (const item of a) {
+    if (!b.has(item)) return false;
+  }
+  return true;
+}
+
 export const useEditorStore = create<EditorStore>()((set) => ({
   // === Initial values ===
   rootComp: null,
@@ -71,12 +80,17 @@ export const useEditorStore = create<EditorStore>()((set) => ({
 
   setSelectedCompNames: (names, selectSource) =>
     set((s) => {
-      if (names.size === 0 && s.selectedCompNames.size === 0) {
+      const nextShowPropertyPane = names.size > 0;
+      if (
+        isSameSet(names, s.selectedCompNames) &&
+        s.selectSource === selectSource &&
+        s.showPropertyPane === nextShowPropertyPane
+      ) {
         return s;
       }
       return {
         selectedCompNames: names,
-        showPropertyPane: names.size > 0,
+        showPropertyPane: nextShowPropertyPane,
         selectSource,
       };
     }),

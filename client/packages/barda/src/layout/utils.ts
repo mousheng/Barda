@@ -511,8 +511,13 @@ export function isItemResizable(item: LayoutItem) {
   return _.isNil(item.isResizable) || item.isResizable;
 }
 
+const EMPTY_RESIZE_HANDLES: ResizeHandleAxis[] = [];
+const SELECTED_AUTO_HEIGHT_HANDLES: ResizeHandleAxis[] = ["e", "w"];
+const SELECTED_DEFAULT_HANDLES: ResizeHandleAxis[] = ["s", "n", "w", "e", "sw", "nw", "se", "ne"];
+
 function getResizeHandles(isSelected?: boolean, autoHeight?: boolean): Array<ResizeHandleAxis> {
-  return isSelected ? (autoHeight ? ["e", "w"] : ["s", "n", "w", "e", "sw", "nw", "se", "ne"]) : [];
+  if (!isSelected) return EMPTY_RESIZE_HANDLES;
+  return autoHeight ? SELECTED_AUTO_HEIGHT_HANDLES : SELECTED_DEFAULT_HANDLES;
 }
 
 export function getItemResizeHandles(item: LayoutItem, extraItem?: ExtraItem): ResizeHandleAxis[] {

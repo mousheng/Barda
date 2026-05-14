@@ -1,5 +1,4 @@
 import { StandardBoxMargin } from "@barda/comps/controls/styleControlConstants";
-import { depthEqualExcludingProperties } from "@barda/util/objectUtils";
 import clsx from "clsx";
 import { UICompType } from "comps/uiCompRegistry";
 import _ from "lodash";
@@ -7,8 +6,6 @@ import React, {
   DragEvent,
   ReactElement,
   SyntheticEvent,
-  useCallback,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -175,7 +172,7 @@ export function GridItemTemmp(props: GridItemProps) {
     const maxes = calcGridItemPosition(props, 0, 0, maxW as number ?? Infinity, maxH as number ?? Infinity);
     const minConstraints: [number, number] = [mins.width, mins.height];
     const maxConstraints: [number, number] = [
-      Math.min(maxes.width, Infinity),
+      Math.min(maxes.width, maxWidth),
       Math.min(maxes.height, Infinity),
     ];
     return (
@@ -231,12 +228,8 @@ export function GridItemTemmp(props: GridItemProps) {
   };
 
   /**
-   * Wrapper around drag events to provide more useful data.
-   * All drag events call the function with the given handler name,
-   * with the signature (index, x, y).
-   *
-   * @param  {String} handlerName Handler name to wrap.
-   * @return {Function}           Handler function.
+   * Wrapper around resize events to provide more useful data.
+   * All resize events call the function with the signature (index, w, h, event data).
    */
   const onResizeHandler = (
     e: SyntheticEvent<Element>,
@@ -304,7 +297,7 @@ export function GridItemTemmp(props: GridItemProps) {
     });
   };
 
-  const adjustWrapperHeight = (width?: number, height?: number, src?: string) => {
+  const adjustWrapperHeight = (width?: number, height?: number) => {
     if (_.isNil(height) || height === 0) return;
     if (!width) {
       width = position.width;
@@ -347,7 +340,6 @@ export function GridItemTemmp(props: GridItemProps) {
       i,
       name,
       autoHeight,
-      isSelected,
       hidden,
       selectedSize,
       clickItem,
@@ -401,7 +393,7 @@ export function GridItemTemmp(props: GridItemProps) {
     );
   };
 
-  const calcPosition = useCallback((): Position => {
+  const calcPosition = (): Position => {
     let width, height, top, left;
     // If resizing, use the exact width and height as returned from resizing callbacks.
     if (resizing) {
@@ -428,9 +420,9 @@ export function GridItemTemmp(props: GridItemProps) {
       left = position.left;
     }
     return { width, height, top, left };
-  }, [dragging, position.height, position.left, position.top, position.width, resizing]);
+  };
 
-  const { isDraggable, isResizable, layoutHide, children, isSelected, clickItem } = props;
+  const { isDraggable, isResizable, layoutHide, children } = props;
   const pos = calcPosition();
   const render = () => {
     let child = React.Children.only(children);
@@ -472,7 +464,7 @@ export function GridItemTemmp(props: GridItemProps) {
     return newChild;
   };
 
-  const renderResult = useMemo(render, [pos, children, layoutHide, isSelected, clickItem]);
+  const renderResult = render();
 
   return renderResult;
 }
@@ -485,10 +477,52 @@ export function GridItemTemmp(props: GridItemProps) {
 //   maxW: Infinity,
 //   transformScale: 1,
 // };
-export const GridItem = React.memo<GridItemProps>(GridItemTemmp, (prevPrpps, nextProps) => {
-  const omitList = ['onDragStart', 'onDrag', 'onDragEnd', 'onResizeStart', 'onResize', 'onResizeStop', 'onHeightChange', 'clickItem', 'resizeHandles', 'showName'];
-  if (prevPrpps.isDragging) {
-    omitList.push('children');
+export const GridItem = React.memo<GridItemProps>(GridItemTemmp, (prevProps, nextProps) => {
+  if (prevProps === nextProps) return true;
+
+  if (prevProps.x !== nextProps.x) return false;
+  if (prevProps.y !== nextProps.y) return false;
+  if (prevProps.w !== nextProps.w) return false;
+  if (prevProps.h !== nextProps.h) return false;
+  if (prevProps.isDragging !== nextProps.isDragging) return false;
+  if (prevProps.isDraggable !== nextProps.isDraggable) return false;
+  if (prevProps.isResizable !== nextProps.isResizable) return false;
+  if (prevProps.isSelectable !== nextProps.isSelectable) return false;
+  if (prevProps.compType !== nextProps.compType) return false;
+  if (prevProps.i !== nextProps.i) return false;
+  if (prevProps.cols !== nextProps.cols) return false;
+  if (prevProps.containerWidth !== nextProps.containerWidth) return false;
+  if (prevProps.rowHeight !== nextProps.rowHeight) return false;
+  if (prevProps.maxRows !== nextProps.maxRows) return false;
+  if (prevProps.colWidth !== nextProps.colWidth) return false;
+  if (prevProps.minW !== nextProps.minW) return false;
+  if (prevProps.maxW !== nextProps.maxW) return false;
+  if (prevProps.minH !== nextProps.minH) return false;
+  if (prevProps.maxH !== nextProps.maxH) return false;
+  if (prevProps.transformScale !== nextProps.transformScale) return false;
+  if (prevProps.className !== nextProps.className) return false;
+  if (prevProps.placeholder !== nextProps.placeholder) return false;
+  if (prevProps.layoutHide !== nextProps.layoutHide) return false;
+  if (prevProps.autoHeight !== nextProps.autoHeight) return false;
+  if (prevProps.isSelected !== nextProps.isSelected) return false;
+  if (prevProps.hidden !== nextProps.hidden) return false;
+  if (prevProps.selectedSize !== nextProps.selectedSize) return false;
+  if (prevProps.delaying !== nextProps.delaying) return false;
+  if (prevProps.showGridLines !== nextProps.showGridLines) return false;
+  if (prevProps.static !== nextProps.static) return false;
+  if (prevProps.name !== nextProps.name) return false;
+  if (prevProps.showName.top !== nextProps.showName.top) return false;
+  if (prevProps.showName.bottom !== nextProps.showName.bottom) return false;
+
+  if (prevProps.margin !== nextProps.margin) return false;
+  if (prevProps.containerPadding !== nextProps.containerPadding) return false;
+  if (prevProps.style !== nextProps.style) return false;
+  if (prevProps.itemMargin !== nextProps.itemMargin) return false;
+  if (prevProps.resizeHandles !== nextProps.resizeHandles) return false;
+
+  if (!prevProps.isDragging && prevProps.children !== nextProps.children) {
+    return false;
   }
-  return depthEqualExcludingProperties(prevPrpps, nextProps, omitList)
+
+  return true;
 });

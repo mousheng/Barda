@@ -57,6 +57,16 @@ const DragPlaceHolder = styled.div<{ $compType: UICompType, $itemMargin?: Standa
 
 const LAYOUT_CLASS_NAME = "react-grid-layout";
 
+type GridItemChildCache = {
+    baseChild?: React.ReactElement;
+    isPlaceholder: boolean;
+    isDragging?: boolean;
+    isSelected?: boolean;
+    margin?: StandardBoxMargin;
+    compType?: UICompType;
+    child: React.ReactElement;
+};
+
 /**
  * 使用函数组件实现网格布局
  * 拖动事件顺序：
@@ -107,6 +117,11 @@ export const NewGridLayout = (props: GridLayoutProps) => {
     const contrastBgColor = useMemo(() => colord(props.bgColor ?? "#ffffff").invert().alpha(0.05).toHex(), [props.bgColor]);
     const selectedKeys = useMemo(() => Object.keys(_.pickBy(props.extraLayout, (extraItem) => !!extraItem.isSelected)), [props.extraLayout])
     const scrollHeightRef = useRef(0);
+    const gridItemChildCacheRef = useRef<Record<string, GridItemChildCache>>({});
+    const showNameProps = useMemo(() => ({
+        top: props.showName?.top ?? 0,
+        bottom: (props.showName?.bottom ?? 0) + scrollHeightRef.current,
+    }), [props.showName?.top, props.showName?.bottom, scrollHeightRef.current]);
 
     // 手动刷新画布
     const refreshCanvas = () => {
@@ -334,17 +349,54 @@ export const NewGridLayout = (props: GridLayoutProps) => {
 
     }
 
+    const getGridItemChild = (
+        item: LayoutItem,
+        baseChild: React.ReactElement,
+        isPlaceholder: boolean,
+        itemExtraInfo?: ExtraItem
+    ) => {
+        const cached = gridItemChildCacheRef.current[item.i];
+        const isSelected = !!itemExtraInfo?.isSelected;
+        if (
+            cached &&
+            cached.baseChild === baseChild &&
+            cached.isPlaceholder === isPlaceholder &&
+            cached.isDragging === item.isDragging &&
+            cached.isSelected === isSelected &&
+            cached.margin === itemExtraInfo?.margin &&
+            cached.compType === itemExtraInfo?.compType
+        ) {
+            return cached.child;
+        }
+
+        const child = (
+            <>
+                {baseChild}
+                {item.i !== "moduleContainer" && item.isDragging && isSelected && (
+                    <DragPlaceHolder $itemMargin={itemExtraInfo?.margin!} $compType={itemExtraInfo?.compType} />
+                )}
+            </>
+        );
+        gridItemChildCacheRef.current[item.i] = {
+            baseChild,
+            isPlaceholder,
+            isDragging: item.isDragging,
+            isSelected,
+            margin: itemExtraInfo?.margin,
+            compType: itemExtraInfo?.compType,
+            child,
+        };
+        return child;
+    };
+
     const processGridItem = (item: LayoutItem): React.ReactElement | undefined => {
         // console.log("processGridItem", item);
         const draggingExtraLayout = draggingUtils.getData<FlyStartInfo>(FLY_START_INFO)?.flyExtraLayout;
         // const delayItem = this.state.delayItem;
         const itemExtraInfo = props.extraLayout?.[item.i] ?? draggingExtraLayout?.[item.i];
-        const child = (item.i === ADD_NEW_COMP_KEY || !childrenMap[item.i]) ? <DragPlaceHolder $compType={itemExtraInfo?.compType} /> : childrenMap[item.i];
+        const isPlaceholder = item.i === ADD_NEW_COMP_KEY || !childrenMap[item.i];
+        const child = isPlaceholder ? <DragPlaceHolder key={item.i} $compType={itemExtraInfo?.compType} /> : childrenMap[item.i];
         if (!child) return;
-        const showNameProps = {
-            top: props.showName?.top ?? 0,
-            bottom: (props.showName?.bottom ?? 0) + scrollHeightRef.current,
-        }
         const onHeightChange = (i: string, h: number): void => {
             if (props?.extraLayout?.[i]?.autoHeight) {
                 // 自动高度组件，需要更新布局
@@ -583,10 +635,7 @@ export const NewGridLayout = (props: GridLayoutProps) => {
                 clickItem={props.clickItem}
                 showName={showNameProps}
             >
-                <>
-                    {child}
-                    {item.i !== "moduleContainer" && item.isDragging && itemExtraInfo?.isSelected && <DragPlaceHolder $itemMargin={itemExtraInfo?.margin!} $compType={itemExtraInfo?.compType} />}
-                </>
+                {getGridItemChild(item, child, isPlaceholder, itemExtraInfo)}
             </GridItem>
         );
     }

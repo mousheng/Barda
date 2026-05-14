@@ -17,6 +17,7 @@ import {
 import { parseBoxValues, StandardBoxMargin } from "comps/controls/styleControlConstants";
 import { EditorState, SelectSourceType } from "comps/editorState";
 import { useEditorStore } from "comps/editorStore";
+import { useShallow } from "zustand/react/shallow";
 import { useAppSettings, useCanvasPositionParams } from "comps/editorSelectors";
 import { createEditorStateCompat } from "comps/editorCompat";
 import { sameTypeMap, stateComp, valueComp } from "comps/generators";
@@ -310,7 +311,8 @@ const GridItemWrapper = React.forwardRef(
   }
 );
 
-type GirdItemViewRecord = Record<string, GridItemType>;
+type GirdItemViewRecord = Record<string, GridItemType & { disableInteract?: boolean }>;
+const GRID_MARGIN: [number, number] = [0, 0];
 
 export function InnerGrid(props: ViewPropsWithSelect) {
   const {
@@ -324,13 +326,23 @@ export function InnerGrid(props: ViewPropsWithSelect) {
   const [currentRowCount, setRowCount] = useState(rowCount || Infinity);
   const [currentRowHeight, setRowHeight] = useState(DEFAULT_ROW_HEIGHT);
   const canvasPositionParams = useCanvasPositionParams();
-  const selectedCompNames = useEditorStore((s) => s.selectedCompNames);
-  const selectSource = useEditorStore((s) => s.selectSource);
-  const isDragging = useEditorStore((s) => s.isDragging);
-  const forceShowGrid = useEditorStore((s) => s.forceShowGrid);
-  const disableInteract = useEditorStore((s) => s.disableInteract);
-  const setDragging = useEditorStore((s) => s.setDragging);
-  const setSelectedCompNames = useEditorStore((s) => s.setSelectedCompNames);
+  const {
+    selectedCompNames,
+    selectSource,
+    isDragging,
+    forceShowGrid,
+    disableInteract,
+    setDragging,
+    setSelectedCompNames,
+  } = useEditorStore(useShallow((s) => ({
+    selectedCompNames: s.selectedCompNames,
+    selectSource: s.selectSource,
+    isDragging: s.isDragging,
+    forceShowGrid: s.forceShowGrid,
+    disableInteract: s.disableInteract,
+    setDragging: s.setDragging,
+    setSelectedCompNames: s.setSelectedCompNames,
+  })));
   const { readOnly } = useContext(ExternalEditorContext);
 
   const isDroppable =
@@ -338,17 +350,37 @@ export function InnerGrid(props: ViewPropsWithSelect) {
   const isDraggable = !readOnly && (_.isNil(props.isDraggable) || props.isDraggable);
   const isResizable = !readOnly && (_.isNil(props.isResizable) || props.isResizable);
   const isSelectable = !readOnly && (_.isNil(props.isSelectable) || props.isSelectable);
-  const extraLayout = useMemo(
-    () =>
-      getExtraLayout(
-        props.items,
-        props.layout,
-        selectedCompNames,
-        props.dragSelectedComps,
-        selectSource
-      ),
-    [props.items, props.layout, selectedCompNames, props.dragSelectedComps, selectSource]
-  );
+  const extraLayoutRef = useRef<ExtraLayout>({});
+  const extraLayout = useMemo(() => {
+    const next = getExtraLayout(
+      props.items,
+      props.layout,
+      selectedCompNames,
+      props.dragSelectedComps,
+      selectSource
+    );
+    const prev = extraLayoutRef.current;
+    const stabilized: ExtraLayout = {};
+    for (const key of Object.keys(next)) {
+      const prevItem = prev[key];
+      const nextItem = next[key];
+      if (
+        prevItem &&
+        prevItem.name === nextItem.name &&
+        prevItem.compType === nextItem.compType &&
+        prevItem.autoHeight === nextItem.autoHeight &&
+        prevItem.isSelected === nextItem.isSelected &&
+        prevItem.hidden === nextItem.hidden &&
+        _.isEqual(prevItem.margin, nextItem.margin)
+      ) {
+        stabilized[key] = prevItem;
+      } else {
+        stabilized[key] = nextItem;
+      }
+    }
+    extraLayoutRef.current = stabilized;
+    return stabilized;
+  }, [props.items, props.layout, selectedCompNames, props.dragSelectedComps, selectSource]);
 
   const [containerSelectNames, setContainerSelectNames] = useState<Set<string>>(new Set([]));
 
@@ -434,9 +466,15 @@ export function InnerGrid(props: ViewPropsWithSelect) {
     const newView: GirdItemViewRecord = {};
     Object.entries(props.items).forEach(([key, item]) => {
       const refItem = itemViewRef.current[key];
-      if (!refItem || !refItem.comp || refItem.comp !== item.comp) {
+      if (
+        !refItem ||
+        !refItem.comp ||
+        refItem.comp !== item.comp ||
+        refItem.disableInteract !== disableInteract
+      ) {
         newView[key] = {
           ...item,
+          disableInteract,
           view: <GridItemWrapper key={key} disableInteract={disableInteract}>{item.view}</GridItemWrapper>,
         };
       } else {
@@ -445,7 +483,7 @@ export function InnerGrid(props: ViewPropsWithSelect) {
     });
     itemViewRef.current = newView;
     return Object.values(newView).map((r) => r.view);
-  }, [props.items]);
+  }, [props.items, disableInteract]);
 
   const clickItem = useCallback(
     (
@@ -489,7 +527,7 @@ export function InnerGrid(props: ViewPropsWithSelect) {
       isSelectable={isSelectable}
       layout={props.layout}
       extraLayout={extraLayout}
-      onDropDragOver={(e) => {
+      onDropDragOver={() => {
         const compType = draggingUtils.getData<UICompType>("compType");
         const compLayout = draggingUtils.getData<UICompLayoutInfo>("compLayout");
         if (compType) {
@@ -511,7 +549,7 @@ export function InnerGrid(props: ViewPropsWithSelect) {
         // log.debug("layout: onLayoutChange. currentLayout: ", currentLayout, " newLayout: ", newLayout);
         onLayoutChange(props.layout, newLayout, props.dispatch, props.items, props.onLayoutChange);
       }}
-      onFlyStart={(layout: Layout, layoutItems: Layout) => {
+      onFlyStart={(_layout: Layout, layoutItems: Layout) => {
         const items = _.pick(props.items, Object.keys(layoutItems));
         draggingUtils.setData("sourceDispatch", props.dispatch);
         draggingUtils.setData<Record<string, GridItemType>>("items", items);
@@ -528,7 +566,7 @@ export function InnerGrid(props: ViewPropsWithSelect) {
         setDragging(true);
       }}
       onResizeStop={() => setDragging(false)}
-      margin={[0, 0]}
+      margin={GRID_MARGIN}
       containerPadding={props.containerPadding}
       emptyRows={props.emptyRows}
       maxRows={currentRowCount}
