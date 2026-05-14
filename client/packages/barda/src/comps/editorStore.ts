@@ -105,7 +105,7 @@ export const useEditorStore = create<EditorStore>()((set) => ({
 
   setDraggingCompType: (compType) =>
     set((s) =>
-      s.draggingCompType !== compType
+      s.draggingCompType !== compType || !s.isDragging
         ? { draggingCompType: compType, isDragging: true }
         : s
     ),
