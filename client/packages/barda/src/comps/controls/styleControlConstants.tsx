@@ -799,6 +799,36 @@ export const StatisticCardStyle = [
     default: "24px",
   },
   {
+    name: "prefixColor",
+    label: trans("statisticCard.prefixColor"),
+    color: "",
+  },
+  {
+    name: "suffixColor",
+    label: trans("statisticCard.suffixColor"),
+    color: "",
+  },
+  {
+    name: "secondaryValueColor",
+    label: trans("statisticCard.secondaryValueColor"),
+    color: "#8B8FA3",
+  },
+  {
+    name: "secondaryValueFontSize_UNIT",
+    label: trans("statisticCard.secondaryValueFontSize"),
+    default: "14px",
+  },
+  {
+    name: "secondaryPrefixColor",
+    label: trans("statisticCard.secondaryPrefixColor"),
+    color: "",
+  },
+  {
+    name: "secondarySuffixColor",
+    label: trans("statisticCard.secondarySuffixColor"),
+    color: "",
+  },
+  {
     name: "iconBackground",
     label: trans("statisticCard.iconBackground"),
     color: "#3377FF",

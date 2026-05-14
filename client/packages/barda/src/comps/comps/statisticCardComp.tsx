@@ -88,10 +88,25 @@ const StatisticCardWrapper = styled.div<{
     margin-bottom: ${(props) => (props.$size === "compact" ? "6px" : "8px")};
   }
 
+  .statistic-card-values .ant-statistic-title {
+    display: none;
+  }
+
   .ant-statistic-content {
     line-height: 1;
-    font-size: ${(props) => props.$style.valueFontSize_UNIT} !important;
-    color: ${(props) => props.$style.valueColor} !important;
+    font-size: ${(props) => props.$style.valueFontSize_UNIT};
+    color: ${(props) => props.$style.valueColor};
+  }
+
+  .statistic-card-values {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: ${(props) => (props.$size === "compact" ? "4px" : "6px")};
+  }
+
+  .statistic-card-values .ant-statistic-content {
+    white-space: nowrap;
   }
 `;
 
@@ -104,6 +119,11 @@ const childrenMap = {
   prefix: withDefault(StringControl, ""),
   suffix: withDefault(StringControl, ""),
   precision: RangeControl.closed(0, 20, 0),
+  showSecondaryIndicator: withDefault(BoolControl, false),
+  secondaryValue: withDefault(NumberControl, 0),
+  secondaryPrefix: withDefault(StringControl, ""),
+  secondarySuffix: withDefault(StringControl, ""),
+  secondaryPrecision: RangeControl.closed(0, 20, 0),
   size: dropdownControl(sizeOptions, "normal"),
   icon: IconControl,
   enableAnimation: withDefault(BoolControl, false),
@@ -127,7 +147,7 @@ const AnimatedValue = (props: {
   }
 
   return (
-    <Suspense fallback={<>{formattedValue}</>}>
+    <Suspense fallback={<span style={props.valueStyle}>{formattedValue}</span>}>
       <CountUp
         start={0}
         end={props.value}
@@ -140,10 +160,49 @@ const AnimatedValue = (props: {
   );
 };
 
+const renderAffix = (text: string, style: React.CSSProperties) => {
+  return text ? <span style={style}>{text}</span> : undefined;
+};
+
+const getNumericValue = (value: string | number) => {
+  return typeof value === "number" ? value : Number(value) || 0;
+};
+
+const formatStatisticValue = (value: string | number, precision: number) => {
+  const numericValue = getNumericValue(value);
+  return precision > 0 ? numericValue.toFixed(precision) : numericValue;
+};
+
 const StatisticCardView = (props: RecordConstructorToView<typeof childrenMap> & { $hasClickHandler?: boolean }) => {
   const customPadding = props.style.padding_UNIT?.trim();
-  console.log(customPadding);
   const padding = customPadding && customPadding.length > 0 ? customPadding : props.size === "compact" ? "9px" : "16px";
+  const primaryPrefixStyle = { color: props.style.prefixColor || props.style.valueColor, fontSize: props.style.valueFontSize_UNIT };
+  const primarySuffixStyle = { color: props.style.suffixColor || props.style.valueColor, fontSize: props.style.valueFontSize_UNIT };
+  const secondaryValueStyle = { color: props.style.secondaryValueColor, fontSize: props.style.secondaryValueFontSize_UNIT };
+  const secondaryPrefixStyle = {
+    color: props.style.secondaryPrefixColor || props.style.secondaryValueColor,
+    fontSize: props.style.secondaryValueFontSize_UNIT,
+  };
+  const secondarySuffixStyle = {
+    color: props.style.secondarySuffixColor || props.style.secondaryValueColor,
+    fontSize: props.style.secondaryValueFontSize_UNIT,
+  };
+
+  const renderValue = (value: string | number, precision: number, valueStyle: React.CSSProperties) => {
+    const numericValue = getNumericValue(value);
+    if (props.enableAnimation) {
+      return (
+        <AnimatedValue
+          value={numericValue}
+          enableAnimation={props.enableAnimation}
+          precision={precision}
+          valueStyle={valueStyle}
+          duration={props.duration}
+        />
+      );
+    }
+    return formatStatisticValue(numericValue, precision);
+  };
 
   return (
     <StatisticCardWrapper
@@ -157,30 +216,33 @@ const StatisticCardView = (props: RecordConstructorToView<typeof childrenMap> & 
     >
       <div className="statistic-card-content">
         <div className="statistic-card-info">
-          <Statistic
-            title={props.title}
-            value={props.value}
-            prefix={props.prefix || undefined}
-            suffix={props.suffix || undefined}
-            precision={props.precision}
-            formatter={(value: string | number) => {
-              const numericValue = typeof value === "number" ? value : Number(value) || 0;
-              if (props.enableAnimation) {
-                return (
-                  <AnimatedValue
-                    value={numericValue}
-                    enableAnimation={props.enableAnimation}
-                    precision={props.precision}
-                    valueStyle={{ color: props.style.valueColor }}
-                    duration={props.duration}
-                  />
-                );
+          <Statistic title={props.title} value={undefined} formatter={() => undefined} />
+          <div className="statistic-card-values">
+            <Statistic
+              value={props.value}
+              prefix={renderAffix(props.prefix, primaryPrefixStyle)}
+              suffix={renderAffix(props.suffix, primarySuffixStyle)}
+              precision={props.precision}
+              formatter={(value: string | number) =>
+                renderValue(value, props.precision, {
+                  color: props.style.valueColor,
+                  fontSize: props.style.valueFontSize_UNIT,
+                })
               }
-              // 应用精度格式化
-              return props.precision > 0 ? numericValue.toFixed(props.precision) : numericValue;
-            }}
-            valueStyle={{ color: props.style.valueColor }}
-          />
+              valueStyle={{ color: props.style.valueColor, fontSize: props.style.valueFontSize_UNIT }}
+            />
+            {props.showSecondaryIndicator && (
+              <Statistic
+                className="statistic-card-secondary"
+                value={props.secondaryValue}
+                prefix={renderAffix(props.secondaryPrefix, secondaryPrefixStyle)}
+                suffix={renderAffix(props.secondarySuffix, secondarySuffixStyle)}
+                precision={props.secondaryPrecision}
+                formatter={(value: string | number) => renderValue(value, props.secondaryPrecision, secondaryValueStyle)}
+                valueStyle={secondaryValueStyle}
+              />
+            )}
+          </div>
         </div>
         {hasIcon(props.icon) && <div className="statistic-card-icon">{props.icon}</div>}
       </div>
@@ -238,6 +300,30 @@ let StatisticCardBasicComp = (function () {
               label: trans("statisticCard.duration"),
               tooltip: trans("statisticCard.durationTooltip"),
             })}
+        </Section>
+        <Section name={trans("statisticCard.secondaryIndicator")}>
+          {children.showSecondaryIndicator.propertyView({
+            label: trans("statisticCard.showSecondaryIndicator"),
+            tooltip: trans("statisticCard.showSecondaryIndicatorTooltip"),
+          })}
+          {children.showSecondaryIndicator.getView() && [
+            children.secondaryValue.propertyView({
+              label: trans("statisticCard.secondaryValue"),
+              tooltip: trans("statisticCard.secondaryValueTooltip"),
+            }),
+            children.secondaryPrefix.propertyView({
+              label: trans("statisticCard.secondaryPrefix"),
+              tooltip: trans("statisticCard.secondaryPrefixTooltip"),
+            }),
+            children.secondarySuffix.propertyView({
+              label: trans("statisticCard.secondarySuffix"),
+              tooltip: trans("statisticCard.secondarySuffixTooltip"),
+            }),
+            children.secondaryPrecision.propertyView({
+              label: trans("statisticCard.secondaryPrecision"),
+              tooltip: trans("statisticCard.secondaryPrecisionTooltip"),
+            }),
+          ]}
         </Section>
         <Section name={sectionNames.interaction}>{children.onEvent.propertyView()}</Section>
         <Section name={sectionNames.layout}>{hiddenPropertyView(children)}</Section>
