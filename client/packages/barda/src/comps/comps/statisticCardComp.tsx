@@ -229,7 +229,7 @@ const StatisticCardView = (props: RecordConstructorToView<typeof childrenMap> & 
                   fontSize: props.style.valueFontSize_UNIT,
                 })
               }
-              valueStyle={{ color: props.style.valueColor, fontSize: props.style.valueFontSize_UNIT }}
+              styles={{ content: { color: props.style.valueColor, fontSize: props.style.valueFontSize_UNIT } }}
             />
             {props.showSecondaryIndicator && (
               <Statistic
@@ -239,7 +239,7 @@ const StatisticCardView = (props: RecordConstructorToView<typeof childrenMap> & 
                 suffix={renderAffix(props.secondarySuffix, secondarySuffixStyle)}
                 precision={props.secondaryPrecision}
                 formatter={(value: string | number) => renderValue(value, props.secondaryPrecision, secondaryValueStyle)}
-                valueStyle={secondaryValueStyle}
+                styles={{ content: secondaryValueStyle }}
               />
             )}
           </div>
