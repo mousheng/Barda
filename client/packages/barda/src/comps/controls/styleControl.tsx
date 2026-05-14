@@ -160,12 +160,12 @@ const StyleContent = styled.div`
         flex: 0 0 96px;
 
         div {
-          line-height: 30px;
+          line-height: 32px;
         }
       }
 
       > svg {
-        height: 30px;
+        height: 32px;
       }
 
       > div:nth-of-type(2) {
@@ -227,6 +227,7 @@ const CodeEditorWithCloseButtonWrapper = styled.div < { editorName?: string } > 
     display: flex;
     flex-direction: row;
     width: 100%;
+    height: 32px;
     align-items: center;
     .cm-line {
       line-height: 24px!important;
