@@ -55,5 +55,6 @@ public class Oauth2Constants {
             + "&client_id=" + CLIENT_ID_PLACEHOLDER
             + "&redirect_uri=" + REDIRECT_URL_PLACEHOLDER
             + "&scope=openid"
+            + "&prompt=consent"
             + "&state=" + STATE_PLACEHOLDER;
 }

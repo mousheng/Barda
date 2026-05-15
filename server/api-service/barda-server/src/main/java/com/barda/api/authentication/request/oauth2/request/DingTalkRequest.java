@@ -30,7 +30,6 @@ public class DingTalkRequest extends AbstractOauth2Request<Oauth2SimpleAuthConfi
 
     @Override
     protected Mono<AuthToken> getAuthToken(OAuth2RequestContext context) {
-        // 钉钉 OAuth2 获取 userAccessToken 需要在 body 中传 clientId/clientSecret
         Map<String, Object> body = Map.of(
                 "grantType", "authorization_code",
                 "code", context.getCode(),
@@ -59,7 +58,6 @@ public class DingTalkRequest extends AbstractOauth2Request<Oauth2SimpleAuthConfi
                             .expireIn(MapUtils.getIntValue(map, "expireIn"))
                             .refreshToken(MapUtils.getString(map, "refreshToken"))
                             .refreshTokenExpireIn(MapUtils.getIntValue(map, "refreshTokenExpireIn"))
-                            .openId(MapUtils.getString(map, "openid"))
                             .build();
                     return Mono.just(authToken);
                 });
@@ -72,15 +70,29 @@ public class DingTalkRequest extends AbstractOauth2Request<Oauth2SimpleAuthConfi
                 .build()
                 .get()
                 .uri(source.userInfo())
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken.getAccessToken())
-                .exchangeToMono(response -> response.bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
-                }))
+                .header("x-acs-dingtalk-access-token", authToken.getAccessToken())
+                .exchangeToMono(response -> {
+                    if (response.statusCode().isError()) {
+                        return response.bodyToMono(String.class)
+                                .flatMap(body -> Mono.error(new AuthException(
+                                        "DingTalk user info error: HTTP " + response.statusCode().value() + ", body=" + body)));
+                    }
+                    return response.bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+                    });
+                })
                 .flatMap(map -> {
                     String uid = MapUtils.getString(map, "openId");
                     if (StringUtils.isBlank(uid)) {
                         uid = MapUtils.getString(map, "unionId");
                     }
+                    if (StringUtils.isBlank(uid)) {
+                        return Mono.error(new AuthException("DingTalk user info: empty openId and unionId"));
+                    }
                     String name = MapUtils.getString(map, "nick");
+                    if (StringUtils.isBlank(name)) {
+                        name = uid;
+                    }
+                    authToken.setOpenId(uid);
                     AuthUser authUser = AuthUser.builder()
                             .uid(uid)
                             .username(name)
@@ -91,5 +103,3 @@ public class DingTalkRequest extends AbstractOauth2Request<Oauth2SimpleAuthConfi
                 });
     }
 }
-
-
