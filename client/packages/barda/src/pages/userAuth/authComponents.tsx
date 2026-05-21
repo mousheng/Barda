@@ -59,7 +59,7 @@ const AuthBottom = styled.div`
   flex-wrap: wrap;
 
   > button {
-    margin-right: 24px;
+    margin-right: 8px;
     margin-bottom: 16px;
     outline: 0;
   }
@@ -68,7 +68,7 @@ const AuthBottom = styled.div`
     // over 5 children, hide the button label
     :nth-last-child(n + 5),
     :nth-last-child(n + 5) ~ button {
-      margin-right: 16px;
+      margin-right: 8px;
 
       .auth-label {
         display: none;
@@ -94,17 +94,11 @@ const AuthBottom = styled.div`
     }
 
     > button {
-      margin-right: 22px;
+      margin-right: 8px;
 
       .auth-label {
         display: none;
       }
-    }
-
-    img {
-      width: 38px;
-      height: 38px;
-      margin-right: 0;
     }
   }
 `;
@@ -198,10 +192,35 @@ export const TermsAndPrivacyInfo = (props: { onCheckChange: (e: CheckboxChangeEv
   );
 };
 
-export const LoginLogoStyle = styled.img`
+export const LoginLogoStyle = styled.img``;
+
+export const LoginIconWrapper = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
   margin-right: 8px;
-  width: 32px;
-  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #e5e6eb;
+  overflow: hidden;
+  transition: background 0.2s;
+
+  img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  &:hover {
+    background: #f5f5f6;
+  }
 `;
 
 export const StyledLoginButton = styled.button`
@@ -218,12 +237,6 @@ export const StyledLoginButton = styled.button`
     border: unset;
     background: unset;
     cursor: pointer;
-  }
-
-  &:hover {
-    p {
-      color: #4965f2;
-    }
   }
 `;
 

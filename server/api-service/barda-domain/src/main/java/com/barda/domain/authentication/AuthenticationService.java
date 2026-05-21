@@ -3,6 +3,8 @@ package com.barda.domain.authentication;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.Nullable;
+
 import com.barda.sdk.auth.EmailAuthConfig;
 import com.barda.sdk.constants.AuthSourceConstants;
 
@@ -47,4 +49,13 @@ public interface AuthenticationService {
      * @return 包含身份验证配置的 {@link Flux<FindAuthConfig>} 对象
      */
     Flux<FindAuthConfig> findAllAuthConfigs(boolean enableOnly);
+
+    /**
+     * 获取所有身份验证配置，支持指定组织ID。
+     *
+     * @param enableOnly 是否只返回启用的配置
+     * @param orgId 组织ID（可选，为null时使用默认逻辑）
+     * @return 包含身份验证配置的 {@link Flux<FindAuthConfig>} 对象
+     */
+    Flux<FindAuthConfig> findAllAuthConfigs(boolean enableOnly, @Nullable String orgId);
 }

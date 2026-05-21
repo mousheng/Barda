@@ -5,6 +5,7 @@ import static com.barda.sdk.auth.constants.AuthTypeConstants.GITHUB;
 import static com.barda.sdk.auth.constants.AuthTypeConstants.GOOGLE;
 import static com.barda.sdk.auth.constants.AuthTypeConstants.DINGTALK;
 import static com.barda.sdk.auth.constants.AuthTypeConstants.FEISHU;
+import static com.barda.sdk.auth.constants.AuthTypeConstants.GENERIC;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -29,6 +30,7 @@ import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.barda.sdk.auth.EmailAuthConfig;
+import com.barda.sdk.auth.GenericOauth2AuthConfig;
 import com.barda.sdk.auth.Oauth2SimpleAuthConfig;
 
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +64,7 @@ public final class JsonUtils {
         OBJECT_MAPPER.registerSubtypes(new NamedType(Oauth2SimpleAuthConfig.class, GOOGLE));
         OBJECT_MAPPER.registerSubtypes(new NamedType(Oauth2SimpleAuthConfig.class, FEISHU));
         OBJECT_MAPPER.registerSubtypes(new NamedType(Oauth2SimpleAuthConfig.class, DINGTALK));
+        OBJECT_MAPPER.registerSubtypes(new NamedType(GenericOauth2AuthConfig.class, GENERIC));
     }
 
     /**

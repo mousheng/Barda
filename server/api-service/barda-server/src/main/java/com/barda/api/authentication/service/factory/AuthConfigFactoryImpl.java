@@ -8,16 +8,21 @@ import static com.barda.sdk.constants.AuthSourceConstants.FEISHU;
 import static com.barda.sdk.constants.AuthSourceConstants.FEISHU_NAME;
 import static com.barda.sdk.constants.AuthSourceConstants.DINGTALK;
 import static com.barda.sdk.constants.AuthSourceConstants.DINGTALK_NAME;
+import static com.barda.sdk.constants.AuthSourceConstants.GENERIC;
+import static com.barda.sdk.constants.AuthSourceConstants.GENERIC_NAME;
 import static java.util.Objects.requireNonNull;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.barda.api.authentication.dto.AuthConfigRequest;
 import com.barda.sdk.auth.AbstractAuthConfig;
 import com.barda.sdk.auth.EmailAuthConfig;
+import com.barda.sdk.auth.GenericOauth2AuthConfig;
 import com.barda.sdk.auth.Oauth2SimpleAuthConfig;
 import com.barda.sdk.auth.constants.AuthTypeConstants;
 
@@ -43,6 +48,7 @@ public class AuthConfigFactoryImpl implements AuthConfigFactory {
             case AuthTypeConstants.GOOGLE -> buildOauth2SimpleAuthConfig(GOOGLE, GOOGLE_NAME, authConfigRequest, enable);
             case AuthTypeConstants.FEISHU -> buildOauth2SimpleAuthConfig(FEISHU, FEISHU_NAME, authConfigRequest, enable);
             case AuthTypeConstants.DINGTALK -> buildOauth2SimpleAuthConfig(DINGTALK, DINGTALK_NAME, authConfigRequest, enable);
+            case AuthTypeConstants.GENERIC -> buildGenericOauth2AuthConfig(authConfigRequest, enable);
             default -> throw new UnsupportedOperationException(authConfigRequest.getAuthType());
         };
     }
@@ -59,7 +65,8 @@ public class AuthConfigFactoryImpl implements AuthConfigFactory {
                 AuthTypeConstants.GITHUB,
                 AuthTypeConstants.GOOGLE,
                 AuthTypeConstants.FEISHU,
-                AuthTypeConstants.DINGTALK
+                AuthTypeConstants.DINGTALK,
+                AuthTypeConstants.GENERIC
         );
     }
 
@@ -96,5 +103,48 @@ public class AuthConfigFactoryImpl implements AuthConfigFactory {
                 requireNonNull(authConfigRequest.getClientId(), "clientId can not be null."),
                 authConfigRequest.getClientSecret(),
                 authConfigRequest.getAuthType());
+    }
+
+    @SuppressWarnings("unchecked")
+    private GenericOauth2AuthConfig buildGenericOauth2AuthConfig(
+            AuthConfigRequest authConfigRequest, boolean enable) {
+        Map<String, String> sourceMappings = null;
+        Object sourceMappingsObj = authConfigRequest.get("sourceMappings");
+        if (sourceMappingsObj instanceof Map) {
+            Map<String, Object> rawMap = (Map<String, Object>) sourceMappingsObj;
+            sourceMappings = new java.util.HashMap<>();
+            for (Map.Entry<String, Object> entry : rawMap.entrySet()) {
+                sourceMappings.put(entry.getKey(),
+                        entry.getValue() != null ? entry.getValue().toString() : null);
+            }
+        }
+        // Generic 类型使用请求中的 source/sourceName，支持同一组织配置多个不同的通用 OAuth 提供商
+        String source = authConfigRequest.getString("source");
+        if (StringUtils.isBlank(source)) {
+            source = GENERIC;
+        }
+        String sourceName = authConfigRequest.getString("sourceName");
+        if (StringUtils.isBlank(sourceName)) {
+            sourceName = GENERIC_NAME;
+        }
+        return new GenericOauth2AuthConfig(
+                authConfigRequest.getId(),
+                enable,
+                authConfigRequest.isEnableRegister(),
+                source,
+                sourceName,
+                requireNonNull(authConfigRequest.getClientId(), "clientId can not be null."),
+                authConfigRequest.getClientSecret(),
+                authConfigRequest.getAuthType(),
+                authConfigRequest.getString("issuerUri"),
+                authConfigRequest.getString("authorizationEndpoint"),
+                authConfigRequest.getString("tokenEndpoint"),
+                authConfigRequest.getString("userInfoEndpoint"),
+                authConfigRequest.getString("jwksUri"),
+                authConfigRequest.getString("scope"),
+                authConfigRequest.getString("sourceDescription"),
+                authConfigRequest.getString("sourceIcon"),
+                sourceMappings,
+                MapUtils.getBoolean(authConfigRequest, "userCanSelectAccounts"));
     }
 }

@@ -5,7 +5,7 @@ import { ApiResponse } from "api/apiResponses";
 
 export class OAuthAuthenticator extends AbstractAuthenticator {
   bind() {
-    const { authParams, urlParam, redirectUrl } = this;
+    const { authParams, urlParam, redirectUrl, orgId } = this;
     const reLoginOnBindFail = authParams.authGoal !== "innerBind";
     return UserApi.bindThirdParty({
       state: urlParam.state!,
@@ -14,11 +14,12 @@ export class OAuthAuthenticator extends AbstractAuthenticator {
       authId: authParams.authId,
       redirectUrl: redirectUrl,
       reLoginOnBindFail: reLoginOnBindFail,
+      ...(orgId && { orgId }),
     });
   }
 
   login(): AxiosPromise<ApiResponse> {
-    const { urlParam, authParams, redirectUrl } = this;
+    const { urlParam, authParams, redirectUrl, orgId } = this;
     return UserApi.thirdPartyLogin({
       state: urlParam.state!,
       code: urlParam.code!,
@@ -26,6 +27,7 @@ export class OAuthAuthenticator extends AbstractAuthenticator {
       authId: authParams.authId,
       redirectUrl: redirectUrl,
       ...(authParams.invitationId && { invitationId: authParams.invitationId }),
+      ...(orgId && { orgId }),
     });
   }
 }

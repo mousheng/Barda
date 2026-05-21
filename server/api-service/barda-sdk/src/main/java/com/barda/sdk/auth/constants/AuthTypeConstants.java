@@ -31,4 +31,9 @@ public class AuthTypeConstants {
      * 钉钉身份验证类型。
      */
     public static final String DINGTALK = "DINGTALK";
+
+    /**
+     * 通用 OAuth2/OIDC 身份验证类型。
+     */
+    public static final String GENERIC = "GENERIC";
 }

@@ -18,8 +18,6 @@ import { ThirdPartyAuth } from "pages/userAuth/thirdParty/thirdPartyAuth";
 import { AUTH_REGISTER_URL } from "constants/routesURL";
 import { useLocation } from "react-router-dom";
 import { LockOutlined } from '@ant-design/icons';
-import { useSelector } from "react-redux";
-import { selectSystemConfig } from "@barda/redux/selectors/configSelectors";
 import encryptUtils from "@barda/util/encryptUtils";
 
 const AccountLoginWrapper = styled(FormWrapperMobile)`
@@ -32,11 +30,11 @@ export default function FormLogin() {
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
   const redirectUrl = useRedirectUrl();
-  const { systemConfig, inviteInfo } = useContext(AuthContext);
+  const { systemConfig, inviteInfo, orgId } = useContext(AuthContext);
   const invitationId = inviteInfo?.invitationId;
   const authId = systemConfig?.form.id;
   const location = useLocation();
-  const sysConfig = useSelector(selectSystemConfig);
+  const registerUrl = orgId ? `/org/${orgId}/auth/register` : AUTH_REGISTER_URL;
   const EncryptUtils = new encryptUtils(systemConfig.form.publicKey);
 
   const { onSubmit, loading } = useAuthSubmit(
@@ -48,6 +46,7 @@ export default function FormLogin() {
         invitationId: invitationId,
         source: UserConnectionSource.email,
         authId,
+        orgId,
       })
     }
     ,
@@ -78,7 +77,7 @@ export default function FormLogin() {
           loading={loading}
           disabled={!account || !password}
           onClick={onSubmit}
-          icon={sysConfig?.form?.enableRSA ? <LockOutlined /> : undefined}
+          icon={systemConfig.form.enableRSA ? <LockOutlined /> : undefined}
         >
           {trans("userAuth.login")}
         </ConfirmButton>
@@ -86,7 +85,7 @@ export default function FormLogin() {
       <AuthBottomView>
         <ThirdPartyAuth invitationId={invitationId} authGoal="login" />
         {systemConfig.form.enableRegister && (
-          <StyledRouteLink to={{ pathname: AUTH_REGISTER_URL, state: location.state }}>
+          <StyledRouteLink to={{ pathname: registerUrl, state: location.state }}>
             {trans("userAuth.register")}
           </StyledRouteLink>
         )}

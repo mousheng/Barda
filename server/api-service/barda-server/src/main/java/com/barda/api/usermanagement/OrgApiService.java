@@ -1,5 +1,7 @@
 package com.barda.api.usermanagement;
 
+import javax.annotation.Nullable;
+
 import org.springframework.http.codec.multipart.Part;
 
 import com.barda.api.authentication.dto.OrganizationDomainCheckResult;
@@ -147,8 +149,9 @@ public interface OrgApiService {
     /**
      * 获取组织配置。
      *
+     * @param orgId 可选的组织ID，用于SAAS模式下获取指定组织的登录配置
      * @return 包含组织配置的 ConfigView 的 Mono 对象
      */
-    Mono<ConfigView> getOrganizationConfigs();
+    Mono<ConfigView> getOrganizationConfigs(@Nullable String orgId);
 }
 

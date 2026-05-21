@@ -3,10 +3,15 @@ package com.barda.domain.authentication;
 import static com.barda.sdk.exception.BizError.LOG_IN_SOURCE_NOT_SUPPORTED;
 import static com.barda.sdk.util.ExceptionUtils.ofError;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
+import com.barda.domain.organization.model.OrgMember;
 import com.barda.sdk.encryption.RSACryptoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +20,8 @@ import com.barda.domain.organization.service.OrganizationService;
 import com.barda.sdk.auth.AbstractAuthConfig;
 import com.barda.sdk.config.AuthProperties;
 import com.barda.sdk.config.CommonConfig;
+import com.barda.sdk.constants.AuthSourceConstants;
+import com.barda.sdk.constants.GlobalContext;
 import com.barda.sdk.constants.WorkspaceMode;
 
 import lombok.extern.slf4j.Slf4j;
@@ -100,9 +107,34 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Override
     public Flux<FindAuthConfig> findAllAuthConfigs(boolean enableOnly) {
+        return getOrgIdFromContext()
+                .flatMapMany(orgIdFromCtx -> findAllAuthConfigsByOrgId(orgIdFromCtx, enableOnly))
+                .switchIfEmpty(findAllAuthConfigsFallback(enableOnly));
+    }
+
+    /**
+     * 查找所有认证配置，支持指定组织ID。
+     *
+     * @param enableOnly 是否只包含启用的配置。
+     * @param orgId 组织ID，为null时委托给 {@link #findAllAuthConfigs(boolean)}。
+     * @return 包含所有认证配置的Flux。
+     */
+    @Override
+    public Flux<FindAuthConfig> findAllAuthConfigs(boolean enableOnly, @Nullable String orgId) {
+        if (orgId != null) {
+            return findAllAuthConfigsByOrgId(orgId, enableOnly)
+                    .switchIfEmpty(findAllAuthConfigs(enableOnly));
+        }
+        return findAllAuthConfigs(enableOnly);
+    }
+
+    /**
+     * 兜底查找：域匹配 → SAAS主组织 → 企业组织 → 默认EMAIL。
+     */
+    private Flux<FindAuthConfig> findAllAuthConfigsFallback(boolean enableOnly) {
         return findAllAuthConfigsByDomain()
-                .switchIfEmpty(findAllAuthConfigsForEnterpriseMode())
                 .switchIfEmpty(findAllAuthConfigsForSaasMode())
+                .switchIfEmpty(findAllAuthConfigsForEnterpriseMode())
                 .filter(findAuthConfig -> {
                     if (enableOnly) {
                         return findAuthConfig.authConfig().isEnable();
@@ -116,18 +148,63 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     /**
+     * 从当前请求的session上下文中获取用户所属组织的orgId。
+     * 未登录时返回Mono.empty()，降级到域名/SAAS/企业模式的查找逻辑。
+     */
+    private Mono<String> getOrgIdFromContext() {
+        return Mono.deferContextual(contextView -> {
+            if (!contextView.hasKey(GlobalContext.CURRENT_ORG_MEMBER)) {
+                return Mono.<String>empty();
+            }
+            return contextView.<Mono<OrgMember>>get(GlobalContext.CURRENT_ORG_MEMBER)
+                    .filter(orgMember -> !orgMember.isInvalid())
+                    .map(OrgMember::getOrgId);
+        });
+    }
+
+    /**
+     * 根据组织ID直接查找认证配置。
+     */
+    private Flux<FindAuthConfig> findAllAuthConfigsByOrgId(String orgId, boolean enableOnly) {
+        return organizationService.getById(orgId)
+                .flatMapIterable(organization -> {
+                    List<AbstractAuthConfig> allConfigs = organization.getAuthConfigs();
+                    List<AbstractAuthConfig> configs = allConfigs
+                            .stream()
+                            .filter(abstractAuthConfig -> !enableOnly || abstractAuthConfig.isEnable())
+                            .collect(Collectors.toList());
+                    boolean hasEmail = allConfigs.stream()
+                            .anyMatch(c -> AuthSourceConstants.EMAIL.equals(c.getSource()));
+                    if (!hasEmail) {
+                        configs.add(authProperties.getEmail().getRSA() ?
+                                DEFAULT_AUTH_CONFIG : DEFAULT_AUTH_CONFIG_DISABLE_RSA);
+                    }
+                    return configs.stream()
+                            .map(abstractAuthConfig -> new FindAuthConfig(abstractAuthConfig, organization))
+                            .collect(Collectors.toList());
+                });
+    }
+
+    /**
      * 获取按域划分的 FindAuthConfig。
      *
      * @return FindAuthConfig Flux 对象
      */
     private Flux<FindAuthConfig> findAllAuthConfigsByDomain() {
         return organizationService.getByDomain()
-                .flatMapIterable(organization ->
-                        organization.getAuthConfigs()
-                                .stream()
-                                .map(abstractAuthConfig -> new FindAuthConfig(abstractAuthConfig, organization))
-                                .collect(Collectors.toList())
-                );
+                .flatMapIterable(organization -> {
+                    List<AbstractAuthConfig> configs = new ArrayList<>(
+                            organization.getAuthConfigs());
+                    boolean hasEmail = configs.stream()
+                            .anyMatch(c -> AuthSourceConstants.EMAIL.equals(c.getSource()));
+                    if (!hasEmail) {
+                        configs.add(authProperties.getEmail().getRSA() ?
+                                DEFAULT_AUTH_CONFIG : DEFAULT_AUTH_CONFIG_DISABLE_RSA);
+                    }
+                    return configs.stream()
+                            .map(abstractAuthConfig -> new FindAuthConfig(abstractAuthConfig, organization))
+                            .collect(Collectors.toList());
+                });
     }
 
     /**
@@ -140,12 +217,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return Flux.empty();
         }
         return organizationService.getOrganizationInEnterpriseMode()
-                .flatMapIterable(organization ->
-                        organization.getAuthConfigs()
-                                .stream()
-                                .map(abstractAuthConfig -> new FindAuthConfig(abstractAuthConfig, organization))
-                                .collect(Collectors.toList())
-                );
+                .flatMapIterable(organization -> {
+                    List<AbstractAuthConfig> configs = new ArrayList<>(
+                            organization.getAuthConfigs());
+                    boolean hasEmail = configs.stream()
+                            .anyMatch(c -> AuthSourceConstants.EMAIL.equals(c.getSource()));
+                    if (!hasEmail) {
+                        configs.add(authProperties.getEmail().getRSA() ?
+                                DEFAULT_AUTH_CONFIG : DEFAULT_AUTH_CONFIG_DISABLE_RSA);
+                    }
+                    return configs.stream()
+                            .map(abstractAuthConfig -> new FindAuthConfig(abstractAuthConfig, organization))
+                            .collect(Collectors.toList());
+                });
     }
 
     /**
@@ -155,8 +239,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     private Flux<FindAuthConfig> findAllAuthConfigsForSaasMode() {
         if (commonConfig.getWorkspace().getMode() == WorkspaceMode.SAAS) {
-            return Flux.fromIterable(authProperties.getAuthConfigs())
-                    .map(abstractAuthConfig -> new FindAuthConfig(abstractAuthConfig, null));
+            return organizationService.getPrimaryOrganization()
+                    .flatMapIterable(organization -> {
+                        List<AbstractAuthConfig> configs = new ArrayList<>(
+                                organization.getAuthConfigs());
+                        boolean hasEmail = configs.stream()
+                                .anyMatch(c -> AuthSourceConstants.EMAIL.equals(c.getSource()));
+                        if (!hasEmail) {
+                            configs.add(authProperties.getEmail().getRSA() ?
+                                    DEFAULT_AUTH_CONFIG : DEFAULT_AUTH_CONFIG_DISABLE_RSA);
+                        }
+                        // organization 传 null：SAAS 模式下从主组织读取登录方式仅作为默认配置来源，
+                        // 不代表通过默认页面注册的用户要加入主组织（他们会创建自己的组织）
+                        return configs.stream()
+                                .map(abstractAuthConfig -> new FindAuthConfig(abstractAuthConfig, null))
+                                .collect(Collectors.toList());
+                    });
         }
         return Flux.empty();
     }

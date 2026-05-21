@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -116,13 +117,15 @@ public class ConfigController {
     /**
      * 获取配置信息。
      *
+     * @param orgId 可选的组织ID，用于SAAS模式下获取指定组织的登录配置
      * @param exchange 服务器 Web Exchange
      * @return 配置信息
      */
     @JsonView(JsonViews.Public.class)
     @GetMapping
-    public Mono<ResponseView<ConfigView>> getConfig(ServerWebExchange exchange) {
-        return orgApiService.getOrganizationConfigs()
+    public Mono<ResponseView<ConfigView>> getConfig(@RequestParam(required = false) String orgId,
+                                                     ServerWebExchange exchange) {
+        return orgApiService.getOrganizationConfigs(orgId)
                 .map(ResponseView::success);
     }
 

@@ -29,15 +29,8 @@ const ThirdAuthWrapper = styled.div`
     width: 408px;
     height: 48px;
     display: flex;
-    justify-content: flex-start;
-    padding-left: 104px;
-
-    .auth-label {
-      font-weight: 500;
-      font-size: 16px;
-      color: #333333;
-      line-height: 16px;
-    }
+    justify-content: center;
+    align-items: center;
   }
 
   .only-third-auth-label {
@@ -54,7 +47,6 @@ const ThirdAuthWrapper = styled.div`
     > button,
     > button:focus {
       width: calc(100vw - 104px);
-      padding-left: 48px;
     }
   }
 `;
@@ -124,7 +116,7 @@ function Login() {
 
   return (
     <AuthContainer
-      title={getLoginTitle(inviteInfo?.createUserName, systemConfig.branding?.brandName)}
+      title={getLoginTitle(inviteInfo?.createUserName, systemConfig.branding?.brandName, systemConfig.orgName)}
     >
       {loginCardView}
     </AuthContainer>

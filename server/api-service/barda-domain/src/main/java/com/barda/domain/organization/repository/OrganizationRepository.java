@@ -70,4 +70,21 @@ public interface OrganizationRepository extends ReactiveMongoRepository<Organiza
      * @return 存在域的组织列表
      */
     Flux<Organization> findByOrganizationDomainIsNotNull();
+
+    /**
+     * 根据是否为主组织和状态查找组织。
+     *
+     * @param isPrimary 是否为主组织
+     * @param state 要查找的状态
+     * @return 匹配的组织（如果存在）
+     */
+    Mono<Organization> findByIsPrimaryOrganizationAndState(Boolean isPrimary, OrganizationState state);
+
+    /**
+     * 根据状态查找创建时间最早的组织。
+     *
+     * @param state 要查找的状态
+     * @return 创建时间最早的组织（如果存在）
+     */
+    Mono<Organization> findFirstByStateOrderByCreatedAtAsc(OrganizationState state);
 }

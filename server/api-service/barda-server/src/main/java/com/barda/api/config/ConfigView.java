@@ -54,4 +54,10 @@ public class ConfigView {
      * 自定义品牌
      */
     private Object branding;
+
+    /**
+     * 组织名称
+     */
+    @JsonInclude(Include.NON_NULL)
+    private String orgName;
 }

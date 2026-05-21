@@ -53,6 +53,7 @@ export type Org = {
   createdBy: string;
   commonSettings: CommonSettingResponseData;
   createTime?: string;
+  isPrimaryOrganization?: boolean;
 };
 
 export type OrgAndRole = {

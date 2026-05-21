@@ -51,9 +51,10 @@ function UserRegister() {
   const [password, setPassword] = useState("");
   const redirectUrl = useRedirectUrl();
   const location = useLocation();
-  const { systemConfig, inviteInfo } = useContext(AuthContext);
+  const { systemConfig, inviteInfo, orgId } = useContext(AuthContext);
   const EncryptUtils = new encryptUtils(systemConfig.form.publicKey);
   const authId = systemConfig.form.id;
+  const loginUrl = orgId ? `/org/${orgId}/auth/login` : AUTH_LOGIN_URL;
   const { loading, onSubmit } = useAuthSubmit(
     async () => {
       return UserApi.formLogin({
@@ -63,6 +64,7 @@ function UserRegister() {
         invitationId: inviteInfo?.invitationId,
         source: UserConnectionSource.email,
         authId,
+        orgId,
       })
     },
     false,
@@ -103,7 +105,7 @@ function UserRegister() {
         <TermsAndPrivacyInfoWrapper>
           <TermsAndPrivacyInfo onCheckChange={(e) => setSubmitBtnDisable(!e.target.checked)} />
         </TermsAndPrivacyInfoWrapper>
-        <StyledRouteLinkLogin to={{ pathname: AUTH_LOGIN_URL, state: location.state }}>
+        <StyledRouteLinkLogin to={{ pathname: loginUrl, state: location.state }}>
           {trans("userAuth.userLogin")}
         </StyledRouteLinkLogin>
       </RegisterContent>

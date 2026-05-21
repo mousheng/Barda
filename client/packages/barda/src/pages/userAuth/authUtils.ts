@@ -3,6 +3,7 @@ import {
   BASE_URL,
   CAS_AUTH_REDIRECT,
   OAUTH_REDIRECT,
+  USER_AUTH_URL,
   USER_INFO_COMPLETION,
 } from "constants/routesURL";
 import { AxiosPromise, AxiosResponse } from "axios";
@@ -25,6 +26,7 @@ export const AuthContext = createContext<{
   systemConfig: SystemConfig;
   inviteInfo?: AuthInviteInfo;
   thirdPartyAuthError?: boolean;
+  orgId?: string;
 }>(undefined as any);
 
 export const getSafeAuthRedirectURL = (redirectUrl: string | null) => {
@@ -109,11 +111,15 @@ export const checkPassWithMsg = (value: string) => {
   return [valid, messages.join(",")] as const;
 };
 
-export const getLoginTitle = (inviteUserName?: string, brandName?: string) => {
+export const getLoginTitle = (inviteUserName?: string, brandName?: string, orgName?: string) => {
   const productName = brandName ?? trans("productName");
-  return inviteUserName
-    ? trans("userAuth.inviteWelcomeTitle", { username: inviteUserName, productName })
-    : trans("userAuth.welcomeTitle", { productName });
+  if (inviteUserName) {
+    return trans("userAuth.inviteWelcomeTitle", { username: inviteUserName, productName });
+  }
+  if (orgName) {
+    return trans("userAuth.orgWelcomeTitle", { orgName });
+  }
+  return trans("userAuth.welcomeTitle", { productName });
 };
 
 /**
@@ -124,7 +130,8 @@ export const geneAuthStateAndSaveParam = (
   authGoal: ThirdPartyAuthGoal,
   config: ThirdPartyConfigType,
   afterLoginRedirect: string | null,
-  invitationId?: string
+  invitationId?: string,
+  orgId?: string
 ) => {
   const state = Math.floor(Math.random() * 0xffffffff).toString(16);
   const params: AuthSessionStoreParams = {
@@ -137,6 +144,7 @@ export const geneAuthStateAndSaveParam = (
     routeLink: config.routeLink,
     name: config.name,
     authId: config.id,
+    orgId: orgId,
   };
   sessionStorage.setItem(AuthParamStorageKey, JSON.stringify(params));
   return state;
@@ -167,7 +175,6 @@ export const getAuthUrl = (config: ThirdPartyConfigType, redirectUrl: string, st
   return url;
 };
 export const getRedirectUrl = (authType: ThirdPartyAuthType) => {
-  return encodeURIComponent(
-    `${window.location.origin}${authType === "CAS" ? CAS_AUTH_REDIRECT : OAUTH_REDIRECT}`
-  );
+  const redirectPath = authType === "CAS" ? CAS_AUTH_REDIRECT : OAUTH_REDIRECT;
+  return encodeURIComponent(`${window.location.origin}${redirectPath}`);
 };

@@ -9,6 +9,7 @@ export interface CommonLoginParam {
   invitationId?: string;
   authId?: string;
   source?: string;
+  orgId?: string;
 }
 
 export interface CommonBindParam {
@@ -28,6 +29,7 @@ interface FormLoginRequest extends CommonLoginParam {
   password: string;
   register: boolean;
   authId?: string;
+  orgId?: string;
 }
 
 export interface GetUserResponse extends ApiResponse {
@@ -67,9 +69,11 @@ class UserApi extends Api {
   }
 
   static formLogin(request: FormLoginRequest): AxiosPromise<ApiResponse> {
-    const { invitationId, ...reqBody } = request;
-    const queryParam = invitationId ? { invitationId: invitationId } : undefined;
-    return Api.post(UserApi.formLoginURL, reqBody, queryParam);
+    const { invitationId, orgId, ...reqBody } = request;
+    const queryParam: Record<string, string> = {};
+    if (invitationId) queryParam.invitationId = invitationId;
+    if (orgId) queryParam.orgId = orgId;
+    return Api.post(UserApi.formLoginURL, reqBody, Object.keys(queryParam).length > 0 ? queryParam : undefined);
   }
 
   static bindEmail(request: { email: string; authId?: string }): AxiosPromise<ApiResponse> {

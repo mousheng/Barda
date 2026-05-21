@@ -1,5 +1,7 @@
 package com.barda.api.usermanagement;
 
+import javax.annotation.Nullable;
+
 import com.barda.api.authentication.dto.OrganizationDomainCheckResult;
 import com.barda.api.bizthreshold.AbstractBizThresholdChecker;
 import com.barda.api.config.ConfigView;
@@ -550,22 +552,30 @@ public class OrgApiServiceImpl implements OrgApiService {
      * @return 组织配置信息视图。
      */
     @Override
-    public Mono<ConfigView> getOrganizationConfigs() {
-        Mono<Organization> organizationMono = this.organizationService.getByDomain().cache();
+    public Mono<ConfigView> getOrganizationConfigs(@Nullable String orgId) {
+        Mono<Organization> organizationMono;
+        if (orgId != null) {
+            organizationMono = this.organizationService.getById(orgId).cache();
+        } else {
+            organizationMono = this.organizationService.getByDomain().cache();
+        }
         Mono<Map<String, Object>> brandingMono = organizationMono
                 .switchIfEmpty(this.organizationService.getOrganizationInEnterpriseMode())
                 .map(organization -> Optional.ofNullable(organization.getCommonSettings().get("branding"))
                         .map(value -> (Map<String, Object>) value)
                         .orElseGet(HashMap::new))
                 .defaultIfEmpty(new HashMap<>());
-        return authenticationService.findAllAuthConfigs(true)
+        Mono<String> orgNameMono = organizationMono
+                .map(Organization::getName)
+                .defaultIfEmpty("");
+        return authenticationService.findAllAuthConfigs(true, orgId)
                 .map(FindAuthConfig::authConfig)
                 .collectList()
                 .zipWith(organizationMono.hasElement())
                 .flatMap(tuple -> {
                     List<AbstractAuthConfig> authConfigs = tuple.getT1();
                     Boolean hasSelfDomain = tuple.getT2();
-                    return brandingMono.map(branding -> {
+                    return Mono.zip(brandingMono, orgNameMono, (branding, orgName) -> {
                         authConfigs.forEach(authConfig -> {
                             if (authConfig instanceof EmailAuthConfig && authConfig.getSourceName().equals("EMAIL")) {
                                 ((EmailAuthConfig) authConfig).setPublicKey(rsacryptoService.publicKeyString);
@@ -579,6 +589,7 @@ public class OrgApiServiceImpl implements OrgApiService {
                                 .workspaceMode(commonConfig.getWorkspace().getMode())
                                 .selfDomain(hasSelfDomain)
                                 .cookieName(commonConfig.getCookieName())
+                                .orgName(orgName)
                                 .build();
                     });
                 });

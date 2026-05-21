@@ -13,6 +13,7 @@ import {
   IMPORT_APP_FROM_TEMPLATE_URL,
   INVITE_LANDING_URL,
   isAuthUnRequired,
+  ORG_AUTH_URL,
   QUERY_LIBRARY_URL,
   SETTING,
   TRASH_URL,
@@ -49,6 +50,7 @@ import { buildMaterialPreviewURL } from "./util/materialUtils";
 import { GlobalInstances } from "components/GlobalInstances";
 
 const LazyUserAuthComp = React.lazy(() => import("pages/userAuth"));
+const LazyOrgUserAuthComp = React.lazy(() => import("pages/userAuth/orgAuth"));
 const LazyInviteLanding = React.lazy(() => import("pages/common/inviteLanding"));
 const LazyComponentDoc = React.lazy(() => import("pages/ComponentDoc"));
 const LazyComponentPlayground = React.lazy(() => import("pages/ComponentPlayground"));
@@ -147,6 +149,7 @@ class AppIndex extends React.Component<AppIndexProps, any> {
               // component={ApplicationListPage}
               component={ApplicationHome}
             />
+            <LazyRoute path={ORG_AUTH_URL} component={LazyOrgUserAuthComp} />
             <LazyRoute path={USER_AUTH_URL} component={LazyUserAuthComp} />
             <LazyRoute path={INVITE_LANDING_URL} component={LazyInviteLanding} />
             <LazyRoute path={`${COMPONENT_DOC_URL}/:name`} component={LazyComponentDoc} />

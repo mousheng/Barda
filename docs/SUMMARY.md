@@ -86,6 +86,15 @@
 * [开发 Barda 组件](develop-component.md)
 * [使用 SDK 嵌入 Barda 应用](embed-using-sdk.md)
 
+身份源管理
+* [身份源管理](identity-source/README.md)
+    * [配置 飞书](identity-source/feishu.md)
+    * [配置 钉钉](identity-source/dingtalk.md)
+    * [通用 OAuth 提供商](identity-source/generic-oauth.md)
+        * [配置 Authing](identity-source/authing.md)
+        * [配置 Gitee](identity-source/gitee.md)
+    * [常见问题](identity-source/faq.md)
+
 二次开发
 
 * [新开发教程 (推荐)](developer/quick-start-examples.md)

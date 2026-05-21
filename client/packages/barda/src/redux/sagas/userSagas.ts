@@ -6,9 +6,9 @@ import {
   ReduxActionErrorTypes,
   ReduxActionTypes,
 } from "constants/reduxActionConstants";
-import { AUTH_LOGIN_URL } from "constants/routesURL";
+import { AUTH_LOGIN_URL, ORG_AUTH_LOGIN_URL } from "constants/routesURL";
 import log from "loglevel";
-import { all, call, delay, put, takeLatest } from "redux-saga/effects";
+import { all, call, delay, put, select, takeLatest } from "redux-saga/effects";
 import {
   LogoutActionType,
   logoutSuccess,
@@ -22,6 +22,8 @@ import { SERVER_ERROR_CODES } from "constants/apiConstants";
 import { defaultUser } from "constants/userConstants";
 import { messageInstance } from "barda-design";
 import { AuthSearchParams } from "constants/authConstants";
+import { getUser } from "redux/selectors/usersSelectors";
+import { User } from "constants/userConstants";
 
 function validResponseData(response: AxiosResponse<ApiResponse>) {
   return response && response.data && response.data.data;
@@ -142,6 +144,15 @@ export function* logoutSaga(action: LogoutActionType) {
       const loginType = urlObj.searchParams.get(AuthSearchParams.loginType);
       if (loginType) {
         redirectURL = redirectURL + `&${AuthSearchParams.loginType}=${loginType}`;
+      }
+    } else {
+      // 如果不是主组织，跳转到该组织的专属登录页
+      const user: User = yield select(getUser);
+      if (user.currentOrgId) {
+        const currentOrg = user.orgs.find((o: Org) => o.id === user.currentOrgId);
+        if (currentOrg && !currentOrg.isPrimaryOrganization) {
+          redirectURL = ORG_AUTH_LOGIN_URL.replace(":orgId", user.currentOrgId);
+        }
       }
     }
     let isValidResponse = true;

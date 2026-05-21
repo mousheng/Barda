@@ -34,7 +34,9 @@ function validateParam(authParams: AuthSessionStoreParams, urlParam: AuthRedirec
     return true;
   } else {
     messageInstance.error(trans("userAuth.invalidThirdPartyParam"));
-    history.push(authParams.authGoal === "login" ? AUTH_LOGIN_URL : BASE_URL, {
+    const orgId = authParams.orgId;
+    const loginUrl = orgId ? `/org/${orgId}/auth/login` : AUTH_LOGIN_URL;
+    history.push(authParams.authGoal === "login" ? loginUrl : BASE_URL, {
       thirdPartyAuthError: true,
     });
     return false;

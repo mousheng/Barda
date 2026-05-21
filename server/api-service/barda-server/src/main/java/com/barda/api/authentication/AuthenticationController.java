@@ -86,11 +86,12 @@ public class AuthenticationController {
     @PostMapping("/form/login")
     public Mono<ResponseView<Boolean>> formLogin(@RequestBody FormLoginRequest formLoginRequest,
                                                  @RequestParam(required = false) String invitationId,
+                                                 @RequestParam(required = false) String orgId,
                                                  ServerWebExchange exchange) {
         return authenticationApiService.authenticateByForm(
                         rsaCryptoService.pureDecryt(formLoginRequest.loginId()),
                         rsaCryptoService.pureDecryt(formLoginRequest.password()),
-                        formLoginRequest.source(), formLoginRequest.register(), formLoginRequest.authId())
+                        formLoginRequest.source(), formLoginRequest.register(), formLoginRequest.authId(), orgId)
                 .flatMap(user -> authenticationApiService.loginOrRegister(user, exchange, invitationId))
                 .thenReturn(ResponseView.success(true));
     }
@@ -113,8 +114,9 @@ public class AuthenticationController {
             @RequestParam String code,
             @RequestParam(required = false) String invitationId,
             @RequestParam(required = false) String redirectUrl,
+            @RequestParam(required = false) String orgId,
             ServerWebExchange exchange) {
-        return authenticationApiService.authenticateByOauth2(authId, source, code, redirectUrl)
+        return authenticationApiService.authenticateByOauth2(authId, source, code, redirectUrl, orgId)
                 .flatMap(authUser -> authenticationApiService.loginOrRegister(authUser, exchange, invitationId))
                 .thenReturn(ResponseView.success(true));
     }
@@ -160,12 +162,13 @@ public class AuthenticationController {
     /**
      * 获取所有认证配置。
      *
+     * @param orgId 可选的组织ID，用于SAAS模式下获取指定组织的登录配置
      * @return 包含认证配置列表的Mono，表示操作是否成功的响应视图
      */
     @JsonView(JsonViews.Public.class)
     @GetMapping("/configs")
-    public Mono<ResponseView<List<AbstractAuthConfig>>> getAllConfigs() {
-        return authenticationService.findAllAuthConfigs(false)
+    public Mono<ResponseView<List<AbstractAuthConfig>>> getAllConfigs(@RequestParam(required = false) String orgId) {
+        return authenticationService.findAllAuthConfigs(false, orgId)
                 .map(FindAuthConfig::authConfig)
                 .collectList()
                 .map(ResponseView::success);

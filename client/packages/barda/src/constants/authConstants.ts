@@ -3,13 +3,16 @@ import {
   AUTH_LOGIN_URL,
   AUTH_REGISTER_URL,
   OAUTH_REDIRECT,
+  ORG_AUTH_LOGIN_URL,
+  ORG_AUTH_BIND_URL,
+  ORG_AUTH_REGISTER_URL,
 } from "constants/routesURL";
 import { InviteInfo } from "api/inviteApi";
 import Login, { ThirdPartyBindCard } from "pages/userAuth/login";
 import UserRegister from "pages/userAuth/register";
 import { AuthRedirect } from "pages/userAuth/thirdParty/authRedirect";
 import React from "react";
-import { GoogleLoginIcon, GithubLoginIcon, EmailLoginIcon, DingTalkLoginIcon, FeishuLoginIcon } from "assets/icons";
+import { GoogleLoginIcon, GithubLoginIcon, EmailLoginIcon, DingTalkLoginIcon, FeishuLoginIcon, GeneralLoginIcon } from "assets/icons";
 
 export type AuthInviteInfo = InviteInfo & { invitationId: string };
 export type AuthLocationState = { inviteInfo?: AuthInviteInfo; thirdPartyAuthError?: boolean };
@@ -59,6 +62,7 @@ export type AuthSessionStoreParams = {
   routeLink?: boolean;
   name: string;
   authId?: string;
+  orgId?: string;
 };
 
 /**
@@ -74,10 +78,20 @@ export const AuthRoutes: Array<{ path: string; component: React.ComponentType<an
   { path: OAUTH_REDIRECT, component: AuthRedirect },
 ];
 
-export type ServerAuthType = "GOOGLE" | "GITHUB" | "FORM" | "FEISHU" | "DINGTALK";
+export const OrgAuthRoutes: Array<{ path: string; component: React.ComponentType<any> }> = [
+  { path: ORG_AUTH_LOGIN_URL, component: Login },
+  { path: ORG_AUTH_BIND_URL, component: ThirdPartyBindCard },
+  { path: ORG_AUTH_REGISTER_URL, component: UserRegister },
+];
+
+export type ServerAuthType = "GOOGLE" | "GITHUB" | "FORM" | "FEISHU" | "DINGTALK" | "GENERIC";
 
 export type ServerAuthTypeInfoValueType = { logo: string; isOAuth2?: boolean };
 export const ServerAuthTypeInfo: { [key in ServerAuthType]?: ServerAuthTypeInfoValueType } = {
+  GENERIC: {
+    logo: GeneralLoginIcon,
+    isOAuth2: true,
+  },
   GOOGLE: {
     logo: GoogleLoginIcon,
     isOAuth2: true,

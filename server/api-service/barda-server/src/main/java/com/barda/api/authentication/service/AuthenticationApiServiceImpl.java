@@ -2,6 +2,7 @@ package com.barda.api.authentication.service;
 
 import static com.barda.sdk.exception.BizError.AUTH_ERROR;
 import static com.barda.sdk.exception.BizError.DISABLE_AUTH_CONFIG_FORBIDDEN;
+import static com.barda.sdk.exception.BizError.LOG_IN_SOURCE_NOT_SUPPORTED;
 import static com.barda.sdk.exception.BizError.USER_NOT_EXIST;
 import static com.barda.sdk.util.ExceptionUtils.deferredError;
 import static com.barda.sdk.util.ExceptionUtils.ofError;
@@ -51,6 +52,7 @@ import com.barda.domain.user.model.ConnectionAuthToken;
 import com.barda.domain.user.model.User;
 import com.barda.domain.user.service.UserService;
 import com.barda.sdk.auth.AbstractAuthConfig;
+import com.barda.sdk.auth.constants.AuthTypeConstants;
 import com.barda.sdk.exception.BizError;
 import com.barda.sdk.exception.BizException;
 import com.barda.sdk.util.CookieHelper;
@@ -148,6 +150,7 @@ public class AuthenticationApiServiceImpl implements AuthenticationApiService {
     @Autowired
     private OrganizationRepository organizationRepository;
 
+
     /**
      * 基于表单的身份验证。
      *
@@ -159,8 +162,8 @@ public class AuthenticationApiServiceImpl implements AuthenticationApiService {
      * @return 已授权的用户
      */
     @Override
-    public Mono<AuthUser> authenticateByForm(String loginId, String password, String source, boolean register, String authId) {
-        return authenticate(authId, source, new FormAuthRequestContext(loginId, password, register));
+    public Mono<AuthUser> authenticateByForm(String loginId, String password, String source, boolean register, String authId, @Nullable String orgId) {
+        return authenticate(authId, source, new FormAuthRequestContext(loginId, password, register), orgId);
     }
 
     /**
@@ -173,8 +176,8 @@ public class AuthenticationApiServiceImpl implements AuthenticationApiService {
      * @return 已授权的用户
      */
     @Override
-    public Mono<AuthUser> authenticateByOauth2(String authId, String source, String code, String redirectUrl) {
-        return authenticate(authId, source, new OAuth2RequestContext(code, redirectUrl));
+    public Mono<AuthUser> authenticateByOauth2(String authId, String source, String code, String redirectUrl, @Nullable String orgId) {
+        return authenticate(authId, source, new OAuth2RequestContext(code, redirectUrl), orgId);
     }
 
     /**
@@ -185,9 +188,15 @@ public class AuthenticationApiServiceImpl implements AuthenticationApiService {
      * @param context 身份验证上下文
      * @return 已授权的用户
      */
-    protected Mono<AuthUser> authenticate(String authId, @Deprecated String source, AuthRequestContext context) {
+    protected Mono<AuthUser> authenticate(String authId, @Deprecated String source, AuthRequestContext context, @Nullable String orgId) {
         return Mono.defer(() -> {
                     if (StringUtils.isNotBlank(authId)) {
+                        if (orgId != null) {
+                            return authenticationService.findAllAuthConfigs(true, orgId)
+                                    .filter(fac -> Objects.equals(authId, fac.authConfig().getId()))
+                                    .next()
+                                    .switchIfEmpty(ofError(LOG_IN_SOURCE_NOT_SUPPORTED, "LOG_IN_SOURCE_NOT_SUPPORTED"));
+                        }
                         return authenticationService.findAuthConfigByAuthId(authId);
                     }
                     log.warn("source is deprecated and will be removed in the future, please use authId instead. {}", source);
@@ -195,7 +204,15 @@ public class AuthenticationApiServiceImpl implements AuthenticationApiService {
                 })
                 .doOnNext(findAuthConfig -> {
                     context.setAuthConfig(findAuthConfig.authConfig());
-                    context.setOrgId(Optional.ofNullable(findAuthConfig.organization()).map(Organization::getId).orElse(null));
+                    if (orgId != null) {
+                        // 显式传入 orgId（来自 /org/:orgId/auth 路径），用户加入该组织
+                        context.setOrgId(orgId);
+                    } else {
+                        // 域名匹配或企业模式：organization 非 null 时用户加入对应组织
+                        // SAAS 默认登录：organization 为 null（仅借用主组织配置），用户创建自己的组织
+                        context.setOrgId(Optional.ofNullable(findAuthConfig.organization())
+                                .map(Organization::getId).orElse(null));
+                    }
                 })
                 .then(authRequestFactory.build(context))
                 .flatMap(authRequest -> authRequest.auth(context))
@@ -393,7 +410,7 @@ public class AuthenticationApiServiceImpl implements AuthenticationApiService {
     @Override
     public Mono<Boolean> disableAuthConfig(String authId) {
         return checkIfAdmin()
-                .then(checkIfOnlyEffectiveCurrentUserConnections(authId))
+                .then(checkIfLastEnabledAuthConfig(authId))
                 .then(sessionUserService.getVisitorOrgMemberCache())
                 .flatMap(orgMember -> organizationService.getById(orgMember.getOrgId()))
                 .doOnNext(organization -> disableAuthConfig(organization, authId))
@@ -437,28 +454,20 @@ public class AuthenticationApiServiceImpl implements AuthenticationApiService {
     }
 
     /**
-     * 检查是否只有当前用户的有效连接是由指定的身份验证ID标识的。
+     * 检查当前authId是否是组织中最后一个已启用的认证配置。
+     * 只有组织中所有其他认证配置都未启用时，才禁止禁用最后一个。
      *
      * @param authId 身份验证ID
      * @return 空Mono
      */
-    private Mono<Void> checkIfOnlyEffectiveCurrentUserConnections(String authId) {
-        Mono<List<String>> userConnectionAuthConfigIdListMono = sessionUserService.getVisitor()
-                .flatMapIterable(User::getConnections)
-                .filter(connection -> StringUtils.isNotBlank(connection.getAuthId()))
-                .map(Connection::getAuthId)
-                .collectList();
-        Mono<List<String>> orgAuthIdListMono = authenticationService.findAllAuthConfigs(true)
+    private Mono<Void> checkIfLastEnabledAuthConfig(String authId) {
+        return authenticationService.findAllAuthConfigs(true)
                 .map(FindAuthConfig::authConfig)
                 .map(AbstractAuthConfig::getId)
-                .collectList();
-        return Mono.zip(userConnectionAuthConfigIdListMono, orgAuthIdListMono)
-                .delayUntil(tuple -> {
-                    List<String> userConnectionAuthConfigIds = tuple.getT1();
-                    List<String> orgAuthConfigIds = tuple.getT2();
-                    userConnectionAuthConfigIds.retainAll(orgAuthConfigIds);
-                    userConnectionAuthConfigIds.remove(authId);
-                    if (CollectionUtils.isEmpty(userConnectionAuthConfigIds)) {
+                .collectList()
+                .delayUntil(orgAuthConfigIds -> {
+                    orgAuthConfigIds.remove(authId);
+                    if (CollectionUtils.isEmpty(orgAuthConfigIds)) {
                         return Mono.error(new BizException(DISABLE_AUTH_CONFIG_FORBIDDEN, "DISABLE_AUTH_CONFIG_FORBIDDEN"));
                     }
                     return Mono.empty();
@@ -473,12 +482,19 @@ public class AuthenticationApiServiceImpl implements AuthenticationApiService {
      * @param authId        身份验证ID
      */
     private void disableAuthConfig(Organization organization, String authId) {
-        Optional.of(organization)
+        List<AbstractAuthConfig> configs = Optional.of(organization)
                 .map(Organization::getAuthConfigs)
-                .orElse(Collections.emptyList())
-                .stream()
+                .orElse(Collections.emptyList());
+        configs.stream()
                 .filter(abstractAuthConfig -> Objects.equals(abstractAuthConfig.getId(), authId))
-                .forEach(abstractAuthConfig -> abstractAuthConfig.setEnable(false));
+                .findFirst()
+                .ifPresent(abstractAuthConfig -> {
+                    if (AuthTypeConstants.GENERIC.equals(abstractAuthConfig.getAuthType()) && !abstractAuthConfig.isEnable()) {
+                        configs.remove(abstractAuthConfig);
+                    } else {
+                        abstractAuthConfig.setEnable(false);
+                    }
+                });
     }
 
     /**

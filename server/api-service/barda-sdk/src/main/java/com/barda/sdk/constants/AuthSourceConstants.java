@@ -57,6 +57,16 @@ public class AuthSourceConstants {
     public static final String DINGTALK_NAME = "DingTalk";
 
     /**
+     * 通用 OAuth2/OIDC 协议的默认身份验证源
+     */
+    public static final String GENERIC = "GENERIC";
+
+    /**
+     * 通用 OAuth2/OIDC 的名称
+     */
+    public static final String GENERIC_NAME = "Generic";
+
+    /**
      * 通用协议的默认身份验证源
      * OAuth 2.0
      */

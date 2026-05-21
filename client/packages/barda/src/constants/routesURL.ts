@@ -5,6 +5,7 @@ import { DatasourceType } from "@barda/constants/queryConstants";
 
 export const BASE_URL = "/";
 export const USER_AUTH_URL = "/user/auth";
+export const ORG_AUTH_URL = "/org/:orgId/auth";
 export const COMPONENT_DOC_URL = "/components";
 export const SETTING = "/setting";
 export const PERMISSION_SETTING = "/setting/permission";
@@ -41,6 +42,10 @@ export const OAUTH_REDIRECT = `${USER_AUTH_URL}/oauth/redirect`;
 export const CAS_AUTH_REDIRECT = `${USER_AUTH_URL}/cas/redirect`;
 export const LDAP_AUTH_LOGIN_URL = `${USER_AUTH_URL}/ldap/login`;
 export const USER_INFO_COMPLETION = `${USER_AUTH_URL}/completion`;
+
+export const ORG_AUTH_LOGIN_URL = `${ORG_AUTH_URL}/login`;
+export const ORG_AUTH_REGISTER_URL = `${ORG_AUTH_URL}/register`;
+export const ORG_AUTH_BIND_URL = `${ORG_AUTH_URL}/bind`;
 export const INVITE_LANDING_URL = "/invite/:invitationId";
 
 export const APPLICATION_VIEW_URL = (appId: string, viewMode: AppViewMode) =>
@@ -50,6 +55,7 @@ export const isAuthUnRequired = (pathname: string): boolean => {
   return (
     pathname.startsWith("/invite/") ||
     pathname.startsWith(USER_AUTH_URL) ||
+    pathname.startsWith("/org/") ||
     pathname.startsWith(COMPONENT_DOC_URL)
   );
 };

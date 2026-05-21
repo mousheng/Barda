@@ -18,10 +18,12 @@ export abstract class AbstractAuthenticator {
   protected authParams: AuthSessionStoreParams;
   protected urlParam: AuthRedirectUrlParams;
   protected redirectUrl: string;
+  protected orgId?: string;
 
   constructor(authParams: AuthSessionStoreParams, urlParam: AuthRedirectUrlParams) {
     this.authParams = authParams;
     this.urlParam = urlParam;
+    this.orgId = authParams.orgId;
     this.redirectUrl = decodeURIComponent(getRedirectUrl(authParams.authType));
   }
 
@@ -40,7 +42,8 @@ export abstract class AbstractAuthenticator {
         );
       })
       .catch((e) => {
-        history.push(AUTH_LOGIN_URL, {
+        const loginUrl = this.orgId ? `/org/${this.orgId}/auth/login` : AUTH_LOGIN_URL;
+        history.push(loginUrl, {
           thirdPartyAuthError: true,
         });
         messageInstance.error(e.message);

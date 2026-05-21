@@ -7,7 +7,7 @@ export type { AuthRedirectUrlParams };
 
 export function getAuthenticator(
   authParams: AuthSessionStoreParams,
-  urlParam: AuthRedirectUrlParams
+  urlParam: AuthRedirectUrlParams,
 ) {
   return new OAuthAuthenticator(authParams, urlParam);
 }

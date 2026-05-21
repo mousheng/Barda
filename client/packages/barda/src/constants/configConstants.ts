@@ -29,6 +29,7 @@ export type ConfigBaseInfo = {
   warning?: string;
   featureFlag: FeatureFlag;
   branding?: BrandingConfig;
+  orgName?: string;
 };
 
 type OAuthConfig = {
@@ -39,6 +40,7 @@ type OAuthConfig = {
   agentId?: string;
   clientId?: string;
   id?: string;
+  sourceIcon?: string;
 };
 
 export type FormConfig = {
@@ -77,8 +79,11 @@ export type SystemConfig = {
 export const transToSystemConfig = (responseData: ConfigResponseData): SystemConfig => {
   const thirdPartyAuthConfigs: ThirdPartyConfigType[] = [];
   responseData.authConfigs?.forEach((authConfig) => {
-    const logo = ServerAuthTypeInfo[authConfig.authType]?.logo || GeneralLoginIcon;
+    const defaultLogo = ServerAuthTypeInfo[authConfig.authType]?.logo || GeneralLoginIcon;
     if (isOAuthConfig(authConfig)) {
+      // 优先使用管理员配置的 sourceIcon（Generic 类型），否则使用默认图标
+      // sourceIcon 可能是图标名称（/icon:xxx）或图片 URL，统一传递，由渲染端处理
+      const logo = authConfig.sourceIcon || defaultLogo;
       const routeLinkConf: Partial<ThirdPartyConfigType> = isRouteLink(authConfig.authType)
         ? {
           url: QR_CODE_OAUTH_URL,

@@ -1,5 +1,7 @@
 package com.barda.api.authentication.service;
 
+import javax.annotation.Nullable;
+
 import org.springframework.web.server.ServerWebExchange;
 
 import com.barda.api.authentication.dto.AuthConfigRequest;
@@ -22,7 +24,7 @@ public interface AuthenticationApiService {
      * @param authId   身份验证ID。
      * @return 身份验证后的用户信息。
      */
-    Mono<AuthUser> authenticateByForm(String loginId, String password, String source, boolean register, String authId);
+    Mono<AuthUser> authenticateByForm(String loginId, String password, String source, boolean register, String authId, @Nullable String orgId);
 
     /**
      * 使用基于OAuth2的身份验证方式进行身份验证。
@@ -31,9 +33,10 @@ public interface AuthenticationApiService {
      * @param source     身份验证来源。
      * @param code       授权码。
      * @param redirectUrl 重定向URL。
+     * @param orgId      组织ID（可选）。
      * @return 身份验证后的用户信息。
      */
-    Mono<AuthUser> authenticateByOauth2(String authId, String source, String code, String redirectUrl);
+    Mono<AuthUser> authenticateByOauth2(String authId, String source, String code, String redirectUrl, @Nullable String orgId);
 
     /**
      * 登录或注册用户。

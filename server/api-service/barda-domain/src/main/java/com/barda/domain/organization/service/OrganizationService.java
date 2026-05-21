@@ -121,6 +121,14 @@ public interface OrganizationService {
     Mono<Organization> getByDomain();
 
     /**
+     * 获取主组织（SAAS模式下作为默认登录配置来源）。
+     *
+     * @return 主组织（如果存在）
+     */
+    @PossibleEmptyMono
+    Mono<Organization> getPrimaryOrganization();
+
+    /**
      * 更新组织的通用设置。
      *
      * @param orgId 要更新的组织 ID

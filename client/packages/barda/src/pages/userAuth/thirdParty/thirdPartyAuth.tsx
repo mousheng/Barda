@@ -4,15 +4,14 @@ import {
   ThirdPartyAuthGoal,
   ThirdPartyConfigType,
 } from "constants/authConstants";
-import { CommonGrayLabel, WhiteLoading } from "barda-design";
+import { WhiteLoading, useIcon, removeQuote, iconPrefix } from "barda-design";
 import { useLocation } from "react-router-dom";
 import history from "util/history";
-import { LoginLogoStyle, StyledLoginButton } from "pages/userAuth/authComponents";
-import { useSelector } from "react-redux";
-import { selectSystemConfig } from "redux/selectors/configSelectors";
+import { LoginIconWrapper, LoginLogoStyle, StyledLoginButton } from "pages/userAuth/authComponents";
 import { messageInstance } from "barda-design";
 import { trans } from "i18n";
-import { geneAuthStateAndSaveParam, getAuthUrl, getRedirectUrl } from "pages/userAuth/authUtils";
+import { geneAuthStateAndSaveParam, getAuthUrl, getRedirectUrl, AuthContext } from "pages/userAuth/authUtils";
+import { useContext } from "react";
 
 function ThirdPartyLoginButton(props: {
   config: ThirdPartyConfigType;
@@ -25,13 +24,15 @@ function ThirdPartyLoginButton(props: {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const loginRedirectUrl = queryParams.get(AuthSearchParams.redirectUrl);
+  const { orgId } = useContext(AuthContext);
   const redirectUrl = getRedirectUrl(config.authType);
   const onLoginClick = () => {
     const state = geneAuthStateAndSaveParam(
       props.authGoal,
       config,
       loginRedirectUrl,
-      props.invitationId
+      props.invitationId,
+      orgId
     );
     if (config.authType === "LDAP") {
       history.push({
@@ -64,14 +65,25 @@ function ThirdPartyLoginButton(props: {
     }
   };
 
+  const isIconName = config.logo && removeQuote(config.logo).startsWith(iconPrefix);
+  const icon = useIcon(isIconName && config.logo ? config.logo : undefined);
+  // 非图标名称（URL）才用 <img>，图标名称加载中时不做任何渲染以避免破损图标
+  const renderAsImg = !isIconName;
+
   if (props.autoJump) {
     onLoginClick();
     return <WhiteLoading size={18} />;
   }
+
   return (
-    <StyledLoginButton onClick={onLoginClick}>
-      <LoginLogoStyle alt={config.name} src={config.logo} title={config.name} />
-      <CommonGrayLabel className="auth-label">{label}</CommonGrayLabel>
+    <StyledLoginButton onClick={onLoginClick} title={label}>
+      {icon ? (
+        <LoginIconWrapper>{icon.getView()}</LoginIconWrapper>
+      ) : renderAsImg ? (
+        <LoginIconWrapper>
+          <LoginLogoStyle alt={config.name} src={config.logo} title={config.name} />
+        </LoginIconWrapper>
+      ) : null}
     </StyledLoginButton>
   );
 }
@@ -82,7 +94,7 @@ export function ThirdPartyAuth(props: {
   authGoal: ThirdPartyAuthGoal;
   labelFormatter?: (name: string) => string;
 }) {
-  const systemConfig = useSelector(selectSystemConfig);
+  const { systemConfig } = useContext(AuthContext);
   if (!systemConfig) {
     return null;
   }
