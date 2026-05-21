@@ -81,6 +81,7 @@ type GridItemChildCache = {
  * @returns 
  */
 export const NewGridLayout = (props: GridLayoutProps) => {
+    const { hintPlaceholder } = props;
     // 用于组件刷新
     const [refreshCanvasCount, setRefreshCanvasCount] = useState<number>(0)
     // 最终呈现的布局
@@ -986,8 +987,9 @@ export const NewGridLayout = (props: GridLayoutProps) => {
                     {/* <div style={{ height: "0px" }}>children:{_.size(props.children)},props.layout:{_.size(props.layout)},layout:{_.size(layouts)},count:{inCanvasCountRef.current},stateChangedHs:{JSON.stringify(compsHeightMap)},dragOverPos: {JSON.stringify(dragOverItemPosition.current)}</div> */}
                     <div style={contentStyle} ref={ref}>
                         {props.showGridLines && <GridLines positionParams={positionParams} position={gridLinesPosition} lineColor={contrastBgColor} />}
-                        {mounted &&
-                            _.orderBy(layouts, ['z'], ['asc']).map((item) => processGridItem(item))}
+                        {_.isEmpty(layouts) && hintPlaceholder
+                            ? hintPlaceholder
+                            : mounted && _.orderBy(layouts, ['z'], ['asc']).map((item) => processGridItem(item))}
                     </div>
                 </LayoutContainer>
             </ScrollBar>
@@ -1010,8 +1012,9 @@ export const NewGridLayout = (props: GridLayoutProps) => {
         {/* <div style={{ height: "0px" }}>children:{_.size(props.children)},props.layout:{_.size(props.layout)},layout:{_.size(layouts)},count:{inCanvasCountRef.current},stateChangedHs:{JSON.stringify(compsHeightMap)},dragOverPos: {JSON.stringify(dragOverItemPosition.current)}</div> */}
         <div style={contentStyle} ref={ref}>
             {props.showGridLines && <GridLines positionParams={positionParams} position={gridLinesPosition} lineColor={contrastBgColor} />}
-            {mounted &&
-                _.orderBy(layouts, ['z'], ['asc']).map((item) => processGridItem(item))}
+            {_.isEmpty(layouts) && hintPlaceholder
+                ? hintPlaceholder
+                : mounted && _.orderBy(layouts, ['z'], ['asc']).map((item) => processGridItem(item))}
         </div>
     </LayoutContainer>
         )

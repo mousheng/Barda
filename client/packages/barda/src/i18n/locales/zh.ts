@@ -1611,7 +1611,7 @@ export const zh = {
     },
     formComp: {
         containerPlaceholder: "从右侧窗格拖动组件或",
-        openDialogButton: "从数据生成表单",
+        openDialogButton: "从数据库生成表单",
         resetAfterSubmit: "成功提交后重置",
         initialData: "初始数据",
         disableSubmit: "禁用提交",
