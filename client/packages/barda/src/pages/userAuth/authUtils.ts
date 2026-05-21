@@ -40,19 +40,26 @@ export const getSafeAuthRedirectURL = (redirectUrl: string | null) => {
 export function useAuthSubmit(
   requestFunc: () => AxiosPromise<ApiResponse>,
   infoCompleteCheck: boolean,
-  redirectUrl: string | null
+  redirectUrl: string | null,
+  beforeRedirect?: (resp: AxiosResponse<ApiResponse>) => Promise<boolean>,
 ) {
   const [loading, setLoading] = useState(false);
   return {
     loading: loading,
-    onSubmit: () => {
+    onSubmit: async () => {
       setLoading(true);
-      requestFunc()
-        .then((resp) => authRespValidate(resp, infoCompleteCheck, redirectUrl))
-        .catch((e) => {
-          messageInstance.error(e.message);
-        })
-        .finally(() => setLoading(false));
+      try {
+        const resp = await requestFunc();
+        if (beforeRedirect) {
+          const shouldRedirect = await beforeRedirect(resp);
+          if (!shouldRedirect) return;
+        }
+        authRespValidate(resp, infoCompleteCheck, redirectUrl);
+      } catch (e: any) {
+        messageInstance.error(e.message);
+      } finally {
+        setLoading(false);
+      }
     },
   };
 }
